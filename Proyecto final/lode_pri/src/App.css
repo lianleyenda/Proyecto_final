@@ -1,3 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap");
+
+.tipografia {
+  font-family: "Bree Serif", serif;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +45,33 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.promo {
+  background: #5a1a00; /* color marrón como en la referencia */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  font-family: "Bree Serif", serif;
+  font-size: 16px;
+  position: fixed; /* 🔹 siempre arriba */
+  top: 0;
+  left: 0;
+  width: 100%; /* que ocupe todo el ancho */
+  z-index: 1000; /* que quede por encima del resto */
+}
+
+/* Ajuste para que el header no quede tapado */
+header {
+  margin-top: 50px; /* altura de la promo */
+}
+
+.division {
+  display: grid;
+  padding: 10px;
+  justify-content: right;
+  align-items: right;
 }
