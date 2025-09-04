@@ -5,13 +5,7 @@ app = Flask(__name__)
 
 
 
-data = {
-   'host': '10.9.120.5',        # o la IP de tu servidor MySQL
-   'port': 3306,                 #puerto
-   'user': 'hamburgueseria',             # tu usuario de MySQL
-   'password': 'hambur1234',             # tu contraseña
-   'database': 'hamburgueseria'       # el nombre de la base que creaste en phpMyAdmin
-}
+
 
 
 
