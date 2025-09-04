@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ producto.Producto }}</title>
+  </head>
+  <body>
+    <h1>{{ producto.Producto }}</h1>
+    <!-- Nombre de la hamburguesa -->
+    <p>Precio: ${{ producto.Costo }}</p>
+    <!-- Precio cargado en la base de datos -->
+    {% if producto.foto %}
+    <!-- Si existe foto, la mostramos -->
+    <img src="{{ producto.foto }}" alt="{{ producto.Producto }}" width="250" />
+    {% endif %}
+  </body>
+</html>

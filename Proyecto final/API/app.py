@@ -1,10 +1,17 @@
 import mysql.connector
-from flask import Flask, g, request, jsonify
+from flask import Flask, g, request, jsonify, render_template
 
 app = Flask(__name__)
 
 
 
+data = {
+   'host': '10.9.120.5',        # o la IP de tu servidor MySQL
+   'port': 3306,                 #puerto
+   'user': 'hamburgueseria',             # tu usuario de MySQL
+   'password': 'hambur1234',             # tu contraseña
+   'database': 'hamburgueseria'       # el nombre de la base que creaste en phpMyAdmin
+}
 
 
 
@@ -12,19 +19,6 @@ app = Flask(__name__)
 def get_db():
     conn = mysql.connector.connect(**data)
     return conn
-
-
-
-
-
-@app.route('/menu', methods=['GET'])
-def listar_usuarios():
- db = get_db()
- cursor = db.cursor(dictionary=True)  # dictionary=True para obtener diccionarios
- cursor.execute('SELECT * FROM Productos')
- resultado = cursor.fetchall()
- return jsonify({'Productos': resultado})
-   
 
 
 if __name__ == '__main__':
@@ -61,7 +55,6 @@ def eliminar_stock(stock_id):
 
 
 
-from flask import request
 
 @app.route('/stock/<int:stock_id>', methods=['PUT']) 
 def modificar_stock(stock_id):
@@ -217,6 +210,124 @@ def borrar_cuenta(id_usuarios):
     return {'mensaje': f'Usuario con ID {id_usuarios} eliminado correctamente'}, 200
 
 
+##endpoint de las hamburguesas, que en un futuro se guia por el boton y muestra la 
+##hamburguesa. proxima clase verificar si esta bien con postman
 
 
+@app.route('/Menu')
+def index():
+    db = get_db()  # Abrimos la conexión a la base de datos
+    cursor = db.cursor(dictionary=True)  # Creamos un cursor que devuelve resultados como diccionarios
+    cursor.execute("SELECT Producto, Costo FROM Productos")  # Traemos nombre y precio de todas las hamburguesas
+    productos = cursor.fetchall()  # Guardamos todos los resultados en una lista
+    cursor.close()  # Cerramos el cursor
+    db.close()      # Cerramos la conexión
+    return render_template("index.html", productos=productos)
+    # Renderizamos el template index.html y le pasamos la lista de productos
+
+
+
+
+
+
+@app.route('/Productos/<string:nombre>', methods=['GET'])
+def ver_producto(nombre):
+    db = get_db()  # Conexión a la base de datos
+    cursor = db.cursor(dictionary=True)
+    # Buscamos el producto exacto por nombre
+    cursor.execute("SELECT * FROM Productos WHERE Producto = %s", (nombre,))
+    producto = cursor.fetchone()  # Tomamos solo el primer resultado
+    cursor.close()
+    db.close()
+    
+    if producto:
+        # Si existe el producto, renderizamos producto.html pasándole los datos
+        return render_template("producto.html", producto=producto)
+    else:
+        # Si no existe, devolvemos un mensaje de error
+        return "Producto no encontrado", 404
+
+
+
+
+# --------------------------
+# GET: Listar todas las promociones
+# --------------------------
+@app.route('/Promociones', methods=['GET'])
+def obtener_promociones():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM Promociones")
+    promociones = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(promociones), 200       
+
+
+# --------------------------
+# GET: Obtener una promoción por ID
+# --------------------------
+@app.route('/Promociones/<int:id>', methods=['GET'])
+def obtener_promocion(id):
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM Promociones WHERE id = %s", (id,))
+    promo = cursor.fetchone()
+    cursor.close()
+    db.close()
+    if promo:
+        return jsonify(promo), 200
+    else:
+        return jsonify({"mensaje": "Promoción no encontrada"}), 404
+
+# --------------------------
+# POST: Agregar una nueva promoción
+# --------------------------
+@app.route('/Promociones', methods=['POST'])
+def agregar_promocion():
+    datos = request.get_json()
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(
+        "INSERT INTO Promociones (nombre, descripcion, precio, productos) VALUES (%s, %s, %s, %s)",
+        (datos["nombre"], datos.get("descripcion"), datos["precio"], datos.get("productos"))
+    )
+    db.commit()
+    cursor.close()
+    db.close()
+    return jsonify({"mensaje": "Promoción agregada"}), 201
+
+# --------------------------
+# PUT: Actualizar una promoción existente
+# --------------------------
+@app.route('/Promociones/<int:id>', methods=['PUT'])
+def actualizar_promocion(id):
+    datos = request.get_json()
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(
+        "UPDATE Promociones SET nombre=%s, descripcion=%s, precio=%s, productos=%s WHERE id=%s",
+        (datos["nombre"], datos.get("descripcion"), datos["precio"], datos.get("productos"), id)
+    )
+    db.commit()
+    cursor.close()
+    db.close()
+    return jsonify({"mensaje": "Promoción actualizada"}), 200
+
+# --------------------------
+# DELETE: Eliminar una promoción
+# --------------------------
+@app.route('/Promociones/<int:id>', methods=['DELETE'])
+def eliminar_promocion(id):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM Promociones WHERE id = %s", (id,))
+    db.commit()
+    cursor.close()
+    db.close()
+    return jsonify({"mensaje": "Promoción eliminada"}), 200
+
+# --------------------------
+# Ejecutar la app
+# --------------------------
 

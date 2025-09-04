@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Menú de Hamburguesas</title>
+  </head>
+  <body>
+    <h1>Menú de Hamburguesas 🍔</h1>
+    <ul>
+      <!-- Iteramos por todos los productos enviados desde Flask -->
+      {% for producto in productos %}
+      <li>
+        <!-- Creamos un link a la página individual usando el nombre del producto -->
+        <a href="/Productos/{{ producto.Producto | urlencode }}">
+          {{ producto.Producto }}
+        </a>
+        - ${{ producto.Costo }}
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
