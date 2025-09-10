@@ -3,6 +3,8 @@
 hamburgueseria.db
 
 
+.env
+
 *.pyc
 __pycache__/
 

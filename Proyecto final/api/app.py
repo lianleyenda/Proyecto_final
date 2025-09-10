@@ -1,8 +1,20 @@
 import mysql.connector
 from flask import Flask, g, request, jsonify, session, redirect, url_for, render_template
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()#lee la funciones
 
 app = Flask(__name__)
 
+data = {
+   'host': os.getenv("DB_HOST"),
+   'port': int(os.getenv("DB_PORT")),
+   'user': os.getenv("DB_USER"),
+   'password': os.getenv("DB_PASS"),
+   'database': os.getenv("DB_NAME")
+}
 
 
 # Datos de conexión

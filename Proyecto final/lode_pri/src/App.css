@@ -132,6 +132,7 @@
 }
 
 .search-bar {
+  color: black;
   display: flex;
   align-items: center;
   border: 1px solid #ccc;
