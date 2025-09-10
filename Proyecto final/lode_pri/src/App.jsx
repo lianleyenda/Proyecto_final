@@ -3,32 +3,43 @@ import "./App.css";
 function App() {
   return (
     <>
-      <head>
-        <title>Lode_priburguer</title>
-      </head>
+      <div class="promo">
+  <span>¡Hoy tu hambre tiene premio! 🍔 Comprá 2 hamburguesas y la tercera va de regalo —solo por tiempo limitado.</span>
+  <button>Ir</button>
+</div>
 
-      <body>
-        <div class="promo">
-          <h2 class="tipografia">
-            ¡Hoy tu hambre tiene premio! 🍔 Comprá 2 hamburguesas y la tercera
-            va de regalo —solo por tiempo limitado.
-          </h2>
-          <button>Ir</button>
-        </div>
-        <header>
-          <a class="division">Inicio</a>
-          <a class="division">Contactos</a>
-          <a class="division">Promociones</a>
-          <a class="division">Carrito</a>
-        </header>
+<header>
+<nav class="navbar">
+  <div class="navbar-left">
+    <img src="logo.png" alt="Logo LODEPRI" />
+    <span>LODEPRI</span>
+  </div>
 
+  <div class="navbar-right">
+    <a href="#">Página principal</a>
+    <a href="#">Contacto</a>
+    <a href="#">Promociones</a>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Buscar..." />
+      <button>🔍</button>
+    </div>
+  </div>
+</nav>
+</header>
+
+      
+
+      
+        {/* Esto empuja el contenido abajo de la promo */}
         <div>
-          <h2>este es el cominezo donde iria la foto</h2>
+          <h2>este es el comienzo donde iría la foto</h2>
         </div>
         <div>
-          <h2>aca hirian los distintas hamburguesas</h2>
+          <h2>aca irían las distintas hamburguesas</h2>
         </div>
-      </body>
+
+      
     </>
   );
 }

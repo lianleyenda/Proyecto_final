@@ -48,30 +48,106 @@
 }
 
 .promo {
-  background: #5a1a00; /* color marrón como en la referencia */
+  background: #5a1a00;
   color: white;
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 15px;
-  padding: 10px;
+  justify-content: center;   /* 🔹 centra texto + botón como bloque */
+  padding: 10px 20px;
   font-family: "Bree Serif", serif;
   font-size: 16px;
-  position: fixed; /* 🔹 siempre arriba */
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%; /* que ocupe todo el ancho */
-  z-index: 1000; /* que quede por encima del resto */
+  width: 100%;
+  z-index: 1000;
+  gap: 10px; /* espacio entre texto y botón */
 }
 
-/* Ajuste para que el header no quede tapado */
-header {
-  margin-top: 50px; /* altura de la promo */
+
+.promo span {
+  display: flex;
+  justify-content: center;
+  
 }
 
-.division {
-  display: grid;
-  padding: 10px;
-  justify-content: right;
-  align-items: right;
+.promo button {
+  background-color: #5a1a00;
+  color: white;
+  border: 2px solid white;
+  padding: 0.3em 0.8em;
+  font-family: "Bree Serif", serif;
+  font-size: 15px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+
+/* 🔹 Barra blanca de navegación */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 10px 20px;
+  position: fixed;
+  top: 50px; /* justo debajo de la promo */
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  border-bottom: 1px solid #ddd;
+  font-family: "Bree Serif", serif;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-left img {
+  height: 40px; /* tamaño logo */
+}
+
+.navbar-left span {
+  font-size: 18px;
+  font-weight: bold;
+  color: black;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar-right a {
+  text-decoration: none;
+  color: black;
+  font-size: 16px;
+}
+
+.navbar-right a:hover {
+  color: #5a1a00; /* marrón al pasar el mouse */
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 5px 10px;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.search-bar button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
 }
