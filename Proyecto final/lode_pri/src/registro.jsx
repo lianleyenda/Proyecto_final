@@ -1,4 +1,4 @@
-import "./App.css";
+import "./login.css";
 
 export default function Registro() {
   return (
