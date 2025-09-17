@@ -6,8 +6,8 @@
 
 #root {
   max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+ margin: 0 auto;
+  
   text-align: center;
 }
 
@@ -89,7 +89,6 @@
   justify-content: space-between;
   align-items: center;
   background: white;
-  padding: 10px 20px;
   position: fixed;
   top: 50px; /* justo debajo de la promo */
   left: 0;
@@ -97,12 +96,14 @@
   z-index: 999;
   border-bottom: 1px solid #ddd;
   font-family: "Bree Serif", serif;
+  flex-wrap: wrap;
 }
 
 .navbar-left {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-left: 10px;
 }
 
 .navbar-left img {
@@ -118,14 +119,18 @@
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  justify-content: right; /* reparte el espacio entre ellos */
+  gap: 20px; /* ocupa todo el espacio disponible de la navbar */
+  margin-right: 10px;
+  
 }
 
 .navbar-right a {
-  text-decoration: none;
+  flex-grow: 1;   /* cada link se estira proporcionalmente */
+  text-align: center; /* centra el texto dentro de cada espacio */
   color: black;
-  font-size: 16px;
 }
+
 
 .navbar-right a:hover {
   color: #5a1a00; /* marrón al pasar el mouse */
@@ -152,3 +157,31 @@
   cursor: pointer;
   font-size: 16px;
 }
+
+.hero {
+  display: flex;
+  align-items: left;
+  justify-content: left;
+  background-color: #007bff; /* azul de fondo */
+  height: 90vh;              /* pantalla casi completa */
+   /* deja espacio superior para el navbar fijo */
+  box-sizing: border-box;
+}
+
+
+
+.hero-imagen {
+  width: 103%;
+  height: 560px;        /* 🔹 define cuánto de la imagen se ve */
+  overflow: hidden;     /* 🔹 oculta el resto de la imagen */
+  position: relative;
+}
+
+.hero-imagen img {
+  width: 100%;
+  height: auto;
+  position: relative;
+  top: -120px;            /* 🔹 mueve la imagen hacia arriba para cortar la parte inferior */
+}
+
+

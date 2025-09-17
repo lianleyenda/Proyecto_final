@@ -17,7 +17,7 @@ export default function Login() {
         </div>
       </div>
       <div className="volver">
-        <Link to="/inicio">← Volver</Link>
+        <Link to="/">← Volver</Link>
       </div>
     </div>
     </body>

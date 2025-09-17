@@ -12,19 +12,17 @@ function Inicio() {
 <header>
 <nav class="navbar">
   <div class="navbar-left">
-    <img src="logo.png" alt="Logo LODEPRI" />
-    <span>LODEPRI</span>
+    <a href="/"><img src="img/lode_pri.png" alt="Logo LODEPRI" /></a>
+    <a href="/"><span>LODEPRI</span></a>
   </div>
 
   <div class="navbar-right">
     <a href="#">Página principal</a>
     <a href="#">Contacto</a>
     <a href="#">Promociones</a>
-
-    <div>
-      <Link to="/Login">Iniciar Sesion</Link>
+    <a href="/Login">Iniciar Sesion</a>
     </div>
-  </div>
+  
 </nav>
 </header>
 
@@ -32,8 +30,10 @@ function Inicio() {
 
       
         {/* Esto empuja el contenido abajo de la promo */}
-        <div>
-          <h2>este es el comienzo donde iría la foto</h2>
+        <div className="hero-imagen">
+          
+        
+        <img src="img/imagen_incio.png" alt="Inicio"></img>
         </div>
         <div>
           <h2>aca irían las distintas hamburguesas</h2>
