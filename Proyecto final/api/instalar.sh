@@ -15,3 +15,5 @@ fi
 pip install --upgrade pip
 pip install flask
 pip install mysql-connector-python
+pip install python-dotenv
+
