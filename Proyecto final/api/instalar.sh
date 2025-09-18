@@ -16,3 +16,7 @@ pip install --upgrade pip
 pip install flask
 pip install mysql-connector-python
 pip install python-dotenv
+<<<<<<< HEAD
+=======
+
+>>>>>>> 41fcb11d6ff4520a47472781134aedc8c5084e5e
