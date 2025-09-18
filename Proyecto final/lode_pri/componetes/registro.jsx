@@ -2,7 +2,7 @@ import "../src/login.css";
 
 export default function Registro() {
   return (
-    <body className="fondo">
+    <div className="fondo">
     <div className="contenedor">
       <div className="card">
         <h1 className="titulo">Registro de usuario</h1>
@@ -18,6 +18,6 @@ export default function Registro() {
         </div>
       </div>
     </div>
-    </body>
+    </div>
   );
 }

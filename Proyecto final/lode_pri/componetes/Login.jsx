@@ -3,7 +3,7 @@ import "../src/login.css";
 
 export default function Login() {
   return (
-    <body className="fondo">
+    <div className="fondo">
     <div className="contenedor">
       <div className="card">
         <h1 className="titulo">Bienvenido</h1>
@@ -20,6 +20,6 @@ export default function Login() {
         <Link to="/">← Volver</Link>
       </div>
     </div>
-    </body>
+    </div>
   );
 }

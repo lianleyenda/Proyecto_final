@@ -3,7 +3,7 @@ import "../src/login.css";
 
 export default function Olvido() {
   return (
-     <body className="fondo">    
+     <div className="fondo">    
      <div className="contenedor">
       <div className="card">
         <h1 className="titulo">Recuperar Contraseña</h1>
@@ -27,7 +27,7 @@ export default function Olvido() {
         </div>
       </div>
     </div>
-    </body>
+    </div>
 
   );
 }
