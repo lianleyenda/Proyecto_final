@@ -1,12 +1,14 @@
 import mysql.connector
 from flask import Flask, g, request, jsonify, session, redirect, url_for, render_template
 from dotenv import load_dotenv
+from flask_cors import CORS
 import os
 
 
 load_dotenv()#lee la funciones
 
 app = Flask(__name__)
+CORS(app)
 
 data = {
    'host': os.getenv("DB_HOST"),
@@ -32,14 +34,17 @@ def get_db():
 
 
 
+
 @app.route('/menu', methods=['GET'])
-def listar_usuarios():
- db = get_db()
- cursor = db.cursor(dictionary=True)  # dictionary=True para obtener diccionarios
- cursor.execute('SELECT * FROM Productos')
- resultado = cursor.fetchall()
- return jsonify({'Productos': resultado})
-   
+def listar_productos():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM Productos')
+    resultado = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(resultado)  # 🔹 Solo la lista
+
 
 
 if __name__ == '__main__':
@@ -310,3 +315,103 @@ def agregar_carrito(id_Stock):
      session["carrito"] = carrito
      print(f"✅ {producto['Producto']} agregado al carrito", "success")
      return redirect(url_for("inicio"))  # 🔹 Redirige al menú
+
+
+
+@app.route('/Productos/<string:nombre>', methods=['GET'])
+def ver_producto(nombre):
+    db = get_db()  # Conexión a la base de datos
+    cursor = db.cursor(dictionary=True)
+    # Buscamos el producto exacto por nombre
+    cursor.execute("SELECT * FROM Productos WHERE Producto = %s", (nombre,))
+    producto = cursor.fetchone()  # Tomamos solo el primer resultado
+    cursor.close()
+    db.close()
+    if producto:
+        # Si existe el producto, renderizamos producto.html pasándole los datos
+        return render_template("producto.html", producto=producto)
+    else:
+        # Si no existe, devolvemos un mensaje de error
+        return "Producto no encontrado", 404
+
+
+
+
+# --------------------------
+# GET: Listar todas las promociones
+# --------------------------
+@app.route('/Promociones', methods=['GET'])
+def obtener_promociones():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM Promociones")
+    promociones = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(promociones), 200       
+
+
+
+# --------------------------
+# GET: Obtener una promoción por ID
+# --------------------------
+@app.route('/Promociones/<int:id>', methods=['GET'])
+def obtener_promocion(id):
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM Promociones WHERE id = %s", (id,))
+    promo = cursor.fetchone()
+    cursor.close()
+    db.close()
+    if promo:
+        return jsonify(promo), 200
+    else:
+        return jsonify({"mensaje": "Promoción no encontrada"}), 404
+
+
+# --------------------------
+# POST: Agregar una nueva promoción
+# --------------------------
+@app.route('/Promociones', methods=['POST'])
+def agregar_promocion():
+    datos = request.get_json()
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(
+        "INSERT INTO Promociones (nombre, descripcion, precio, productos) VALUES (%s, %s, %s, %s)",
+        (datos["nombre"], datos.get("descripcion"), datos["precio"], datos.get("productos"))
+    )
+    db.commit()
+    cursor.close()
+    db.close()
+    return jsonify({"mensaje": "Promoción agregada"}), 201
+# --------------------------
+# PUT: Actualizar una promoción existente
+# --------------------------
+@app.route('/Promociones/<int:id>', methods=['PUT'])
+
+def actualizar_promocion(id):
+    datos = request.get_json()
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(
+        "UPDATE Promociones SET nombre=%s, descripcion=%s, precio=%s, productos=%s WHERE id=%s",
+        (datos["nombre"], datos.get("descripcion"), datos["precio"], datos.get("productos"), id)
+    )
+    db.commit()
+    cursor.close()
+    db.close()
+    return jsonify({"mensaje": "Promoción actualizada"}), 200
+# --------------------------
+# DELETE: Eliminar una promoción
+# --------------------------
+
+@app.route('/Promociones/<int:id>', methods=['DELETE'])
+def eliminar_promocion(id):
+ db = get_db()
+ cursor = db.cursor()
+ cursor.execute("DELETE FROM Promociones WHERE id = %s", (id,))
+ db.commit()
+ cursor.close()
+ db.close()
+ return jsonify({"mensaje": "Promoción eliminada"}), 200

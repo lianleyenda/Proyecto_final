@@ -2,7 +2,7 @@
 
 hamburgueseria.db
 
-
+node_modules/
 .env
 
 *.pyc

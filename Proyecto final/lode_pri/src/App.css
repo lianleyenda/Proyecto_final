@@ -5,9 +5,6 @@
 }
 
 #root {
-  max-width: 1280px;
- margin: 0 auto;
-  
   text-align: center;
 }
 
@@ -52,7 +49,7 @@
   color: white;
   display: flex;
   align-items: center;
-  justify-content: center;   /* 🔹 centra texto + botón como bloque */
+  justify-content: center; /* 🔹 centra texto + botón como bloque */
   padding: 10px 20px;
   font-family: "Bree Serif", serif;
   font-size: 16px;
@@ -64,11 +61,9 @@
   gap: 10px; /* espacio entre texto y botón */
 }
 
-
 .promo span {
   display: flex;
   justify-content: center;
-  
 }
 
 .promo button {
@@ -82,7 +77,6 @@
   white-space: nowrap;
 }
 
-
 /* 🔹 Barra blanca de navegación */
 .navbar {
   display: flex;
@@ -93,6 +87,7 @@
   top: 50px; /* justo debajo de la promo */
   left: 0;
   width: 100%;
+  height: 60px;
   z-index: 999;
   border-bottom: 1px solid #ddd;
   font-family: "Bree Serif", serif;
@@ -122,15 +117,13 @@
   justify-content: right; /* reparte el espacio entre ellos */
   gap: 20px; /* ocupa todo el espacio disponible de la navbar */
   margin-right: 10px;
-  
 }
 
 .navbar-right a {
-  flex-grow: 1;   /* cada link se estira proporcionalmente */
+  flex-grow: 1; /* cada link se estira proporcionalmente */
   text-align: center; /* centra el texto dentro de cada espacio */
   color: black;
 }
-
 
 .navbar-right a:hover {
   color: #5a1a00; /* marrón al pasar el mouse */
@@ -163,17 +156,15 @@
   align-items: left;
   justify-content: left;
   background-color: #007bff; /* azul de fondo */
-  height: 90vh;              /* pantalla casi completa */
-   /* deja espacio superior para el navbar fijo */
+  height: 90vh; /* pantalla casi completa */
+  /* deja espacio superior para el navbar fijo */
   box-sizing: border-box;
 }
 
-
-
 .hero-imagen {
-  width: 103%;
-  height: 560px;        /* 🔹 define cuánto de la imagen se ve */
-  overflow: hidden;     /* 🔹 oculta el resto de la imagen */
+  width: 105%;
+  height: 590px; /* 🔹 define cuánto de la imagen se ve */
+  overflow: hidden; /* 🔹 oculta el resto de la imagen */
   position: relative;
 }
 
@@ -181,7 +172,19 @@
   width: 100%;
   height: auto;
   position: relative;
-  top: -120px;            /* 🔹 mueve la imagen hacia arriba para cortar la parte inferior */
+  top: -100px; /* 🔹 mueve la imagen hacia arriba para cortar la parte inferior */
 }
+
+.mensage {
+  color: #5a1a00;
+  display: flex;
+  align-items: center;
+  background-color: #ccc;
+  height: 100px; /* altura fija */
+  padding: 0 25px; /* solo padding horizontal */
+  font-family: "Bree Serif", serif;
+  font-size: 25px;
+}
+
 
 
