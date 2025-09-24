@@ -52,17 +52,18 @@ function Inicio() {
         </h2>
       </div>
 
-      <div>
-        <h2>Hamburguesas</h2>
+      <div className="producto">
         <ul>
-          {menu.map((item) => (
-            <li key={item.id_Stock}>
-              <img src="img/lode_pri.png"></img>
-              <h3>{item.Producto}</h3>
-              <p>Precio: ${item.Costo}</p>
-            </li>
-          ))}
-        </ul>
+  {menu.map((item) => (
+    <ol key={item.id_Stock}>
+      <img src={`img/${item.Imagen}`} alt={item.Producto} />
+      <h3>{item.Producto}</h3>
+      <p>Precio: ${item.Costo}</p>
+      <button>Añadir al carrito </button>
+    </ol>
+  ))}
+</ul>
+
       </div>
     </>
   );

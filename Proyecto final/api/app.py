@@ -415,3 +415,29 @@ def eliminar_promocion(id):
  cursor.close()
  db.close()
  return jsonify({"mensaje": "Promoción eliminada"}), 200
+
+
+
+@app.route("/carrito/<int:id_Stock>", methods=["DELETE"])
+def eliminar_carrito(id_Stock):
+    usuario_id = session.get("usuario_id")
+    if not usuario_id:
+        return {"error": "Debes iniciar sesión"}, 401
+
+    carrito = session.get("carrito", [])
+    nuevo_carrito = []
+
+    for item in carrito:
+        if item["id_Stock"] == id_Stock:
+            if item["cantidad"] > 1:
+                item["cantidad"] -= 1
+                nuevo_carrito.append(item)
+            # si cantidad == 1, no lo agregamos (se elimina)
+        else:
+            nuevo_carrito.append(item)
+
+    session["carrito"] = nuevo_carrito
+    return {"message": "Producto eliminado"}, 200
+
+
+

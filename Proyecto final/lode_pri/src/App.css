@@ -164,8 +164,8 @@
 }
 
 .hero-imagen {
-  width: 105%;
-  height: 590px; /* 🔹 define cuánto de la imagen se ve */
+  width: 107%;
+  height: 615px; /* 🔹 define cuánto de la imagen se ve */
   overflow: hidden; /* 🔹 oculta el resto de la imagen */
   position: relative;
 }
@@ -181,7 +181,7 @@
   color: #5a1a00;
   display: flex;
   align-items: center;
-  background-color: #ccc;
+  background-color: white;
   height: 100px; /* altura fija */
   padding: 0 25px; /* solo padding horizontal */
   font-family: "Bree Serif", serif;
@@ -189,4 +189,33 @@
 }
 
 
+.producto{
+  color: black;
+}
 
+.producto ul{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+  gap: 20px;
+}
+
+.producto ol{
+   background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  color: #5a1a00;
+}
+
+.producto img{
+  width: 335px;
+  height: auto;
+  border-radius: 5px;
+}
+
+.producto button{
+background-color: #3b79e3;
+width: 335px;
+text-align: center;
+
+}
