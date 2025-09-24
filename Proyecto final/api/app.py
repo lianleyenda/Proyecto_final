@@ -318,13 +318,6 @@ def agregar_carrito(id_Stock):
 
 
 
-<<<<<<< HEAD
-=======
-
-
-
-
->>>>>>> 41fcb11d6ff4520a47472781134aedc8c5084e5e
 @app.route('/Productos/<string:nombre>', methods=['GET'])
 def ver_producto(nombre):
     db = get_db()  # Conexión a la base de datos
