@@ -3,6 +3,48 @@ import "../src/App.css";
 import { Link } from "react-router-dom";
 
 function Inicio() {
+  
+   const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {// hacemos la funcion que este fija
+      if (window.scrollY > 50) {// window es la venta que vemos en cada vista le decimos que cunado se scrolee 50 px de true
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);// le decimos caundo pasas la funciom
+    return () => window.removeEventListener("scroll", handleScroll);//es para qu ele componente no quede siempre activo
+  }, []);
+
+
+ const [heroHeight, setHeroHeight] = useState(615); // altura inicial
+
+useEffect(() => {
+  const elScroll = () => {
+    const scrolledAmount = window.scrollY;
+
+    if (scrolledAmount > 50) {
+      setScrolled(true);
+    } else {
+      setScrolled(false);
+    }
+
+    // Reduce la altura de la imagen del héroe al hacer scroll
+    const newHeight = Math.max(400, 615 - scrolledAmount); // no deja que quede menor a 400px
+    setHeroHeight(newHeight);
+  };
+
+  window.addEventListener("scroll", elScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
+
+
+  
+  
   const [menu, setMenu] = useState([]);
 
   useEffect(() => {
@@ -22,7 +64,7 @@ function Inicio() {
         <button>Ir</button>
       </div>
 
-      <header>
+      <header className={scrolled ? "scrolled" : ""}>
         <nav className="navbar">
           <div className="navbar-left">
             <a href="/">
@@ -34,15 +76,15 @@ function Inicio() {
           </div>
 
           <div className="navbar-right">
-            <a href="#">Página principal</a>
+            <a href="/">Página principal</a>
             <a href="#">Contacto</a>
-            <a href="#">Promociones</a>
+            <a href="/Promociones">Promociones</a>
             <a href="/Login">Iniciar Sesión</a>
           </div>
         </nav>
       </header>
 
-      <div className="hero-imagen">
+      <div className="hero-imagen" style={{ height: `${heroHeight}px` }}>
         <img src="img/imagen_incio.png" alt="Inicio" />
       </div>
 
@@ -54,19 +96,54 @@ function Inicio() {
 
       <div className="producto">
         <ul>
-  {menu.map((item) => (
-    <ol key={item.id_Stock}>
-      <img src={`img/${item.Imagen}`} alt={item.Producto} />
-      <h3>{item.Producto}</h3>
-      <p>Precio: ${item.Costo}</p>
-      <button>Añadir al carrito </button>
-    </ol>
-  ))}
-</ul>
-
+          {menu.map((item) => (
+            <ol key={item.id_Stock}>
+              <img src={`img/${item.Imagen}`} alt={item.Producto} />
+              <h3>{item.Producto}</h3>
+              <p>Precio: ${item.Costo}</p>
+              <button>Añadir al carrito </button>
+            </ol>
+          ))}
+        </ul>
+    </div>
+    <div className="presentacion">
+      <img src="img/mano_de_hamburguesa.png" alt="Mano con hamburguesa" />
+    
+    <div className="presentacion-texto">
+      <h2>¿Quiénes somos?</h2>
+      <p>
+      Somos dos hermanos de 17 años que decidimos arrancar este 
+      proyecto juntos. Con muchas ganas y trabajo, creamos un 
+      local de hamburguesas caseras, rápidas y sin vueltas, 
+      pensado para que vengas, pidas y disfrutes bien.  
+      </p>
       </div>
-    </>
-  );
+    </div>
+
+    <div className="presentacion">
+      <img src="img/muestra_de_hamburguesas.png" alt="Mano con hamburguesa" />
+    
+    <div className="presentacion-texto">
+      <h2>¿Qué hacemos?</h2>
+      <p>
+      En nuestro local nos dedicamos a preparar hamburguesas 
+      caseras con ingredientes frescos y de calidad, pensadas 
+      para que cada bocado tenga sabor auténtico. Cocinamos 
+      al momento, de forma rápida y sin vueltas, para que 
+      disfrutes una comida rica en minutos. Nuestra propuesta 
+      es simple: hamburguesas únicas, hechas con dedicación, 
+      servidas con agilidad y en un ambiente limpio y cómodo. 
+      </p>
+      </div>
+    </div>
+<footer>
+<p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
+
+</footer>
+    
+
+   </>
+  )
 }
 
 export default Inicio;

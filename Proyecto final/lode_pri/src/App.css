@@ -84,17 +84,29 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  background: transparent;
+  width: 100%;
+  height: 60px;
+  flex-wrap: wrap;
+  transition: background 0.3s ease;
+}
+
+
+
+header {
   position: fixed;
   top: 50px; /* justo debajo de la promo */
   left: 0;
   width: 100%;
-  height: 60px;
   z-index: 999;
-  border-bottom: 1px solid #ddd;
-  font-family: "Bree Serif", serif;
-  flex-wrap: wrap;
+  transition: background 0.3s ease; /* transición suave */
 }
+
+header.scrolled {
+  background: white;
+ 
+}
+
 
 .navbar-left {
   display: flex;
@@ -175,6 +187,7 @@
   height: auto;
   position: relative;
   top: -100px; /* 🔹 mueve la imagen hacia arriba para cortar la parte inferior */
+  transition: transform 0.3s ease;
 }
 
 .mensage {
@@ -186,11 +199,13 @@
   padding: 0 25px; /* solo padding horizontal */
   font-family: "Bree Serif", serif;
   font-size: 25px;
+  width: 105%;
 }
 
 
 .producto{
   color: black;
+   background-color: white;
 }
 
 .producto ul{
@@ -218,4 +233,40 @@ background-color: #3b79e3;
 width: 335px;
 text-align: center;
 
+}
+
+.fondo{
+  background-color: black;
+}
+
+.presentacion {
+ display: flex;           /* Pone los hijos (imagen y texto) uno al lado del otro */
+  align-items: center;     /* Centra verticalmente */
+  justify-content: center; /* Centra horizontalmente */
+  gap: 20px;               /* Espacio entre la imagen y el texto */
+  padding: 20px;
+}
+
+.presentacion img {
+  height: auto;
+  width: 700px;
+  padding-left: 50px;
+}
+
+.presentacion-texto {
+  display: flex;
+  flex-direction: column; /* apila h2 y p */
+  justify-content: center;
+  color: #5a1a00;
+  padding-left: 120px;
+}
+
+.presentacion-texto h2 {
+  font-size: 28px;
+  margin-bottom: 15px; /* espacio debajo del título */
+}
+
+.presentacion-texto p {
+  font-size: 18px;
+  line-height: 1.5;
 }
