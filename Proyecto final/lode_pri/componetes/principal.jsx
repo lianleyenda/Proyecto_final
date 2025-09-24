@@ -36,7 +36,7 @@ function Inicio() {
           <div className="navbar-right">
             <a href="#">Página principal</a>
             <a href="#">Contacto</a>
-            <a href="#">Promociones</a>
+            <a href="/Promociones">Promociones</a>
             <a href="/Login">Iniciar Sesión</a>
           </div>
         </nav>
