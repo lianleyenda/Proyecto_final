@@ -3,6 +3,9 @@ from flask import Flask, g, request, jsonify, session, redirect, url_for, render
 from dotenv import load_dotenv
 from flask_cors import CORS
 import os
+request
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 
 load_dotenv()#lee la funciones
@@ -110,60 +113,65 @@ def modificar_stock(stock_id):
 
 @app.route('/registro', methods=['POST'])
 def registrar_usuario():
-   data = request.get_json()
-   if not data or 'Usuario' not in data or 'Email' not in data or 'Password' not in data:
-       return {'mensaje': 'Faltan datos'}, 400
+    data = request.get_json()
+    if not data or 'Usuario' not in data or 'Email' not in data or 'Password' not in data:
+        return {'mensaje': 'Faltan datos'}, 400
 
+    nombre = data['Usuario']
+    email = data['Email']
+    password = data['Password']
 
-   nombre = data['Usuario']
-   email = data['Email']
-   password = data['Password']
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
 
-   db = get_db()
-   
-   cursor = db.cursor()
-   cursor.execute('INSERT INTO Usuarios (Usuario, Email, Password) VALUES (%s, %s, %s)',
-                      (nombre, email, password))
-   db.commit()
-    
-   return {'mensaje': 'El email se registro registrado'}, 400
+    # Verificar si el email ya existe
+    cursor.execute('SELECT * FROM Usuarios WHERE Email = %s', (email,))
+    if cursor.fetchone():
+        cursor.close()
+        db.close()
+        return {'mensaje': 'El email ya está registrado'}, 400
 
+    # Encriptar la contraseña
+    password_hash = generate_password_hash(password)
+
+    # Insertar usuario
+    cursor.execute(
+        'INSERT INTO Usuarios (Usuario, Email, Password) VALUES (%s, %s, %s)',
+        (nombre, email, password_hash)
+    )
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return {'mensaje': 'Usuario registrado con éxito'}, 201
 
 
 @app.route('/inicio', methods=['POST'])
 def inicio():
-   data = request.get_json()
+    data = request.get_json()
+    if not data or 'Email' not in data or 'Password' not in data:
+        return {'mensaje': 'Faltan datos'}, 400
 
+    email = data['Email']
+    password = data['Password']
 
-   if not data or 'Email' not in data or 'Password' not in data:
-       return {'mensaje': 'Faltan datos'}, 400
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
 
+    # Buscar usuario
+    cursor.execute('SELECT * FROM Usuarios WHERE Email = %s', (email,))
+    user = cursor.fetchone()
+    cursor.close()
+    db.close()
 
-   email = data['Email']
-   password = data['Password']
+    if user is None:
+        return {'mensaje': 'Usuario no encontrado'}, 404
 
+    if check_password_hash(user['Password'], password):
+        return {'mensaje': 'Inicio de sesión exitoso', 'usuario': user}, 200
+    else:
+        return {'mensaje': 'Contraseña incorrecta'}, 401
 
-   db = get_db()
-   cursor = db.cursor(dictionary=True)
-# Usamos diccionario=True para acceder a los campos por nombre en lugar de por índice
-# Sin esto, el cursor devuelve tuplas y habría que usar usuario[0], usuario[1], etc.
-
-
-
-
-   cursor.execute("SELECT * FROM Usuarios WHERE Email = %s AND Password = %s", (email, password))
-   usuario = cursor.fetchone()
-
-
-   cursor.close()
-   db.close()
-
-
-   if usuario:
-       return {'mensaje': 'Inicio de sesión exitoso', 'usuario': usuario}, 200
-   else:
-       return {'mensaje': 'Email o contraseña incorrectos'}, 401
-   
 
 
 
@@ -415,29 +423,3 @@ def eliminar_promocion(id):
  cursor.close()
  db.close()
  return jsonify({"mensaje": "Promoción eliminada"}), 200
-
-
-
-@app.route("/carrito/<int:id_Stock>", methods=["DELETE"])
-def eliminar_carrito(id_Stock):
-    usuario_id = session.get("usuario_id")
-    if not usuario_id:
-        return {"error": "Debes iniciar sesión"}, 401
-
-    carrito = session.get("carrito", [])
-    nuevo_carrito = []
-
-    for item in carrito:
-        if item["id_Stock"] == id_Stock:
-            if item["cantidad"] > 1:
-                item["cantidad"] -= 1
-                nuevo_carrito.append(item)
-            # si cantidad == 1, no lo agregamos (se elimina)
-        else:
-            nuevo_carrito.append(item)
-
-    session["carrito"] = nuevo_carrito
-    return {"message": "Producto eliminado"}, 200
-
-
-
