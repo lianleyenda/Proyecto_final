@@ -3,7 +3,23 @@ import "../src/App.css";
 import { Link } from "react-router-dom";
 import { TiShoppingCart } from "react-icons/ti";
 
-function Inicio() {
+function Sesion() {
+
+  const [usuario, setUsuario] = useState(null);
+   const [isOpen, setIsOpen] = useState(false); 
+
+   useEffect(() => {
+    // Recuperamos los datos del usuario desde el localStorage
+    const usuarioData = localStorage.getItem("Usuario");
+    console.log(usuarioData)
+    if (usuarioData) {
+      setUsuario(JSON.parse(usuarioData)); // Convertimos el JSON a objeto
+      console.log("si ando")
+    }
+    else {
+    console.log("No hay usuario en localStorage");
+  }
+  }, []); // Solo se ejecuta una vez cuando el componente se monta
   
    const [scrolled, setScrolled] = useState(false);
 
@@ -44,6 +60,8 @@ useEffect(() => {
 
 
 
+
+
   
   
   const [menu, setMenu] = useState([]);
@@ -57,12 +75,16 @@ useEffect(() => {
 
   return (
     <>
+
+         
+
+        
       <div className="promo">
         <span>
           ¡Hoy tu hambre tiene premio! 🍔 Comprá 2 hamburguesas y la tercera va
           de regalo —solo por tiempo limitado.
         </span>
-         <a href="/Promociones">
+        <a href="/Promociones">
         <button>Ir</button>
         </a>
       </div>
@@ -82,8 +104,12 @@ useEffect(() => {
             <a href="/">Página principal</a>
             <a href="#">Contacto</a>
             <a href="/Promociones">Promociones</a>
-            <a href="/Login">Iniciar Sesión</a>
-            <a href="/Login"><TiShoppingCart size={40}></TiShoppingCart></a>
+            <h2>{usuario}</h2>
+            <a href="/">
+            <button>Cerrar Sesion</button>
+            </a>
+            <a><TiShoppingCart size={40}></TiShoppingCart></a>
+        
           </div>
         </nav>
       </header>
@@ -96,6 +122,7 @@ useEffect(() => {
         <h2>
           Cada hamburguesa es única, preparada con cariño y sabor que enamora.
         </h2>
+        
       </div>
 
       <div className="producto">
@@ -156,4 +183,4 @@ useEffect(() => {
   )
 }
 
-export default Inicio;
+export default Sesion;

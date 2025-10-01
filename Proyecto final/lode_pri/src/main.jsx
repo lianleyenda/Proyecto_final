@@ -8,6 +8,8 @@ import Login from "../componetes/Login.jsx";
 import Registro from "../componetes/registro.jsx";
 import Olvido from "../componetes/olvido.jsx";
 import Promociones from "../componetes/Promociones.jsx";
+import Sesion from "../componetes/sesion.jsx";
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -18,6 +20,9 @@ createRoot(document.getElementById("root")).render(
         <Route path="/registro" element={<Registro />} />
         <Route path="/olvide" element={<Olvido />} />
         <Route path="/promociones" element={<Promociones />} />
+        <Route path="/inicio" element={<Sesion />}/>
+        
+        
       </Routes>
     </Router>
   </StrictMode>

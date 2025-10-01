@@ -25,8 +25,10 @@ export default function Login() {
       const data = await res.json();
       if (res.ok) {
         alert(data.mensaje); // Inicio de sesión exitoso
-        console.log("Usuario logueado:", data.usuario);
-         navigate("/"); // <-- Redirige a la página principal
+        console.log("Usuario logueado:", data.usuario.Usuario);
+         // Guardamos los datos del usuario en el localStorage
+      localStorage.setItem("Usuario", JSON.stringify(data.usuario.Usuario));
+         navigate("/inicio"); // <-- Redirige a la página principal
         // acá podés guardar el usuario en localStorage o Context
       } else {
         alert(data.mensaje); // Usuario no encontrado o contraseña incorrecta
