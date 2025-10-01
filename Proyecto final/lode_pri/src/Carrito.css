@@ -1,0 +1,42 @@
+/* Botón del carrito */
+.carrito-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Fondo oscuro cuando está abierto */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -300px; /* inicialmente oculto */
+  width: 300px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  transition: right 0.3s ease;
+  z-index: 100;
+  padding: 20px;
+}
+
+.sidebar.open {
+  right: 0; /* cuando se abre */
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}

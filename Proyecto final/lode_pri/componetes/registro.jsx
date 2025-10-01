@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../src/login.css";
-
-
-export default function Registro() {
- const [usuario, setUsuario] = useState("");
- const [email, setEmail] = useState("");
- const [password, setPassword] = useState("");
-
-
- const navigate = useNavigate();
-
-
-=======
-
-
-
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +13,7 @@ export default function Registro() {
  const navigate = useNavigate();
 
 
->>>>>>> 1cb73a0890e9b23551e0b0c8e6fa0c6cf4ef021c
+
  const handleRegistro = async () => {
    try {
      const res = await fetch("http://127.0.0.1:5000/registro", {

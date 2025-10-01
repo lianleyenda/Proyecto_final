@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import "../src/App.css";
 import { Link } from "react-router-dom";
 import { TiShoppingCart } from "react-icons/ti";
+import SidebarCarrito from "./Carrito";
+
 
 function Sesion() {
 
   const [usuario, setUsuario] = useState(null);
-   const [isOpen, setIsOpen] = useState(false); 
+  
 
    useEffect(() => {
     // Recuperamos los datos del usuario desde el localStorage
@@ -108,7 +110,7 @@ useEffect(() => {
             <a href="/">
             <button>Cerrar Sesion</button>
             </a>
-            <a><TiShoppingCart size={40}></TiShoppingCart></a>
+             <SidebarCarrito />
         
           </div>
         </nav>
