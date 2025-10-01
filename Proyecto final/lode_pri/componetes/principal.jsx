@@ -38,7 +38,7 @@ useEffect(() => {
   };
 
   window.addEventListener("scroll", elScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", elScroll);
 }, []);
 
 
@@ -65,7 +65,7 @@ useEffect(() => {
       </div>
 
       <header className={scrolled ? "scrolled" : ""}>
-        <nav className="navbar">
+        <nav className="navbar-navegacion">
           <div className="navbar-left">
             <a href="/">
               <img src="img/lode_pri.png" alt="Logo LODEPRI" />
@@ -77,7 +77,7 @@ useEffect(() => {
 
           <div className="navbar-right">
             <a href="/">Página principal</a>
-            <a href="#">Contacto</a>
+            <a href="/Contacto">Contacto</a>
             <a href="/Promociones">Promociones</a>
             <a href="/Login">Iniciar Sesión</a>
           </div>

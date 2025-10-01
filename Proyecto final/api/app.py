@@ -423,3 +423,33 @@ def eliminar_promocion(id):
  cursor.close()
  db.close()
  return jsonify({"mensaje": "Promoción eliminada"}), 200
+
+
+
+
+
+
+
+@app.route('/contacto', methods=['POST'])
+def guardar_contacto():
+    data = request.get_json()
+    
+    # Validar que los datos estén completos
+    if not data or 'nombre' not in data or 'email' not in data or 'mensaje' not in data:
+        return {'mensaje': 'Todos los campos son requeridos'}, 400
+    
+    nombre = data['nombre']
+    email = data['email']
+    mensaje = data['mensaje']
+    
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(
+        "INSERT INTO Contacto (nombre, email, mensaje) VALUES (%s, %s, %s)",
+        (nombre, email, mensaje)
+    )
+    db.commit()
+    cursor.close()
+    db.close()
+    
+    return {'mensaje': 'Mensaje de contacto guardado exitosamente'}, 201

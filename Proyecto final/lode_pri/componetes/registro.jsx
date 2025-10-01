@@ -1,57 +1,91 @@
-import { useEffect, useState } from "react";
-import "../src/App.css";
-import { Link } from "react-router-dom";
 
-export default function Promociones() {
-  const [promos, setPromos] = useState([]);
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:5000/Promociones")
-      .then((res) => res.json())
-      .then((data) => setPromos(data))
-      .catch((err) => console.error(err));
-  }, []);
 
-  return (
-    <>
-      <header>
-        <nav className="navbar">
-          <div className="navbar-left">
-            <Link to="/">
-              <img src="/img/lode_pri.png" alt="Logo LODEPRI" />
-            </Link>
-            <Link to="/">
-              <span>LODEPRI</span>
-            </Link>
-          </div>
 
-          <div className="navbar-right">
-            <Link to="/">Página principal</Link>
-            <Link to="#">Contacto</Link>
-            <Link to="/Promociones">Promociones</Link>
-            <Link to="/Login">Iniciar Sesión</Link>
-          </div>
-        </nav>
-      </header>
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../src/login.css";
 
-      <div className="promo">
-        <span>¡Mirá nuestras promociones actuales! 🎉</span>
-        <button>Ver</button>
-      </div>
 
-      <div className="producto">
-        <ul>
-          {promos.map((item) => (
-            <ol key={item.id}>
-              <img src={`/img/${item.imagen}`} alt={item.nombre} />
-              <h3>{item.nombre}</h3>
-              <p>{item.descripcion}</p>
-              <p>Precio: ${item.precio}</p>
-              <button>Añadir al carrito</button>
-            </ol>
-          ))}
-        </ul>
-      </div>
-    </>
-  );
+export default function Registro() {
+ const [usuario, setUsuario] = useState("");
+ const [email, setEmail] = useState("");
+ const [password, setPassword] = useState("");
+
+
+ const navigate = useNavigate();
+
+
+ const handleRegistro = async () => {
+   try {
+     const res = await fetch("http://127.0.0.1:5000/registro", {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({
+         Usuario: usuario,
+         Email: email,
+         Password: password,
+       }),
+     });
+
+
+     const data = await res.json();
+     alert(data.mensaje); // Mensaje desde el backend
+
+
+     if (res.ok) {
+       navigate("/Login"); // Redirige al login
+     }
+   } catch (error) {
+     console.error("Error en el registro:", error);
+   }
+ };
+
+
+ return (
+   <div className="fondo">
+     <div className="contenedor">
+       <div className="card">
+         <h1 className="titulo">Registro de usuario</h1>
+
+
+         <input
+           className="input"
+           type="text"
+           placeholder="Nombre"
+           value={usuario}
+           onChange={(e) => setUsuario(e.target.value)}
+         />
+
+
+         <input
+           className="input"
+           type="email"
+           placeholder="Correo"
+           value={email}
+           onChange={(e) => setEmail(e.target.value)}
+         />
+
+
+         <input
+           className="input"
+           type="password"
+           placeholder="Contraseña"
+           value={password}
+           onChange={(e) => setPassword(e.target.value)}
+         />
+
+
+         <button className="submit" onClick={handleRegistro}>
+           Registrarse
+         </button>
+
+
+         <div className="links">
+           <a href="/Login">← Volver</a>
+         </div>
+       </div>
+     </div>
+   </div>
+ );
 }
