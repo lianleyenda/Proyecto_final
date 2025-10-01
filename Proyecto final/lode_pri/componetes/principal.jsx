@@ -80,7 +80,7 @@ useEffect(() => {
 
           <div className="navbar-right">
             <a href="/">Página principal</a>
-            <a href="#">Contacto</a>
+            <a href="/Contacto">Contacto</a>
             <a href="/Promociones">Promociones</a>
             <a href="/Login">Iniciar Sesión</a>
             <a href="/Login"><TiShoppingCart size={40}></TiShoppingCart></a>
