@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 load_dotenv()#lee la funciones
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
 data = {
    'host': os.getenv("DB_HOST"),
@@ -265,64 +265,66 @@ def iniciar_carrito():
 
     
 
-
+# -----------------------------
+# 📌 Ver carrito
+# -----------------------------
 @app.route("/carrito", methods=["GET"])
 def ver_carrito():
-    # 🔹 Verificamos que el usuario esté logueado
-    usuario_id = session.get("usuario_id")
-    if not usuario_id:
-        print("⚠️ Debes iniciar sesión para ver el carrito", "error")
-        return redirect(url_for("inicio"))
-    
-      # 🔹 Recuperamos el carrito de la sesión
     carrito = session.get("carrito", [])
-
-    # 🔹 Calculamos el total
-    total = sum(item["Precio"] * item["cantidad"] for item in carrito)
-
-    # 🔹 Renderizamos el HTML del carrito
-    return render_template("carrito.html", carrito=carrito, total=total)
+    total = sum(float(item["Costo"]) * item["cantidad"] for item in carrito)
+    return jsonify({"carrito": carrito, "total": total}), 200
 
 
-
-
-@app.route("/carrito/agregar/<int:id_Stock>", methods=['POST'])
+# -----------------------------
+# 📌 Agregar producto al carrito
+# -----------------------------
+@app.route("/carrito/agregar/<int:id_Stock>", methods=["POST"])
 def agregar_carrito(id_Stock):
-     #Verificar si hay usuario logueado
-     usuario_id = session.get("usuario_id")
-     if not usuario_id :
-        print("⚠️ Debes iniciar sesión para agregar productos al carrito", "error")
-        return redirect(url_for("inicio"))#redirect sirve para hacer un a redireccion
-    
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT id_Stock, Producto, Costo FROM Productos WHERE id_Stock = %s", (id_Stock,))
+    producto = cursor.fetchone()
+    cursor.close()
+    db.close()
 
-     db = get_db()
-     cursor = db.cursor(dictionary=True)#Ahora podés acceder por nombre de columna ej cursor['nombre]
-     cursor.execute("SELECT id_Stock, Producto, Costo FROM Productos WHERE id_Stock = %s", (id_Stock,))
-     producto = cursor.fetchone()
-     cursor.close()
-     db.close()
+    if not producto:
+        return jsonify({"mensaje": "Producto no encontrado"}), 404
 
-     if not producto:
-        print("⚠️ Producto no encontrado", "error")
-        return redirect(url_for("listar_usuarios"))
-    
-     carrito = session.get("carrito", [])
-     for item in carrito:
-      if item["id_Stock"] == id_Stock:
-        item["cantidad"] += 1
-        encontrado = True
-        break#termina el bucle
-     
-     
-     
-     if not encontrado:
+    carrito = session.get("carrito", [])
+    encontrado = False
+
+    for item in carrito:
+        if item["id_Stock"] == id_Stock:
+            item["cantidad"] += 1
+            encontrado = True
+            break
+
+    if not encontrado:
         producto["cantidad"] = 1
         carrito.append(producto)
 
+    session["carrito"] = carrito
+    return jsonify({"mensaje": f"{producto['Producto']} agregado al carrito", "carrito": carrito}), 200
 
-     session["carrito"] = carrito
-     print(f"✅ {producto['Producto']} agregado al carrito", "success")
-     return redirect(url_for("inicio"))  # 🔹 Redirige al menú
+
+# -----------------------------
+# 📌 Eliminar producto del carrito
+# -----------------------------
+@app.route("/carrito/eliminar/<int:id_Stock>", methods=["POST"])
+def eliminar_carrito(id_Stock):
+    carrito = session.get("carrito", [])
+    carrito = [item for item in carrito if item["id_Stock"] != id_Stock]
+    session["carrito"] = carrito
+    return jsonify({"mensaje": "Producto eliminado del carrito", "carrito": carrito}), 200
+
+
+# -----------------------------
+# 📌 Vaciar carrito
+# -----------------------------
+@app.route("/carrito/vaciar", methods=["POST"])
+def vaciar_carrito():
+    session["carrito"] = []
+    return jsonify({"mensaje": "Carrito vaciado", "carrito": []}), 200
 
 
 
@@ -453,3 +455,27 @@ def guardar_contacto():
     db.close()
     
     return {'mensaje': 'Mensaje de contacto guardado exitosamente'}, 201
+
+
+@app.route('/carrito/total', methods=['GET'])
+def total_carrito():
+    # Verificamos que haya usuario logueado
+    usuario_id = session.get("usuario_id")
+    if not usuario_id:
+        return jsonify({"mensaje": "Debes iniciar sesión para ver el total"}), 401
+
+    # Recuperamos el carrito de la sesión
+    carrito = session.get("carrito", [])
+
+    if not carrito:
+        return jsonify({"mensaje": "El carrito está vacío", "total": 0}), 200
+
+    # Calculamos el total (precio * cantidad de cada producto)
+    total = sum(item["Costo"] * item["cantidad"] for item in carrito)
+
+    return jsonify({"total": total, "items": carrito}), 200
+
+
+
+
+

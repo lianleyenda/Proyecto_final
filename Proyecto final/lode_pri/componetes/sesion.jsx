@@ -3,11 +3,13 @@ import "../src/App.css";
 import { Link } from "react-router-dom";
 import { TiShoppingCart } from "react-icons/ti";
 import SidebarCarrito from "./Carrito";
+import { useCarrito } from "./carritocontext";
 
 
 function Sesion() {
 
   const [usuario, setUsuario] = useState(null);
+  const { agregarCarrito } = useCarrito();
   
 
    useEffect(() => {
@@ -64,7 +66,7 @@ useEffect(() => {
 
 
 
-  
+  console.log(agregarCarrito);
   
   const [menu, setMenu] = useState([]);
 
@@ -134,9 +136,9 @@ useEffect(() => {
               <img src={`img/${item.Imagen}`} alt={item.Producto} />
               <h3>{item.Producto}</h3>
               <p>Precio: ${item.Costo}</p>
-              <a href="/Login">
-              <button>Añadir al carrito </button>
-              </a>
+             <button onClick={() => agregarCarrito(item.id_Stock)}>
+                Añadir al carrito
+              </button>
             </ol>
           ))}
         </ul>

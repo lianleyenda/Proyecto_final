@@ -1,9 +1,0 @@
-# Datos de conexión
-DB_HOST="10.9.120.5"
-DB_PORT=3306
-DB_USER="hamburgueseria"
-DB_PASS="hambur1234"
-DB_NAME="hamburgueseria"
-
-
-# Crear conexión

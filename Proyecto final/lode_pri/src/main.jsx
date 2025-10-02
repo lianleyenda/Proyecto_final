@@ -11,18 +11,22 @@ import Promociones from "../componetes/Promociones.jsx";
 import Sesion from "../componetes/sesion.jsx";
 import Contacto from "../componetes/Contacto.jsx";
 
+import { CarritoProvider } from "../componetes/carritocontext.jsx"; // 🔹 Importamos el provider
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Router>
-      <Routes>
-        <Route path="/" element={<Inicio />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/registro" element={<Registro />} />
-        <Route path="/olvide" element={<Olvido />} />
-        <Route path="/promociones" element={<Promociones />} />
-        <Route path="/inicio" element={<Sesion />}/>
-        <Route path="/contacto" element={<Contacto />} />
-      </Routes>
-    </Router>
+    <CarritoProvider> {/* 🔹 Envolvemos TODO con el Provider */}
+      <Router>
+        <Routes>
+          <Route path="/" element={<Inicio />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
+          <Route path="/olvide" element={<Olvido />} />
+          <Route path="/promociones" element={<Promociones />} />
+          <Route path="/inicio" element={<Sesion />} />
+          <Route path="/contacto" element={<Contacto />} />
+        </Routes>
+      </Router>
+    </CarritoProvider>
   </StrictMode>
 );
