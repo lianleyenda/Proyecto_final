@@ -82,22 +82,47 @@ const agregarCarrito = (id) => {
   // Vaciar carrito
   // -----------------------------
   const vaciarCarrito = () => {
-    fetch("http://127.0.0.1:5000/carrito/vaciar", {
-      method: "POST",
-      credentials: "include",
+  fetch("http://127.0.0.1:5000/carrito/vaciar", {
+    method: "POST",
+    credentials: "include",
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Carrito vaciado:", data);
+      cargarCarrito();
     })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Carrito vaciado:", data);
-        cargarCarrito();
-      })
-      .catch((err) => console.error("Error vaciando carrito:", err));
-  };
+    .catch((err) => console.error("Error vaciando carrito:", err));
+};
+
+
+const incrementarItem = (id) => {
+  setCarrito((prev) => {
+    const nuevoCarrito = prev.map((item) =>
+      item.id_Stock === id ? { ...item, cantidad: item.cantidad + 1 } : item
+    );
+    setTotal(nuevoCarrito.reduce((acc, item) => acc + item.Costo * item.cantidad, 0));
+    return nuevoCarrito;
+  });
+};
+
+const decrementarItem = (id) => {
+  setCarrito((prev) => {
+    const nuevoCarrito = prev.map((item) =>
+      item.id_Stock === id && item.cantidad > 1
+        ? { ...item, cantidad: item.cantidad - 1 }
+        : item
+    );
+    setTotal(nuevoCarrito.reduce((acc, item) => acc + item.Costo * item.cantidad, 0));
+    return nuevoCarrito;
+  });
+};
+
+
 
 
  return (
    //.Provider es el componente que “proporciona” los datos a todos los hijos que usen useCarrito()
-   <CarritoContext.Provider value={{ carrito, total, agregarCarrito, eliminarItem, vaciarCarrito }}> 
+   <CarritoContext.Provider value={{ carrito, total, agregarCarrito, eliminarItem, vaciarCarrito, incrementarItem, decrementarItem  }}> 
      {children}
    </CarritoContext.Provider>
  );

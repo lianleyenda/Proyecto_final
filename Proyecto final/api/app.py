@@ -254,6 +254,7 @@ def borrar_cuenta(id_usuarios):
 # SIN esto, no podríamos usar `session`.
 app.secret_key = "clave_secreta_super_segura"
 
+
 # Middleware que se ejecuta antes de cada request.
 # Su función es asegurarse de que la sesión SIEMPRE tenga un carrito.
 @app.before_request

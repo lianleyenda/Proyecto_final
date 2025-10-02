@@ -1,3 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap");
+
+.tipografia{
+  font-family: "Bree Serif", serif;
+}
 /* Botón del carrito */
 .carrito-btn {
   background: none;
@@ -41,4 +46,80 @@
   font-size: 20px;
   cursor: pointer;
 
+}
+
+.pestaña button {
+  font-family: "Bree Serif", serif;
+  padding: 3px;
+  border: 1px solid #333;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease; /* suaviza los cambios */
+}
+
+/* Cuando pasás el mouse */
+.pestaña button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}
+
+/* Cuando lo presionás */
+.pestaña button:active {
+  background-color: #ccc;
+  transform: scale(0.95);
+}
+
+
+.pestaña{
+font-family: "Bree Serif", serif ;
+}
+
+
+/* Contenedor circular con botones */
+.cantidad-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f7f7;
+  border-radius: 20px;
+  padding: 4px 8px;
+  gap: 8px;
+  margin: 0 10px;
+}
+
+/* Botones + y - */
+.circle-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background-color: #eee;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.circle-btn:hover {
+  background-color: #ddd;
+}
+
+/* Número de cantidad */
+.cantidad {
+  min-width: 20px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Precio */
+.precio {
+  margin-left: 10px;
+  font-size: 14px;
+  color: #555;
 }
