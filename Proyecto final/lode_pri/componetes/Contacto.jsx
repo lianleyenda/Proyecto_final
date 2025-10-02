@@ -1,5 +1,6 @@
 import "../src/contacto.css";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Contacto() {
   const [nombre, setNombre] = useState("");
@@ -8,17 +9,14 @@ function Contacto() {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // Manejar el envío del formulario
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Validación de formulario
     if (!nombre || !email || !mensaje) {
       setError("Todos los campos son requeridos.");
       return;
     }
 
-    // Enviar los datos a la API
     try {
       const response = await fetch("http://localhost:5000/contacto", {
         method: "POST",
@@ -34,6 +32,7 @@ function Contacto() {
         setNombre("");
         setEmail("");
         setMensaje("");
+        setError(null);
       } else {
         setError(data.mensaje || "Hubo un problema al enviar tu mensaje.");
       }
@@ -44,29 +43,41 @@ function Contacto() {
 
   return (
     <>
+      {/* Promo arriba */}
       <div className="contacto-promo">
         <span>¿Tienes dudas o quieres contactarnos? ¡Escríbenos!</span>
       </div>
+      <div className="contacto-root">
+        {/* promo, navbar, mapa, formulario, footer */}
+      </div>
+
+      {/* Navbar */}
 
       <header className="contacto-navbar">
         <nav className="contacto-navbar">
           <div className="contacto-navbar-left">
-            <img src="img/lode_pri.png" alt="Logo LODEPRI" />
-            <span>LODEPRI</span>
+            <Link to="/">
+              <img src="img/lode_pri.png" alt="Logo LODEPRI" />
+            </Link>
+            <Link to="/">
+              <span>LODEPRI</span>
+            </Link>
           </div>
           <div className="contacto-navbar-right">
-            <a href="/">Página principal</a>
-            <a href="#">Contacto</a>
-            <a href="/Promociones">Promociones</a>
-            <a href="/Login">Iniciar Sesión</a>
+            <Link to="/">Página principal</Link>
+            <Link to="/Contacto">Contacto</Link>
+            <Link to="/Promociones">Promociones</Link>
+            <Link to="/Login">Iniciar Sesión</Link>
           </div>
         </nav>
       </header>
 
+      {/* Mensaje central */}
       <div className="contacto-mensage">
         <h2>¡Estamos para ayudarte!</h2>
       </div>
 
+      {/* Mapa */}
       <div className="contacto-mapa">
         <iframe
           title="Ubicación LODEPRI"
@@ -86,13 +97,14 @@ function Contacto() {
         ></iframe>
       </div>
 
+      {/* Formulario */}
       <div className="contacto-formulario">
+        <h3>Envíanos tu consulta</h3>
         <form onSubmit={handleSubmit}>
           <label htmlFor="nombre">Nombre:</label>
           <input
             type="text"
             id="nombre"
-            name="nombre"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             required
@@ -102,7 +114,6 @@ function Contacto() {
           <input
             type="email"
             id="email"
-            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -111,7 +122,6 @@ function Contacto() {
           <label htmlFor="mensaje">Mensaje:</label>
           <textarea
             id="mensaje"
-            name="mensaje"
             rows="5"
             value={mensaje}
             onChange={(e) => setMensaje(e.target.value)}
@@ -121,13 +131,20 @@ function Contacto() {
           <button type="submit">Enviar</button>
         </form>
 
-        {error && <div style={{ color: "red" }}>{error}</div>}
-        {successMessage && <div style={{ color: "green" }}>{successMessage}</div>}
+        {error && <div className="contacto-error">{error}</div>}
+        {successMessage && (
+          <div className="contacto-exito">{successMessage}</div>
+        )}
       </div>
 
-      <footer className="footer-contacto">
-        <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
-      </footer>
+      <footer className="footer-contacto ">
+<p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
+<h2></h2>
+<p>Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de Contacto: +54 9 11 61138645</p>
+
+<p>Síguenos en nuestras redes sociales para enterarte de nuestras ofertas y novedades.</p>
+
+</footer>
     </>
   );
 }

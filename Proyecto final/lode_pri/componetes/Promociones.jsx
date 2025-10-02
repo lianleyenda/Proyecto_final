@@ -59,14 +59,15 @@ export default function Promociones() {
         </nav>
       </header>
 
-      <div className="promociones-hero-imagen" style={{ height: `${heroHeight}px` }}>
+      <div
+        className="promociones-hero-imagen"
+        style={{ height: `${heroHeight}px` }}
+      >
         <img src="img/imagen_incio.png" alt="Inicio" />
       </div>
 
       <div className="promociones-mensage">
-        <h2>
-          ¡Explora nuestras promociones exclusivas!
-        </h2>
+        <h2>¡Explora nuestras promociones exclusivas!</h2>
       </div>
 
       <div className="promociones-producto">
@@ -82,6 +83,19 @@ export default function Promociones() {
           ))}
         </ul>
       </div>
+      <footer className="footer-promociones ">
+        <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
+        <h2></h2>
+        <p>
+          Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de
+          Contacto: +54 9 11 61138645
+        </p>
+
+        <p>
+          Síguenos en nuestras redes sociales para enterarte de nuestras ofertas
+          y novedades.
+        </p>
+      </footer>
     </>
   );
 }

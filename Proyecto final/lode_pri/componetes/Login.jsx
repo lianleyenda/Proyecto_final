@@ -1,16 +1,21 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom"; // <-- Importar
+import { Link, useNavigate } from "react-router-dom";
 import "../src/login.css";
-
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // <-- inicializamos
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 🔹 Validación de correo Gmail
+    const regexGmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    if (!regexGmail.test(email)) {
+      alert("El correo debe ser un Gmail válido (ejemplo: usuario@gmail.com)");
+      return;
+    }
 
     try {
       const res = await fetch("http://localhost:5000/inicio", {
@@ -24,14 +29,13 @@ export default function Login() {
 
       const data = await res.json();
       if (res.ok) {
-        alert(data.mensaje); // Inicio de sesión exitoso
+        alert(data.mensaje);
         console.log("Usuario logueado:", data.usuario.Usuario);
-         // Guardamos los datos del usuario en el localStorage
-      localStorage.setItem("Usuario", JSON.stringify(data.usuario.Usuario));
-         navigate("/inicio"); // <-- Redirige a la página principal
-        // acá podés guardar el usuario en localStorage o Context
+
+        localStorage.setItem("Usuario", JSON.stringify(data.usuario.Usuario));
+        navigate("/inicio");
       } else {
-        alert(data.mensaje); // Usuario no encontrado o contraseña incorrecta
+        alert(data.mensaje);
       }
     } catch (error) {
       console.error("Error en login:", error);
@@ -42,7 +46,8 @@ export default function Login() {
     <div className="fondo">
       <div className="contenedor">
         <div className="card">
-          <h1 className="titulo">Bienvenido</h1>
+        <h1 className="titulo">🍔 Bienvenido</h1>
+
           <form onSubmit={handleSubmit}>
             <input
               className="input"
