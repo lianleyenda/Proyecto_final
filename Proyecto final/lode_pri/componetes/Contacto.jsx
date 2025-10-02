@@ -48,11 +48,10 @@ function Contacto() {
         <span>¿Tienes dudas o quieres contactarnos? ¡Escríbenos!</span>
       </div>
       <div className="contacto-root">
-        {/* promo, navbar, mapa, formulario, footer */}
+        {/* promo, navbar, mapa, info, formulario, footer */}
       </div>
 
       {/* Navbar */}
-
       <header className="contacto-navbar">
         <nav className="contacto-navbar">
           <div className="contacto-navbar-left">
@@ -74,7 +73,7 @@ function Contacto() {
 
       {/* Mensaje central */}
       <div className="contacto-mensage">
-        <h2>¡Estamos para ayudarte!</h2>
+        <h2>¿Donde nos encontramos?</h2>
       </div>
 
       {/* Mapa */}
@@ -82,20 +81,24 @@ function Contacto() {
         <iframe
           title="Ubicación LODEPRI"
           src="https://www.google.com/maps/embed?pb=..."
-          width="100%"
-          height="350"
-          style={{
-            border: 0,
-            borderRadius: "12px",
-            display: "block",
-            margin: "0 auto",
-            maxWidth: "700px",
-          }}
           allowFullScreen=""
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
+
+      {/* Texto descriptivo */}
+      <div className="contacto-descripcion">
+        <p>📍 Nos encontramos en Roca y Escalada.</p>
+        <p>
+          🍔 Nuestra hamburguesa es única, con un sabor que no vas a encontrar
+          en ningún otro lugar.
+        </p>
+        <p>👑 ¡Vení a probarla y descubrí por qué todos vuelven por más!</p>
+      </div>
+
+      
+     
 
       {/* Formulario */}
       <div className="contacto-formulario">
@@ -138,13 +141,11 @@ function Contacto() {
       </div>
 
       <footer className="footer-contacto ">
-<p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
-<h2></h2>
-<p>Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de Contacto: +54 9 11 61138645</p>
-
-<p>Síguenos en nuestras redes sociales para enterarte de nuestras ofertas y novedades.</p>
-
-</footer>
+        <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
+        <h2></h2>
+        <p>Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de Contacto: +54 9 11 61138645</p>
+        <p>Síguenos en nuestras redes sociales para enterarte de nuestras ofertas y novedades.</p>
+      </footer>
     </>
   );
 }
