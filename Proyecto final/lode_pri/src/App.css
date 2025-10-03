@@ -136,6 +136,10 @@ header.scrolled {
  
 }
 
+header.scrolled h2{
+  color: #023973;
+}
+
 
 .navbar-left {
   display: flex;
@@ -160,23 +164,23 @@ header.scrolled {
   justify-content: right; /* reparte el espacio entre ellos */
   gap: 20px; /* ocupa todo el espacio disponible de la navbar */
   margin-right: 10px;
-  color: #5a1a00;
+  color: white;
 }
 
 .navbar-right a {
   flex-grow: 1; /* cada link se estira proporcionalmente */
   text-align: center; /* centra el texto dentro de cada espacio */
-  color: black;
+  color: #023973;
   
 }
 
 .navbar-right a:hover {
-  color: #5a1a00; /* marrón al pasar el mouse */
+  color: white; /* marrón al pasar el mouse */
 }
 
 .navbar-right button{
-  border: 2px solid #5a1a00;
-  color: #5a1a00;
+  border: 2px solid #023973;
+  color: #023973;
   padding: 8px 8px;
 }
 
@@ -327,7 +331,7 @@ text-align: center;
   color:white;
   text-align: center;
   font-weight: bold; /* Negrita */
-  padding-top: 20px;
+  padding-top: 10px;
    background-color: #5a1a00;
 width: 107%;
 height: 150px;

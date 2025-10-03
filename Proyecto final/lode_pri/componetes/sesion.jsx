@@ -108,12 +108,8 @@ useEffect(() => {
             <a href="/">Página principal</a>
             <a href="#">Contacto</a>
             <a href="/Promociones">Promociones</a>
-            <h2>{usuario}</h2>
-            <a href="/">
-            <button>Cerrar Sesion</button>
-            </a>
-             <SidebarCarrito />
-        
+            <h2>{usuario}</h2>        
+            <SidebarCarrito />
           </div>
         </nav>
       </header>

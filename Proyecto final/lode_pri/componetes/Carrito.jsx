@@ -12,7 +12,7 @@ function SidebarCarrito() {
     <div className="tipografia">
       {/* Botón / Icono para abrir */}
       <button className="carrito-btn" onClick={() => setIsOpen(true)}>
-        <TiShoppingCart size={30}/>
+        <TiShoppingCart size={20}/>
       </button>
 
       {/* Overlay (oscurece el fondo) */}
@@ -23,7 +23,7 @@ function SidebarCarrito() {
         <button className="close-btn" onClick={() => setIsOpen(false)}>
           ✖
         </button>
-        <h2>Tu carrito</h2>
+        <h2 color="#023973">Tu carrito</h2>
         {carrito.length > 0 ? (
           <>
           <div className="pestaña">

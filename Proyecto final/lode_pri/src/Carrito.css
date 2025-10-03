@@ -8,6 +8,8 @@
   background: none;
   border: none;
   cursor: pointer;
+  width: 45px;
+  height: 40px;
 }
 
 /* Fondo oscuro cuando está abierto */
@@ -73,6 +75,7 @@
 
 .pestaña{
 font-family: "Bree Serif", serif ;
+color: #023973;
 }
 
 
@@ -86,6 +89,8 @@ font-family: "Bree Serif", serif ;
   padding: 4px 8px;
   gap: 8px;
   margin: 0 10px;
+  
+  
 }
 
 /* Botones + y - */
@@ -115,6 +120,7 @@ font-family: "Bree Serif", serif ;
   font-size: 16px;
   font-weight: bold;
   color: #333;
+  margin-left: -10px;
 }
 
 /* Precio */

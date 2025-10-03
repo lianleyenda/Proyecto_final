@@ -30,15 +30,14 @@ especial que representa todo lo que está dentro de un componente.*/
       .then((data) => {
         console.log("Carrito desde backend:", data);
         const carritoConCantidad = data.carrito.map((item) => ({
-          ...item,
+          ...item,//abre el item con el operador
           cantidad: item.cantidad || 1,
           Costo: Number(item.Costo), // Asegurarse que sea número
         }));
         setCarrito(carritoConCantidad);
         setTotal(
           carritoConCantidad.reduce(
-            (acc, item) => acc + item.Costo * item.cantidad,
-            0
+            (acc, item) => acc + item.Costo * item.cantidad,//El método reduce() recorre un array y acumula un valor a lo largo de todas sus iteraciones
           )
         );
       })
