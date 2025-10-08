@@ -1,5 +1,6 @@
 // src/CarritoContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';  // Importamos MercadoPago
 
 
 const CarritoContext = createContext();/* es como una "caja" donde guardás datos globales
@@ -18,6 +19,12 @@ export function CarritoProvider({ children }) {  /*children En React, children e
 especial que representa todo lo que está dentro de un componente.*/
  const [carrito, setCarrito] = useState([]);
  const [total, setTotal] = useState(0);
+ const [preferenceId, setPreferenceId] = useState(null);  // Estado para guardar el id de preferencia de pago
+
+  // Inicializamos MercadoPago con nuestra public key
+ useEffect(() => {
+    initMercadoPago('APP_USR-ce36031a-fc64-4fd4-9257-feb4679c8807');
+  }, []);
 
 
  // Cargar carrito desde el backend
@@ -116,11 +123,60 @@ const decrementarItem = (id) => {
 };
 
 
+const pagarConMercadoPago = async () => {//pueden realizar otras tareas mientras el programa se encarga de correr otras cosas
+    try {
+      const res = await fetch("http://127.0.0.1:5000/crear_preferencia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ carrito }),
+      });
+      const data = await res.json();
+
+      if (data.id) {
+        // Redirige al checkout de Mercado Pago
+        window.location.href = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${data.id}`;
+      } else {
+        alert("Error al iniciar el pago");
+      }
+    } catch (error) {
+      console.error("Error iniciando pago:", error);
+    }
+  };
+
+  // Crear preferencia para el checkout
+  useEffect(() => {
+    const crearPreferencia = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:5000/crear_preferencia", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ carrito }),
+        });
+        const data = await res.json();
+
+        if (data.id) {
+          setPreferenceId(data.id);
+        } else {
+          alert("Error al crear la preferencia de pago");
+        }
+      } catch (error) {
+        console.error("Error creando preferencia:", error);
+      }
+    };
+
+    crearPreferencia();
+  }, [carrito]);//lo actualiza cada vez que cambia
+
+
+
+
 
 
  return (
    //.Provider es el componente que “proporciona” los datos a todos los hijos que usen useCarrito()
-   <CarritoContext.Provider value={{ carrito, total, agregarCarrito, eliminarItem, vaciarCarrito, incrementarItem, decrementarItem  }}> 
+   <CarritoContext.Provider value={{ carrito, total, agregarCarrito, eliminarItem, 
+   vaciarCarrito, incrementarItem, decrementarItem, pagarConMercadoPago  }}> 
      {children}
    </CarritoContext.Provider>
  );
