@@ -175,14 +175,17 @@ header.scrolled h2{
 }
 
 .navbar-right a:hover {
-  color: white; /* marrón al pasar el mouse */
+  color: #D4D4D4; /* marrón al pasar el mouse */
 }
 
 .navbar-right button{
-  border: 2px solid #023973;
+  margin-left: -20px;
   color: #023973;
-  padding: 8px 8px;
+  flex-grow: 1; 
 }
+
+
+
 
 .search-bar {
   color: black;
@@ -337,5 +340,7 @@ width: 107%;
 height: 150px;
 
 }
+
+
 
 

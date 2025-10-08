@@ -10,7 +10,9 @@ export default function Promociones() {
   useEffect(() => {
     fetch("http://127.0.0.1:5000/Promociones")
       .then((res) => res.json())
-      .then((data) => setPromos(data))
+      .then((data) => {
+        console.table(data)
+        setPromos(data)})
       .catch((err) => console.error(err));
   }, []);
 

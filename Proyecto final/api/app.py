@@ -1,4 +1,5 @@
 import mysql.connector
+import mercadopago
 from flask import Flask, g, request, jsonify, session, redirect, url_for, render_template
 from dotenv import load_dotenv
 from flask_cors import CORS
@@ -50,8 +51,6 @@ def listar_productos():
 
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
 
 
 
@@ -329,23 +328,6 @@ def vaciar_carrito():
 
 
 
-@app.route('/Productos/<string:nombre>', methods=['GET'])
-def ver_producto(nombre):
-    db = get_db()  # Conexión a la base de datos
-    cursor = db.cursor(dictionary=True)
-    # Buscamos el producto exacto por nombre
-    cursor.execute("SELECT * FROM Productos WHERE Producto = %s", (nombre,))
-    producto = cursor.fetchone()  # Tomamos solo el primer resultado
-    cursor.close()
-    db.close()
-    if producto:
-        # Si existe el producto, renderizamos producto.html pasándole los datos
-        return render_template("producto.html", producto=producto)
-    else:
-        # Si no existe, devolvemos un mensaje de error
-        return "Producto no encontrado", 404
-
-
 
 
 # --------------------------
@@ -476,7 +458,43 @@ def total_carrito():
 
     return jsonify({"total": total, "items": carrito}), 200
 
+# Agrega credenciales
+sdk = mercadopago.SDK("TEST_ACCESS_TOKEN")
 
+@app.route("/crear_preferencia", methods=["POST"])
+def crear_preferencia():
+    data = request.get_json()
+    carrito = data.get("carrito", [])
+    #le pasasmo preferencias a las credenciales
+    items = [
+        {
+            "title": item["Producto"],
+            "quantity": item["cantidad"],
+            "unit_price": float(item["Costo"]),
+            "currency_id": "ARS"
+        }
+        for item in carrito
+    ]
+#esto es la url para redirifirlo a comprar
+    preference_data = {
+        "items": items,
+        "back_urls": {
+            "success": "http://localhost:5173/success",#success: URL de retorno cuando se aprueba el pago.
+            "failure": "http://localhost:5173/failure",#failure: URL de retorno cuando se rechaza el pago.
+            "pending": "http://localhost:5173/pending",#pending: URL de retorno cuando el pago está pendiente.
+        },
+        "auto_return": "approved",
+    }
+
+    preference_response = sdk.preference().create(preference_data)
+    preference = preference_response["response"]
+    
+    return jsonify({"id": preference["id"]})
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
 

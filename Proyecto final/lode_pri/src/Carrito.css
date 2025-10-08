@@ -2,13 +2,13 @@
 
 .tipografia{
   font-family: "Bree Serif", serif;
+  color: #023973;
 }
 /* Botón del carrito */
 .carrito-btn {
   background: none;
   border: none;
   cursor: pointer;
-  width: 45px;
   height: 40px;
 }
 
@@ -22,6 +22,12 @@
   background: rgba(0, 0, 0, 0.5);
   z-index: 99;
 }
+
+.carrito-btn:hover {
+  color: #D4D4D4;
+  transform: scale(1.1);
+}
+
 
 /* Sidebar */
 .sidebar {
@@ -62,7 +68,7 @@
 
 /* Cuando pasás el mouse */
 .pestaña button:hover {
-  background-color: #e0e0e0;
+
   transform: scale(1.05);
 }
 
@@ -86,9 +92,9 @@ color: #023973;
   justify-content: center;
   background: #f7f7f7;
   border-radius: 20px;
-  padding: 4px 8px;
+  padding: 4px 10px;
   gap: 8px;
-  margin: 0 10px;
+  margin: 0 20px;
   
   
 }
@@ -107,6 +113,8 @@ color: #023973;
   align-items: center;
   justify-content: center;
   transition: 0.2s;
+  color: #023973;
+  
 }
 
 .circle-btn:hover {
@@ -115,7 +123,7 @@ color: #023973;
 
 /* Número de cantidad */
 .cantidad {
-  min-width: 20px;
+  min-width: 40px;
   text-align: center;
   font-size: 16px;
   font-weight: bold;

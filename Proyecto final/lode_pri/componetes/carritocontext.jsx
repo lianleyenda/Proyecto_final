@@ -28,7 +28,6 @@ especial que representa todo lo que está dentro de un componente.*/
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Carrito desde backend:", data);
         const carritoConCantidad = data.carrito.map((item) => ({
           ...item,//abre el item con el operador
           cantidad: item.cantidad || 1,
@@ -37,7 +36,7 @@ especial que representa todo lo que está dentro de un componente.*/
         setCarrito(carritoConCantidad);
         setTotal(
           carritoConCantidad.reduce(
-            (acc, item) => acc + item.Costo * item.cantidad,//El método reduce() recorre un array y acumula un valor a lo largo de todas sus iteraciones
+            (acc, item) => acc + item.Costo * item.cantidad,0//El método reduce() recorre un array y acumula un valor a lo largo de todas sus iteraciones
           )
         );
       })
@@ -57,7 +56,7 @@ const agregarCarrito = (id) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Respuesta de agregar producto:", data);
+        
         cargarCarrito();
       })
       .catch((err) => console.error("Error agregando producto:", err));
@@ -71,7 +70,7 @@ const agregarCarrito = (id) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Respuesta eliminar:", data);
+        
         cargarCarrito();
       })
       .catch((err) => console.error("Error eliminando producto:", err));
@@ -87,7 +86,7 @@ const agregarCarrito = (id) => {
   })
     .then((res) => res.json())
     .then((data) => {
-      console.log("Carrito vaciado:", data);
+      
       cargarCarrito();
     })
     .catch((err) => console.error("Error vaciando carrito:", err));

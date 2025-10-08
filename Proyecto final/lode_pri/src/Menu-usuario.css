@@ -1,0 +1,52 @@
+.perfil-container {
+  position: relative;
+  display: inline-block;
+}
+
+.perfil-titulo {
+  cursor: pointer;
+  color: #023973;
+  user-select: none;
+}
+
+.perfil-menu {
+  position: absolute;
+  top: 100%; /* aparece justo debajo del h2 */
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+  padding: 10px;
+  margin-top: 4px;
+  animation: slideDown 0.2s ease;
+  z-index: 100;
+}
+
+.perfil-menu button {
+  background: none;
+  border: none;
+  color: #023973;
+  font-size: 16px;
+  padding: 8px 12px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  border-radius: 6px;
+}
+
+.perfil-menu button:hover {
+  background-color: #f3f3f3;
+}
+
+/* Animación suave al desplegar */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
