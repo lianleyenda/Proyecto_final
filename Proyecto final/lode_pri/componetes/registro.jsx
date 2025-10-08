@@ -17,6 +17,7 @@ export default function Registro() {
     }
 
     try {
+      console.log()
       const res = await fetch("http://127.0.0.1:5000/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -27,6 +28,7 @@ export default function Registro() {
         }),
       });
 
+      console.log(res)
       const data = await res.json();
       alert(data.mensaje);
 

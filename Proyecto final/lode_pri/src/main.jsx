@@ -11,6 +11,8 @@ import Promociones from "../componetes/Promociones.jsx";
 import Sesion from "../componetes/sesion.jsx";
 import Contacto from "../componetes/Contacto.jsx";
 
+
+
 import { CarritoProvider } from "../componetes/carritocontext.jsx"; // 🔹 Importamos el provider
 
 createRoot(document.getElementById("root")).render(
@@ -25,6 +27,8 @@ createRoot(document.getElementById("root")).render(
           <Route path="/promociones" element={<Promociones />} />
           <Route path="/inicio" element={<Sesion />} />
           <Route path="/contacto" element={<Contacto />} />
+         
+
         </Routes>
       </Router>
     </CarritoProvider>

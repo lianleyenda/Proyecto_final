@@ -4,28 +4,34 @@ import { Link } from "react-router-dom";
 
 export default function Promociones() {
   const [promos, setPromos] = useState([]);
+  const [productosMasVendidos, setProductosMasVendidos] = useState([]);
   const [scrolled, setScrolled] = useState(false);
   const [heroHeight, setHeroHeight] = useState(615); // Altura inicial de la imagen
 
   useEffect(() => {
+    // Cargar promociones
     fetch("http://127.0.0.1:5000/Promociones")
       .then((res) => res.json())
       .then((data) => {
         console.table(data)
         setPromos(data)})
       .catch((err) => console.error(err));
+
+    // Cargar productos más vendidos
+    fetch("http://127.0.0.1:5000/productos-mas-vendidos")
+      .then((res) => res.json())
+      .then((data) => setProductosMasVendidos(data))
+      .catch((err) => console.error(err));
   }, []);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Cambiar estado del scroll cuando el usuario scrollea más de 50px
       if (window.scrollY > 50) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
 
-      // Reducir la altura de la imagen del héroe con el scroll, sin que sea menor a 400px
       const scrolledAmount = window.scrollY;
       const newHeight = Math.max(400, 615 - scrolledAmount);
       setHeroHeight(newHeight);
@@ -85,9 +91,29 @@ export default function Promociones() {
           ))}
         </ul>
       </div>
-      <footer className="footer-promociones ">
+
+      {/* Aquí se encuentra la nueva sección para los productos más vendidos */}
+      <div className="promociones-producto">
+        <h2>Productos Más Vendidos</h2>
+        <ul>
+          {productosMasVendidos.map((item) => (
+            <ol key={item.Producto}>
+              <img
+                src={`img/${item.imagen}`} 
+                alt={item.Producto}
+                style={{ width: '100%', height: 'auto', borderRadius: '10px' }}
+              />
+              <h3>{item.Producto}</h3>
+              <p>Total Vendido: {item.total_vendido}</p>
+              <p>Precio: ${item.Costo}</p>
+              <button>Añadir al carrito</button>
+            </ol>
+          ))}
+        </ul>
+      </div>
+
+      <footer className="footer-promociones">
         <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
-        <h2></h2>
         <p>
           Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de
           Contacto: +54 9 11 61138645

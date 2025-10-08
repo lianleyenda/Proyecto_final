@@ -190,13 +190,20 @@
 }
 
 .promociones-producto {
-  color: black;
+  text-align: center; /* Centra el texto */
+  font-family: "Bree Serif", serif;
+  color: #5a1a00;
+   justify-content: center; /* Centrado horizontal */
+  align-items: center; /* Centrado vertical */
+  
+  
 }
 
 .promociones-producto ul {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
   gap: 20px;
+  padding: 23px;
 }
 
 .promociones-producto ol {
@@ -205,18 +212,45 @@
   padding: 15px;
   text-align: center;
   color: #5a1a00;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* transición suave para zoom y sombra */
+}
+
+/* Efecto de transición cuando se pasa el mouse sobre los productos */
+.promociones-producto ol:hover {
+  transform: scale(1.05); /* Agranda ligeramente el producto */
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil */
 }
 
 .promociones-producto img {
   width: 335px;
   height: auto;
   border-radius: 5px;
+  transition: transform 0.3s ease; /* Transición suave para zoom de la imagen */
+}
+
+/* Efecto de zoom cuando se pasa el mouse sobre la imagen */
+.promociones-producto img:hover {
+  transform: scale(1.05); /* Efecto al pasar el cursor sobre la imagen */
 }
 
 .promociones-producto button {
   background-color: #3b79e3;
   width: 335px;
   text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease; /* Suaviza los cambios del botón */
+}
+
+/* Efecto al pasar el mouse sobre el botón */
+.promociones-producto button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}
+
+/* Cuando lo presionas */
+.promociones-producto button:active {
+  background-color: #ccc;
+  transform: scale(0.95);
 }
 
 .promociones-header {

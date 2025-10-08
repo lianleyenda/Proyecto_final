@@ -60,20 +60,19 @@
 
 /* NAVBAR */
 .contacto-navbar {
-  display: flex;
+   display: flex;
   justify-content: space-between;
   align-items: center;
   background: transparent;
   position: fixed;
-  top: 50px; /* debajo del banner */
+  top: 50px;
   left: 0;
-  width: 100%;
+  width: 99%;
   height: 60px;
   z-index: 999;
   border-bottom: 1px solid transparent;
   font-family: "Bree Serif", serif;
   flex-wrap: wrap;
-  padding: 0 15px;
 }
 
 .contacto-navbar-left {
@@ -134,7 +133,17 @@
   max-width: 1000px;
   width: 98%;
   height: 400px;
+  
 }
+
+.contacto-mapa iframe {
+  transition: transform 0.3s ease;
+}
+
+.contacto-mapa iframe:hover {
+  transform: scale(1.05);
+}
+
 
 /* FORMULARIO */
 .contacto-formulario {
@@ -155,7 +164,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-right: 60px;
+  margin-right: -62px;
 }
 
 .contacto-formulario label {
@@ -180,22 +189,18 @@
   box-shadow: 0px 0px 6px rgba(2, 136, 209, 0.3);
 }
 
-.contacto-formulario button {
-  background: #ffd166; /* pan de hamburguesa */
-  color: #333;
-  border: none;
-  padding: 12px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
+.contacto-formulario button,
+.producto button {
   transition: all 0.3s ease;
 }
 
-.contacto-formulario button:hover {
-  background: #e07a5f; /* ketchup */
-  color: #fff;
+.contacto-formulario button:hover,
+.producto button:hover {
+  transform: scale(1.05);
+  background-color: #5a1a00;
+  color: white;
 }
+
 
 /* FOOTER */
 .footer-contacto {

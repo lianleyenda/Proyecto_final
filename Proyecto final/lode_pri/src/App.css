@@ -257,19 +257,29 @@ header.scrolled h2{
   grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
   gap: 20px;
 }
-
-.producto ol{
-   background: #fff;
+.producto ol {
+  background: #fff;
   border-radius: 12px;
   padding: 15px;
   text-align: center;
   color: #5a1a00;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* transición suave */
 }
 
-.producto img{
+.producto ol:hover {
+  transform: scale(1.05); /* Agranda ligeramente el producto */
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+}
+
+.producto img {
   width: 335px;
   height: auto;
   border-radius: 5px;
+  transition: transform 0.3s ease;
+}
+
+.producto img:hover {
+  transform: scale(1.05); /* Efecto al pasar el cursor sobre la imagen */
 }
 
 .producto button{
@@ -327,6 +337,7 @@ text-align: center;
 .presentacion-texto p {
   font-size: 18px;
   line-height: 1.5;
+  
 }
 
 
