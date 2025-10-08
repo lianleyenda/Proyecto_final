@@ -95,14 +95,16 @@ function Contacto() {
           en ningún otro lugar.
         </p>
         <p>👑 ¡Vení a probarla y descubrí por qué todos vuelven por más!</p>
+        <h3>Envíanos tu consulta</h3>
       </div>
 
       
      
 
       {/* Formulario */}
+      
       <div className="contacto-formulario">
-        <h3>Envíanos tu consulta</h3>
+        
         <form onSubmit={handleSubmit}>
           <label htmlFor="nombre">Nombre:</label>
           <input

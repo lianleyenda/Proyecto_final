@@ -10,6 +10,8 @@ import Olvido from "../componetes/olvido.jsx";
 import Promociones from "../componetes/Promociones.jsx";
 import Sesion from "../componetes/sesion.jsx";
 import Contacto from "../componetes/Contacto.jsx";
+import AdminPanel from "../componetes/AdminPanel.jsx";
+
 
 import { CarritoProvider } from "../componetes/carritocontext.jsx"; // 🔹 Importamos el provider
 
@@ -25,6 +27,8 @@ createRoot(document.getElementById("root")).render(
           <Route path="/promociones" element={<Promociones />} />
           <Route path="/inicio" element={<Sesion />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/Admin" element={<AdminPanel />} />
+
         </Routes>
       </Router>
     </CarritoProvider>

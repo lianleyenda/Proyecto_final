@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 load_dotenv()#lee la funciones
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+CORS(app)
 
 data = {
    'host': os.getenv("DB_HOST"),
@@ -47,12 +47,6 @@ def listar_productos():
     cursor.close()
     db.close()
     return jsonify(resultado)  # 🔹 Solo la lista
-
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
 
 
 @app.route('/stock/agregar', methods=['POST'])
@@ -113,6 +107,7 @@ def modificar_stock(stock_id):
 
 @app.route('/registro', methods=['POST'])
 def registrar_usuario():
+    # 1. Validación de la solicitud (sin cambios)
     data = request.get_json()
     if not data or 'Usuario' not in data or 'Email' not in data or 'Password' not in data:
         return {'mensaje': 'Faltan datos'}, 400
@@ -121,29 +116,57 @@ def registrar_usuario():
     email = data['Email']
     password = data['Password']
 
-    db = get_db()
-    cursor = db.cursor(dictionary=True)
+    db = None
+    cursor = None
+    try:
+        db = get_db()  # Asume que esta función abre la conexión
+        cursor = db.cursor(dictionary=True)
 
-    # Verificar si el email ya existe
-    cursor.execute('SELECT * FROM Usuarios WHERE Email = %s', (email,))
-    if cursor.fetchone():
-        cursor.close()
-        db.close()
-        return {'mensaje': 'El email ya está registrado'}, 400
+        # 2. Verificar si el email ya existe (SELECT)
+        # Una SELECT también es una transacción, aunque ligera.
+        cursor.execute('SELECT 1 FROM Usuarios WHERE Email = %s', (email,))
+        if cursor.fetchone():
+            # No necesitamos hacer commit/rollback para un SELECT si no está en una transacción explícita
+            return {'mensaje': 'El email ya está registrado'}, 400
 
-    # Encriptar la contraseña
-    password_hash = generate_password_hash(password)
+        # 3. Encriptar la contraseña
+        password_hash = generate_password_hash(password)
 
-    # Insertar usuario
-    cursor.execute(
-        'INSERT INTO Usuarios (Usuario, Email, Password) VALUES (%s, %s, %s)',
-        (nombre, email, password_hash)
-    )
-    db.commit()
-    cursor.close()
-    db.close()
+        # 4. Insertar usuario (INSERT)
+        cursor.execute(
+            'INSERT INTO Usuarios (Usuario, Email, Password) VALUES (%s, %s, %s)',
+            (nombre, email, password_hash)
+        )
+        
+        # 5. Confirmar la transacción
+        db.commit() # ¡IMPORTANTE! Este libera los bloqueos de fila del INSERT.
 
-    return {'mensaje': 'Usuario registrado con éxito'}, 201
+        return {'mensaje': 'Usuario registrado con éxito'}, 201
+
+    except mysql.connector.Error as err:
+        # En caso de cualquier error de MySQL (incluyendo Lock wait timeout exceeded)
+        print(f"Error de base de datos: {err}")
+        if db:
+            db.rollback() # Deshace la transacción para liberar cualquier bloqueo residual.
+        
+        # Puedes revisar códigos de error específicos si es necesario
+        if err.errno == 1205: # Código de error para Lock wait timeout exceeded
+             return {'mensaje': 'Error de concurrencia: El sistema está ocupado. Intente de nuevo.'}, 503
+             
+        return {'mensaje': 'Error al registrar el usuario en la base de datos.'}, 500
+
+    except Exception as e:
+        # Manejo de cualquier otro error no relacionado con MySQL
+        print(f"Error inesperado: {e}")
+        return {'mensaje': 'Error interno del servidor.'}, 500
+
+    finally:
+        # 6. Cerrar recursos (¡Siempre debe ejecutarse!)
+        if cursor:
+            cursor.close()
+        if db:
+            # Asume que get_db() crea una conexión que debe ser cerrada.
+            db.close()
 
 
 @app.route('/inicio', methods=['POST'])
@@ -480,3 +503,6 @@ def total_carrito():
 
 
 
+
+if __name__ == '__main__':
+    app.run(debug=True)
