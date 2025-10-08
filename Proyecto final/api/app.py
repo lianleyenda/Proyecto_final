@@ -501,8 +501,35 @@ def total_carrito():
 
 
 
+# Endpoint para obtener los productos más vendidos
+@app.route('/productos-mas-vendidos', methods=['GET'])
+def productos_mas_vendidos():
+    # Conexión a la base de datos
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
 
+    # Consulta SQL para obtener los productos más vendidos
+    cursor.execute("""
+        SELECT s.Producto, SUM(v.Cantidad) AS total_vendido
+        FROM Ventas v
+        JOIN Productos s ON v.id_Stock = s.id_Stock
+        GROUP BY s.Producto
+        ORDER BY total_vendido DESC
+        LIMIT 10;
+    """)
+    
+    # Obtener los resultados
+    resultados = cursor.fetchall()
+    
+    # Cerrar la conexión
+    cursor.close()
+    conn.close()
+    
+    # Retornar los resultados como JSON
+    return jsonify(resultados)
 
-
+# Iniciar el servidor Flask
 if __name__ == '__main__':
     app.run(debug=True)
+
+
