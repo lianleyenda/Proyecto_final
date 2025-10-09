@@ -12,7 +12,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 load_dotenv()#lee la funciones
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
 data = {
    'host': os.getenv("DB_HOST"),
@@ -485,31 +485,47 @@ def total_carrito():
     return jsonify({"total": total, "items": carrito}), 200
 
 # Agrega credenciales
-sdk = mercadopago.SDK("APP_USR-1014942186658180-100813-034d9c7623a14f3156df471f0a448a8b-2913070235")
+sdk = mercadopago.SDK("APP_USR-5763249349845009-100909-bc1e9b0beeb732567e21720be994d136-2915372170")
 
 @app.route("/crear_preferencia", methods=["POST"])
 def crear_preferencia():
- 
-   
-    
-    # Crear la lista de items a partir del carrito
-    # Crea un ítem en la preferencia
- preference_data = {
-    "items": [
-        {
-            "title": "Mi producto",
-            "quantity": 1,
-            "unit_price": 75.76,
+    try:
+        data = request.get_json()
+        carrito = data.get("carrito", [])
+
+        if not carrito:
+            print("⚠️ Carrito vacío:", carrito)
+            return jsonify({"error": "El carrito está vacío"}), 400
+
+        items = []
+        for item in carrito:
+            print("🧾 Item recibido:", item)
+            items.append({
+                "title": item.get("Producto", "Sin nombre"),
+                "quantity": int(item.get("cantidad", 1)),
+                "unit_price": float(item.get("Costo", 0))
+            })
+
+        preference_data = {
+            "items": items,
+            "back_urls": {
+                "success": "http://localhost:5173/pago/exitoso",
+                "failure": "http://localhost:5173/pago_fallido",
+                "pending": "http://localhost:5173/pago_pendiente"
+            },
+               # 👈 Esto hace que se redirija automáticamente al success si el pago fue aprobado
         }
-    ]
-}
 
- preference_response = sdk.preference().create(preference_data)
- preference = preference_response["response"]
+        print("📦 Enviando a Mercado Pago:", preference_data)
+        preference_response = sdk.preference().create(preference_data)
+        preference = preference_response["response"]
+        print("✅ Preferencia creada:", preference)
 
- 
-    # Devolver solo el id de la preferencia como JSON
- return jsonify({"id": preference["id"]})
+        return jsonify({"id": preference["id"]})
+
+    except Exception as e:
+        print("❌ Error creando preferencia:", e)
+        return jsonify({"error": str(e)}), 500
 
 
 # Endpoint para obtener los productos más vendidos
@@ -538,6 +554,36 @@ def productos_mas_vendidos():
     
     # Retornar los resultados como JSON
     return jsonify(resultados)
+
+
+
+@app.route('/productos/promedio-precios', methods=['GET'])
+def promedio_precios():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT AVG(Costo) AS promedio_precio FROM Productos")
+    resultado = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    promedio = resultado['promedio_precio'] if resultado['promedio_precio'] else 0
+    return jsonify({'promedio_precio_productos': promedio}), 200
+
+
+@app.route('/productos/mas-caro', methods=['GET'])
+def producto_mas_caro():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM Productos ORDER BY Costo DESC LIMIT 1")
+    producto = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if not producto:
+        return jsonify({'mensaje': 'No hay productos registrados'}), 404
+    return jsonify({'producto_mas_caro': producto}), 200
+
+
 
 # Iniciar el servidor Flask
 if __name__ == '__main__':
