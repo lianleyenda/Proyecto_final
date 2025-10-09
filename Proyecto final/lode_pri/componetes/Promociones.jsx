@@ -1,45 +1,55 @@
 import { useEffect, useState } from "react";
 import "../src/Promociones.css";
 import { Link } from "react-router-dom";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 export default function Promociones() {
   const [promos, setPromos] = useState([]);
   const [productosMasVendidos, setProductosMasVendidos] = useState([]);
   const [scrolled, setScrolled] = useState(false);
-  const [heroHeight, setHeroHeight] = useState(615); // Altura inicial de la imagen
+  const [heroHeight, setHeroHeight] = useState(615);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Cargar promociones
-    fetch("http://127.0.0.1:5000/Promociones")
-      .then((res) => res.json())
-      .then((data) => {
-        console.table(data)
-        setPromos(data)})
-      .catch((err) => console.error(err));
+ useEffect(() => {
+  Promise.all([
+    fetch("http://127.0.0.1:5000/Promociones").then((res) => res.json()),
+    fetch("http://127.0.0.1:5000/productos-mas-vendidos").then((res) => res.json())
+  ])
+    .then(([promosData, vendidosData]) => {
+      setPromos(promosData);
+      setProductosMasVendidos(vendidosData);
 
-    // Cargar productos más vendidos
-    fetch("http://127.0.0.1:5000/productos-mas-vendidos")
-      .then((res) => res.json())
-      .then((data) => setProductosMasVendidos(data))
-      .catch((err) => console.error(err));
-  }, []);
+      // ⏳ Esperar 2 segundos antes de quitar la animación
+      setTimeout(() => setLoading(false), 2000);
+    })
+    .catch((err) => console.error(err));
+}, []);
+
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-
+      setScrolled(window.scrollY > 50);
       const scrolledAmount = window.scrollY;
-      const newHeight = Math.max(400, 615 - scrolledAmount);
-      setHeroHeight(newHeight);
+      setHeroHeight(Math.max(400, 615 - scrolledAmount));
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // 🔥 Mostrar animación de carga
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <DotLottieReact
+          src="../src/assets/burger-loading.lottie"
+          loop
+          autoplay
+        />
+        <p className="loader-text">🍔💥 ¡Preparando ofertas irresistibles para VOS!</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -92,16 +102,15 @@ export default function Promociones() {
         </ul>
       </div>
 
-      {/* Aquí se encuentra la nueva sección para los productos más vendidos */}
       <div className="promociones-producto">
         <h2>Productos Más Vendidos</h2>
         <ul>
           {productosMasVendidos.map((item) => (
             <ol key={item.Producto}>
               <img
-                src={`img/${item.imagen}`} 
+                src={`img/${item.imagen}`}
                 alt={item.Producto}
-                style={{ width: '100%', height: 'auto', borderRadius: '10px' }}
+                style={{ width: "100%", height: "auto", borderRadius: "10px" }}
               />
               <h3>{item.Producto}</h3>
               <p>Total Vendido: {item.total_vendido}</p>
@@ -115,14 +124,9 @@ export default function Promociones() {
       <footer className="footer-promociones">
         <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
         <p>
-          Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de
-          Contacto: +54 9 11 61138645
+          Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono: +54 9 11 61138645
         </p>
-
-        <p>
-          Síguenos en nuestras redes sociales para enterarte de nuestras ofertas
-          y novedades.
-        </p>
+        <p>Seguinos en redes para más novedades.</p>
       </footer>
     </>
   );

@@ -12,7 +12,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 load_dotenv()#lee la funciones
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
 data = {
    'host': os.getenv("DB_HOST"),

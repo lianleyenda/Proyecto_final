@@ -243,13 +243,14 @@
 
 /* Efecto al pasar el mouse sobre el botón */
 .promociones-producto button:hover {
-  background-color: #e0e0e0;
+  background-color: #5a1a00;
+  color: white;
   transform: scale(1.05);
 }
 
 /* Cuando lo presionas */
 .promociones-producto button:active {
-  background-color: #ccc;
+  background-color: #fff;
   transform: scale(0.95);
 }
 
@@ -275,4 +276,20 @@
   background-color: #5a1a00;
   width: 107%;
   height: 150px;
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #fff;
+}
+
+.loader-text {
+  font-family: "Bree Serif", serif;
+  color: #5a1a00;
+  font-size: 1.4rem;
+  margin-top: -12px;
 }
