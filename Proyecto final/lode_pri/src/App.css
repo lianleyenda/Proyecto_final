@@ -312,7 +312,7 @@ text-align: center;
   align-items: center;     /* Centra verticalmente */
   justify-content: center; /* Centra horizontalmente */
   gap: 20px;               /* Espacio entre la imagen y el texto */
-  padding: 20px;
+  padding: 42px;
 }
 
 .presentacion img {

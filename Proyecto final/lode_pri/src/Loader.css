@@ -1,0 +1,57 @@
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #faf7f3;
+  font-family: "Bree Serif", serif;
+  color: #5a1a00;
+}
+
+.burger-loader {
+  position: relative;
+  width: 100px;
+  height: 80px;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.bun,
+.patty {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 100px;
+  height: 20px;
+  border-radius: 20px;
+}
+
+.bun.top {
+  background-color: #fff;
+  top: 0;
+}
+
+.patty {
+  background-color: #5a1a00;
+  top: 30px;
+}
+
+.bun.bottom {
+  background-color: #fff;
+  top: 60px;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+p {
+  margin-top: 20px;
+  font-size: 1.2rem;
+}
