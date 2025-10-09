@@ -2,52 +2,34 @@ import { useEffect, useState } from "react";
 import "../src/App.css";
 import { Link } from "react-router-dom";
 import { TiShoppingCart } from "react-icons/ti";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 function Inicio() {
-  
-   const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {// hacemos la funcion que este fija
-      if (window.scrollY > 50) {// window es la venta que vemos en cada vista le decimos que cunado se scrolee 50 px de true
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);// le decimos caundo pasas la funciom
-    return () => window.removeEventListener("scroll", handleScroll);//es para qu ele componente no quede siempre activo
-  }, []);
-
-
- const [heroHeight, setHeroHeight] = useState(615); // altura inicial
-
-useEffect(() => {
-  const elScroll = () => {
-    const scrolledAmount = window.scrollY;
-
-    if (scrolledAmount > 50) {
-      setScrolled(true);
-    } else {
-      setScrolled(false);
-    }
-
-    // Reduce la altura de la imagen del héroe al hacer scroll
-    const newHeight = Math.max(400, 615 - scrolledAmount); // no deja que quede menor a 400px
-    setHeroHeight(newHeight);
-  };
-
-  window.addEventListener("scroll", elScroll);
-  return () => window.removeEventListener("scroll", elScroll);
-}, []);
-
-
-
-  
-  
+  const [scrolled, setScrolled] = useState(false);
+  const [heroHeight, setHeroHeight] = useState(615);
+  const [loading, setLoading] = useState(true);
   const [menu, setMenu] = useState([]);
 
+  // 🌀 Animación de carga
+  useEffect(() => {
+    // Simula carga de datos (2 segundos)
+    const timer = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 📜 Scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolledAmount = window.scrollY;
+      setScrolled(scrolledAmount > 50);
+      setHeroHeight(Math.max(400, 615 - scrolledAmount));
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // 📦 Fetch menú
   useEffect(() => {
     fetch("http://127.0.0.1:5000/menu")
       .then((res) => res.json())
@@ -55,6 +37,21 @@ useEffect(() => {
       .catch((err) => console.error(err));
   }, []);
 
+  // 🔥 Mostrar animación de carga
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <DotLottieReact
+          src="../src/assets/burger-loading.lottie"
+          loop
+          autoplay
+        />
+        <p className="loader-text">🍔💥 Preparando el menú más sabroso para vos...</p>
+      </div>
+    );
+  }
+
+  // 🚀 Página principal
   return (
     <>
       <div className="promo">
@@ -62,8 +59,8 @@ useEffect(() => {
           ¡Hoy tu hambre tiene premio! 🍔 Comprá 2 hamburguesas y la tercera va
           de regalo —solo por tiempo limitado.
         </span>
-         <a href="/Promociones">
-        <button>Ir</button>
+        <a href="/Promociones">
+          <button>Ir</button>
         </a>
       </div>
 
@@ -83,7 +80,9 @@ useEffect(() => {
             <a href="/Contacto">Contacto</a>
             <a href="/Promociones">Promociones</a>
             <a href="/Login">Iniciar Sesión</a>
-            <a href="/Login"><TiShoppingCart size={40}></TiShoppingCart></a>
+            <a href="/Login">
+              <TiShoppingCart size={40} />
+            </a>
           </div>
         </nav>
       </header>
@@ -106,54 +105,56 @@ useEffect(() => {
               <h3>{item.Producto}</h3>
               <p>Precio: ${item.Costo}</p>
               <a href="/Login">
-              <button>Añadir al carrito </button>
+                <button>Añadir al carrito</button>
               </a>
             </ol>
           ))}
         </ul>
-    </div>
-    <div className="presentacion">
-      <img src="img/mano_de_hamburguesa.png" alt="Mano con hamburguesa" />
-    
-    <div className="presentacion-texto">
-      <h2>¿Quiénes somos?</h2>
-      <p>
-      Somos dos hermanos de 17 años que decidimos arrancar este 
-      proyecto juntos. Con muchas ganas y trabajo, creamos un 
-      local de hamburguesas caseras, rápidas y sin vueltas, 
-      pensado para que vengas, pidas y disfrutes bien.  
-      </p>
       </div>
-    </div>
 
-    <div className="presentacion">
-      <img src="img/muestra_de_hamburguesas.png" alt="Mano con hamburguesa" />
-    
-    <div className="presentacion-texto">
-      <h2>¿Qué hacemos?</h2>
-      <p>
-      En nuestro local nos dedicamos a preparar hamburguesas 
-      caseras con ingredientes frescos y de calidad, pensadas 
-      para que cada bocado tenga sabor auténtico. Cocinamos 
-      al momento, de forma rápida y sin vueltas, para que 
-      disfrutes una comida rica en minutos. Nuestra propuesta 
-      es simple: hamburguesas únicas, hechas con dedicación, 
-      servidas con agilidad y en un ambiente limpio y cómodo. 
-      </p>
+      <div className="presentacion">
+        <img src="img/mano_de_hamburguesa.png" alt="Mano con hamburguesa" />
+
+        <div className="presentacion-texto">
+          <h2>¿Quiénes somos?</h2>
+          <p>
+            Somos dos hermanos de 17 años que decidimos arrancar este proyecto
+            juntos. Con muchas ganas y trabajo, creamos un local de hamburguesas
+            caseras, rápidas y sin vueltas, pensado para que vengas, pidas y
+            disfrutes bien.
+          </p>
+        </div>
       </div>
-    </div>
-<footer className="derechos">
-<p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
-<h2></h2>
-<p>Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de Contacto: +54 9 11 61138645</p>
 
-<p>Síguenos en nuestras redes sociales para enterarte de nuestras ofertas y novedades.</p>
+      <div className="presentacion">
+        <img src="img/muestra_de_hamburguesas.png" alt="Hamburguesas" />
 
-</footer>
-    
+        <div className="presentacion-texto">
+          <h2>¿Qué hacemos?</h2>
+          <p>
+            En nuestro local nos dedicamos a preparar hamburguesas caseras con
+            ingredientes frescos y de calidad, pensadas para que cada bocado
+            tenga sabor auténtico. Cocinamos al momento, de forma rápida y sin
+            vueltas, para que disfrutes una comida rica en minutos. Nuestra
+            propuesta es simple: hamburguesas únicas, hechas con dedicación,
+            servidas con agilidad y en un ambiente limpio y cómodo.
+          </p>
+        </div>
+      </div>
 
-   </>
-  )
+      <footer className="derechos">
+        <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
+        <p>
+          Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de
+          Contacto: +54 9 11 61138645
+        </p>
+        <p>
+          Síguenos en nuestras redes sociales para enterarte de nuestras ofertas
+          y novedades.
+        </p>
+      </footer>
+    </>
+  );
 }
 
 export default Inicio;
