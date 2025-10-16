@@ -9,22 +9,20 @@ export default function Promociones() {
   const [scrolled, setScrolled] = useState(false);
   const [heroHeight, setHeroHeight] = useState(615);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1); // 👈 control de página
 
- useEffect(() => {
-  Promise.all([
-    fetch("http://127.0.0.1:5000/Promociones").then((res) => res.json()),
-    fetch("http://127.0.0.1:5000/productos-mas-vendidos").then((res) => res.json())
-  ])
-    .then(([promosData, vendidosData]) => {
-      setPromos(promosData);
-      setProductosMasVendidos(vendidosData);
-
-      // ⏳ Esperar 2 segundos antes de quitar la animación
-      setTimeout(() => setLoading(false), 2000);
-    })
-    .catch((err) => console.error(err));
-}, []);
-
+  useEffect(() => {
+    Promise.all([
+      fetch("http://127.0.0.1:5000/Promociones").then((res) => res.json()),
+      fetch("http://127.0.0.1:5000/productos-mas-vendidos").then((res) => res.json())
+    ])
+      .then(([promosData, vendidosData]) => {
+        setPromos(promosData);
+        setProductosMasVendidos(vendidosData);
+        setTimeout(() => setLoading(false), 2000);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,7 +35,7 @@ export default function Promociones() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 🔥 Mostrar animación de carga
+  // 🔥 Animación de carga
   if (loading) {
     return (
       <div className="loader-container">
@@ -50,6 +48,17 @@ export default function Promociones() {
       </div>
     );
   }
+
+  // 👇 Manejo de cambio de página
+  const totalPages = 2;
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
   return (
     <>
@@ -85,41 +94,67 @@ export default function Promociones() {
       </div>
 
       <div className="promociones-mensage">
-        <h2>¡Explora nuestras promociones exclusivas!</h2>
+        {currentPage === 1 ? (
+          <h2>¡Explora nuestras promociones exclusivas!</h2>
+        ) : (
+          <h2>🔥 Nuestros productos más vendidos 🔥</h2>
+        )}
       </div>
 
-      <div className="promociones-producto">
-        <ul>
-          {promos.map((item) => (
-            <ol key={item.id}>
-              <img src={`img/${item.imagen_nombre}`} alt={item.nombre} />
-              <h3>{item.nombre}</h3>
-              <p>{item.descripcion}</p>
-              <p>Precio: ${item.precio}</p>
-              <button>Añadir al carrito</button>
-            </ol>
-          ))}
-        </ul>
-      </div>
+      {/* 📦 Página 1 → Promociones */}
+      {currentPage === 1 && (
+        <div className="promociones-producto">
+          <ul>
+            {promos.map((item) => (
+              <ol key={item.id}>
+                <img src={`img/${item.imagen_nombre}`} alt={item.nombre} />
+                <h3>{item.nombre}</h3>
+                <p>{item.descripcion}</p>
+                <p>Precio: ${item.precio}</p>
+                <button>Añadir al carrito</button>
+              </ol>
+            ))}
+          </ul>
+        </div>
+      )}
 
-      <div className="promociones-producto">
-        <h2>Productos Más Vendidos</h2>
-        <ul>
-          {productosMasVendidos.map((item) => (
-            <ol key={item.Producto}>
-              <img
-                src={`img/${item.imagen}`}
-                alt={item.Producto}
-                style={{ width: "100%", height: "auto", borderRadius: "10px" }}
-              />
-              <h3>{item.Producto}</h3>
-              <p>Total Vendido: {item.total_vendido}</p>
-              <p>Precio: ${item.Costo}</p>
-              <button>Añadir al carrito</button>
-            </ol>
-          ))}
-        </ul>
-      </div>
+      {/* 📈 Página 2 → Más vendidos */}
+      {currentPage === 2 && (
+        <div className="promociones-producto">
+          <ul>
+            {productosMasVendidos.map((item) => (
+              <ol key={item.Producto}>
+                <img
+                  src={`img/${item.imagen}`}
+                  alt={item.Producto}
+                  style={{ width: "100%", height: "auto", borderRadius: "10px" }}
+                />
+                <h3>{item.Producto}</h3>
+                <p>Total Vendido: {item.total_vendido}</p>
+                <p>Precio: ${item.Costo}</p>
+                <button>Añadir al carrito</button>
+              </ol>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* 📄 Paginado simple adaptado */}
+<div className="paginado-simple">
+  {currentPage === 2 && (
+    <button onClick={prevPage} className="volver-btn">
+      ← Volver
+    </button>
+  )}
+
+  <span className="numero-pagina">{currentPage}</span>
+
+  {currentPage === 1 && (
+    <button onClick={nextPage} className="mas-vendidos-btn">
+      🔥 Ver los productos más vendidos
+    </button>
+  )}
+</div>
 
       <footer className="footer-promociones">
         <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>

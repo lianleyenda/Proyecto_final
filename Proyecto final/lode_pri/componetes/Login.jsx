@@ -5,15 +5,20 @@ import "../src/login.css";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
+
+  const mostrarMensaje = (texto) => {
+    setMensaje(texto);
+    setTimeout(() => setMensaje(""), 3000);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🔹 Validación de correo Gmail
     const regexGmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     if (!regexGmail.test(email)) {
-      alert("El correo debe ser un Gmail válido (ejemplo: usuario@gmail.com)");
+      mostrarMensaje("⚠️ El correo debe ser un Gmail válido (ejemplo: usuario@gmail.com)");
       return;
     }
 
@@ -29,24 +34,24 @@ export default function Login() {
 
       const data = await res.json();
       if (res.ok) {
-        alert(data.mensaje);
-        console.log("Usuario logueado:", data.usuario.Usuario);
-
+        mostrarMensaje("😎 ¡Bienvenido de nuevo, crack del buen comer! 🍟");
         localStorage.setItem("Usuario", JSON.stringify(data.usuario.Usuario));
-        navigate("/inicio");
+        setTimeout(() => navigate("/inicio"), 2500);
       } else {
-        alert(data.mensaje);
+        mostrarMensaje(`❌ ${data.mensaje}`);
       }
     } catch (error) {
       console.error("Error en login:", error);
+      mostrarMensaje("❌ Error al iniciar sesión. Inténtalo otra vez.");
     }
   };
 
   return (
     <div className="fondo">
+      {mensaje && <div className="mensaje-alerta">{mensaje}</div>}
       <div className="contenedor">
         <div className="card">
-        <h1 className="titulo">🍔 Bienvenido</h1>
+          <h1 className="titulo">🍔 Bienvenido</h1>
 
           <form onSubmit={handleSubmit}>
             <input
@@ -67,6 +72,7 @@ export default function Login() {
               Ingresar
             </button>
           </form>
+
           <div className="links">
             <Link to="/olvide">¿Olvidaste tu contraseña?</Link>
             <Link to="/registro">¿No tienes cuenta? Regístrate</Link>

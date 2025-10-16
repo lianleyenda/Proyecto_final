@@ -10,6 +10,7 @@ import Olvido from "../componetes/olvido.jsx";
 import Promociones from "../componetes/Promociones.jsx";
 import Sesion from "../componetes/sesion.jsx";
 import Contacto from "../componetes/Contacto.jsx";
+import Error404 from "../componetes/error404.jsx";
 
 import { CarritoProvider } from "../componetes/carritocontext.jsx"; // 🔹 Importamos el provider
 import PagoExitoso from "../componetes/pago_exitosos.jsx";
@@ -29,6 +30,8 @@ createRoot(document.getElementById("root")).render(
           <Route path="/inicio" element={<Sesion />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/pago/exitoso" element={<PagoExitoso />} />
+          {/* 👇 Cualquier ruta no encontrada muestra el error 404 */}
+        <Route path="*" element={<Error404 />} />
         </Routes>
       </Router>
     </CarritoProvider>
