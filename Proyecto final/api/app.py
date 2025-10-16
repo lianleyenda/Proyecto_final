@@ -585,6 +585,95 @@ def producto_mas_caro():
 
 
 
+
+@app.route('/ventas/ganancia-mensual', methods=['GET'])
+def ganancia_mensual():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            DATE_FORMAT(NOW(), '%Y-%m') AS mes_actual,
+            SUM(Total) AS ganancia_total
+        FROM Ventas
+        WHERE MONTH(Fecha) = MONTH(CURRENT_DATE())
+          AND YEAR(Fecha) = YEAR(CURRENT_DATE());
+    """)
+
+    resultado = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    ganancia = resultado['ganancia_total'] if resultado['ganancia_total'] else 0
+    return jsonify({"mes": resultado['mes_actual'], "ganancia_total": ganancia}), 200
+
+
+
+
+@app.route('/usuarios/top-compradores', methods=['GET'])
+def top_compradores():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT u.Usuario, COUNT(v.id_Venta) AS total_compras, SUM(v.Total) AS monto_total
+        FROM Ventas v
+        JOIN Usuarios u ON v.id_Usuarios = u.id_usuarios
+        GROUP BY u.Usuario
+        ORDER BY monto_total DESC
+        LIMIT 5;
+    """)
+
+    resultado = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return jsonify(resultado), 200
+
+
+
+@app.route('/productos/agregar', methods=['POST'])
+def agregar_producto():
+    db = get_db()
+    cursor = db.cursor()
+
+    data = request.get_json()
+    nombre = data.get('Nombre')
+    descripcion = data.get('Descripcion')
+    categoria = data.get('Categoria')
+
+    if not nombre or not descripcion or not categoria:
+        return jsonify({"error": "Faltan campos obligatorios"}), 400
+
+    cursor.execute("""
+        INSERT INTO Producto (Nombre, Descripcion, Categoria)
+        VALUES (%s, %s, %s);
+    """, (nombre, descripcion, categoria))
+    db.commit()
+
+    cursor.close()
+    db.close()
+
+
+
+
+@app.route('/productos/<int:id_producto>', methods=['DELETE'])
+def eliminar_producto(id_producto):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("DELETE FROM Producto WHERE id_Producto = %s;", (id_producto,))
+    db.commit()
+
+    cursor.close()
+    db.close()
+
+    return jsonify({"mensaje": "Producto eliminado correctamente"}), 200
+
+
+
+
+
 # Iniciar el servidor Flask
 if __name__ == '__main__':
     app.run(debug=True)

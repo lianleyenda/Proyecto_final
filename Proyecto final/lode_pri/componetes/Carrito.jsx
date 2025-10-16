@@ -1,31 +1,36 @@
-import React, { useState } from 'react';
-import { TiShoppingCart } from 'react-icons/ti';
-import { useCarrito } from '../componetes/carritocontext';
+import React, { useState } from "react";
+import { TiShoppingCart } from "react-icons/ti";
+import { useCarrito } from "../componetes/carritocontext";
 import "../src/Carrito.css";
 
 function SidebarCarrito() {
   const [isOpen, setIsOpen] = useState(false);
-  const { carrito, total, eliminarItem, vaciarCarrito, incrementarItem, decrementarItem, pagarConMercadoPago } = useCarrito();
+  const {
+    carrito,
+    total,
+    eliminarItem,
+    vaciarCarrito,
+    incrementarItem,
+    decrementarItem,
+    pagarConMercadoPago,
+  } = useCarrito();
 
   //actualizar la cantidad en el backend tambien
   const actualizarCantidad = async (id_Stock, tipo) => {
-  const item = carrito.find(item => item.id_Stock === id_Stock);
-  const nuevaCantidad = tipo === 'incrementar' 
-    ? item.cantidad + 1 
-    : item.cantidad - 1;
+    const item = carrito.find((item) => item.id_Stock === id_Stock);
+    const nuevaCantidad =
+      tipo === "incrementar" ? item.cantidad + 1 : item.cantidad - 1;
 
-  // Asegúrate de no permitir que la cantidad sea menor que 1
-  if (nuevaCantidad < 1) return;
+    // Asegúrate de no permitir que la cantidad sea menor que 1
+    if (nuevaCantidad < 1) return;
 
-  // Actualizar en el frontend
-  if (tipo === 'incrementar') {
-    incrementarItem(id_Stock); // Ya lo tenemos en el context
-  } else {
-    decrementarItem(id_Stock); // Aquí llamas a decrementarItem para actualizar en el context
-  }
-
-};
-
+    // Actualizar en el frontend
+    if (tipo === "incrementar") {
+      incrementarItem(id_Stock); // Ya lo tenemos en el context
+    } else {
+      decrementarItem(id_Stock); // Aquí llamas a decrementarItem para actualizar en el context
+    }
+  };
 
   return (
     <div className="tipografia">
@@ -37,7 +42,7 @@ function SidebarCarrito() {
         <div className="overlay" onClick={() => setIsOpen(false)}></div>
       )}
 
-      <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <div className={`sidebar ${isOpen ? "open" : ""}`}>
         <button className="close-btn" onClick={() => setIsOpen(false)}>
           ✖
         </button>
@@ -53,7 +58,9 @@ function SidebarCarrito() {
                   <div className="cantidad-badge">
                     {item.cantidad > 1 ? (
                       <button
-                        onClick={() => actualizarCantidad(item.id_Stock, 'decrementar')}
+                        onClick={() =>
+                          actualizarCantidad(item.id_Stock, "decrementar")
+                        }
                         className="circle-btn"
                       >
                         −
@@ -70,7 +77,9 @@ function SidebarCarrito() {
                     <span className="cantidad">{item.cantidad}</span>
 
                     <button
-                      onClick={() => actualizarCantidad(item.id_Stock, 'incrementar')}
+                      onClick={() =>
+                        actualizarCantidad(item.id_Stock, "incrementar")
+                      }
                       className="circle-btn"
                     >
                       +
@@ -78,14 +87,17 @@ function SidebarCarrito() {
                   </div>
 
                   <span className="precio">
-                    ${item.Costo} x {item.cantidad} = ${item.Costo * item.cantidad}
+                    ${item.Costo} x {item.cantidad} = $
+                    {item.Costo * item.cantidad}
                   </span>
                 </li>
               ))}
             </ul>
-            <h3>Total: ${total}</h3>
-            <button onClick={vaciarCarrito}>Vaciar carrito</button>
-            <button onClick={pagarConMercadoPago}>Pagar</button>
+            <h3 className="pagar-vaciar-btn">Total: ${total}</h3>
+            <div className="pagar-vaciar-btn">
+              <button onClick={vaciarCarrito}>Vaciar carrito</button>
+              <button onClick={pagarConMercadoPago}>Pagar</button>
+            </div>
           </div>
         ) : (
           <p>Carrito vacío 😢</p>

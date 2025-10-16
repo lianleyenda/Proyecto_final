@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useCarrito } from "./carritocontext";
 import "../src/login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { vaciarCarrito } = useCarrito(); // 🔹 Hook del carrito
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🔹 Validación de correo Gmail
     const regexGmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     if (!regexGmail.test(email)) {
       alert("El correo debe ser un Gmail válido (ejemplo: usuario@gmail.com)");
@@ -21,19 +22,18 @@ export default function Login() {
       const res = await fetch("http://localhost:5000/inicio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          Email: email,
-          Password: password,
-        }),
+        body: JSON.stringify({ Email: email, Password: password }),
       });
 
       const data = await res.json();
       if (res.ok) {
         alert(data.mensaje);
-        console.log("Usuario logueado:", data.usuario.Usuario);
-
+        localStorage.setItem("Email", JSON.stringify(email));
         localStorage.setItem("Usuario", JSON.stringify(data.usuario.Usuario));
-        navigate("/inicio");
+
+        vaciarCarrito(); // 🔹 Vaciar el carrito al iniciar sesión
+
+        navigate("/inicio"); // 🔹 Redirige al home
       } else {
         alert(data.mensaje);
       }
@@ -46,8 +46,7 @@ export default function Login() {
     <div className="fondo">
       <div className="contenedor">
         <div className="card">
-        <h1 className="titulo">🍔 Bienvenido</h1>
-
+          <h1 className="titulo">🍔 Bienvenido</h1>
           <form onSubmit={handleSubmit}>
             <input
               className="input"

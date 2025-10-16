@@ -4,18 +4,19 @@ import { Link } from "react-router-dom";
 import { TiShoppingCart } from "react-icons/ti";
 import SidebarCarrito from "./Carrito";
 import { useCarrito } from "./carritocontext";
+import SidebarUsuario from "./SidebarUsuario";
+import { useNavigate } from "react-router-dom";
 
 function Sesion() {
   const [usuario, setUsuario] = useState(null);
   const { agregarCarrito } = useCarrito();
-  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Recuperamos los datos del usuario desde el localStorage
     const usuarioData = localStorage.getItem("Usuario");
     if (usuarioData) {
       setUsuario(JSON.parse(usuarioData)); // Convertimos el JSON a objeto
-      
     } else {
       console.log("No hay usuario en localStorage");
     }
@@ -59,8 +60,6 @@ function Sesion() {
     return () => window.removeEventListener("scroll", elScroll);
   }, []);
 
-
-
   const [menu, setMenu] = useState([]);
 
   useEffect(() => {
@@ -85,21 +84,30 @@ function Sesion() {
       <header className={scrolled ? "scrolled" : ""}>
         <nav className="navbar-navegacion">
           <div className="navbar-left">
-            <a href="/">
+            <a href="/inicio">
               <img src="img/lode_pri.png" alt="Logo LODEPRI" />
             </a>
-            <a href="/">
+            <a href="/inicio">
               <span>LODEPRI</span>
             </a>
           </div>
 
           <div className="navbar-right">
-            <a href="/">Página principal</a>
-            <a href="#">Contacto</a>
-            <a href="/Promociones">Promociones</a>
-            <h2>{usuario}</h2>
+            <a href="/inicio">Página principal</a>
+            <a href="/contacto/sesion">Contacto</a>
+            <a href="/Promociones/sesion">Promociones</a>
+            {usuario && (
+              <SidebarUsuario
+                usuario={usuario}
+                onLogout={() => {
+                  localStorage.removeItem("Usuario");
+                  setUsuario(null);
+                  navigate("/"); // ✅ te redirige correctamente al inicio
+                }}
+              />
+            )}
+
             <SidebarCarrito />
-            
           </div>
         </nav>
       </header>
