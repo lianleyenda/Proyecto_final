@@ -1,6 +1,7 @@
 import "../src/contacto.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 function Contacto() {
   const [nombre, setNombre] = useState("");
@@ -8,6 +9,10 @@ function Contacto() {
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // 🔥 Animación de carga
+  setTimeout(() => setLoading(false), 2000);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -41,15 +46,29 @@ function Contacto() {
     }
   };
 
+  // 🕓 Pantalla de carga divertida
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <DotLottieReact
+          src="../src/assets/burger-loading.lottie"
+          loop
+          autoplay
+        />
+        <p className="loader-text">
+          🍔 Estamos calentando la plancha para leer tu mensaje...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Promo arriba */}
       <div className="contacto-promo">
-        <span>¿Tienes dudas o quieres contactarnos? ¡Escríbenos!</span>
+        <span>¿Tienes dudas o querés contactarnos? ¡Escribinos!</span>
       </div>
-      <div className="contacto-root">
-        {/* promo, navbar, mapa, info, formulario, footer */}
-      </div>
+      <div className="contacto-root"></div>
 
       {/* Navbar */}
       <header className="contacto-navbar">
@@ -73,7 +92,7 @@ function Contacto() {
 
       {/* Mensaje central */}
       <div className="contacto-mensage">
-        <h2>¿Donde nos encontramos?</h2>
+        <h2>📍 ¿Dónde nos encontramos?</h2>
       </div>
 
       {/* Mapa */}
@@ -90,21 +109,13 @@ function Contacto() {
       {/* Texto descriptivo */}
       <div className="contacto-descripcion">
         <p>📍 Nos encontramos en Roca y Escalada.</p>
-        <p>
-          🍔 Nuestra hamburguesa es única, con un sabor que no vas a encontrar
-          en ningún otro lugar.
-        </p>
-        <p>👑 ¡Vení a probarla y descubrí por qué todos vuelven por más!</p>
-        <h3>Envíanos tu consulta</h3>
+        <p>🍔 Nuestra hamburguesa es única, con un sabor que no vas a olvidar.</p>
+        <p>💬 ¡Contanos qué te pareció o mandanos tu consulta!</p>
+        <h3>✍️ Envíanos tu mensaje</h3>
       </div>
 
-      
-     
-
       {/* Formulario */}
-      
       <div className="contacto-formulario">
-        
         <form onSubmit={handleSubmit}>
           <label htmlFor="nombre">Nombre:</label>
           <input
@@ -142,11 +153,12 @@ function Contacto() {
         )}
       </div>
 
-      <footer className="footer-contacto ">
+      <footer className="footer-contacto">
         <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
-        <h2></h2>
-        <p>Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de Contacto: +54 9 11 61138645</p>
-        <p>Síguenos en nuestras redes sociales para enterarte de nuestras ofertas y novedades.</p>
+        <p>
+          Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono: +54 9 11 61138645
+        </p>
+        <p>📱 Seguinos para más sabor y locuras hamburgueseras.</p>
       </footer>
     </>
   );

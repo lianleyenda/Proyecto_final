@@ -6,18 +6,22 @@ export default function Registro() {
   const [usuario, setUsuario] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
 
+  const mostrarMensaje = (texto) => {
+    setMensaje(texto);
+    setTimeout(() => setMensaje(""), 3000);
+  };
+
   const handleRegistro = async () => {
-    // 🔹 Validación de correo Gmail
     const regexGmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     if (!regexGmail.test(email)) {
-      alert("El correo debe ser un Gmail válido (ejemplo: usuario@gmail.com)");
+      mostrarMensaje("⚠️ El correo debe ser un Gmail válido (ejemplo: usuario@gmail.com)");
       return;
     }
 
     try {
-      console.log()
       const res = await fetch("http://127.0.0.1:5000/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,20 +32,25 @@ export default function Registro() {
         }),
       });
 
-      console.log(res)
       const data = await res.json();
-      alert(data.mensaje);
+      mostrarMensaje(
+        res.ok
+          ? "🎉 ¡Registro completado! Bienvenido a la familia burger 🍔"
+          : `❌ ${data.mensaje}`
+      );
 
       if (res.ok) {
-        navigate("/Login");
+        setTimeout(() => navigate("/Login"), 2500);
       }
     } catch (error) {
       console.error("Error en el registro:", error);
+      mostrarMensaje("❌ Error al registrar. Inténtalo de nuevo.");
     }
   };
 
   return (
     <div className="fondo">
+      {mensaje && <div className="mensaje-alerta">{mensaje}</div>}
       <div className="contenedor">
         <div className="card">
           <h1 className="titulo">🍔 Registro de usuario</h1>
