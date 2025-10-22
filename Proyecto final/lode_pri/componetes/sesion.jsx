@@ -1,73 +1,66 @@
 import { useEffect, useState } from "react";
 import "../src/App.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TiShoppingCart } from "react-icons/ti";
 import SidebarCarrito from "./Carrito";
 import { useCarrito } from "./carritocontext";
 import SidebarUsuario from "./SidebarUsuario";
-import { useNavigate } from "react-router-dom";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react"; // 🔹 Animaciones Lottie
 
 function Sesion() {
   const [usuario, setUsuario] = useState(null);
   const { agregarCarrito } = useCarrito();
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(true); // 🔹 Estado de carga
+  const [scrolled, setScrolled] = useState(false);
+  const [heroHeight, setHeroHeight] = useState(615);
+  const [menu, setMenu] = useState([]);
+  const [mostrarAnimacion, setMostrarAnimacion] = useState(false); // 🔹 Animación al agregar carrito
+
+  // 🔹 Recuperar usuario
   useEffect(() => {
-    // Recuperamos los datos del usuario desde el localStorage
     const usuarioData = localStorage.getItem("Usuario");
     if (usuarioData) {
-      setUsuario(JSON.parse(usuarioData)); // Convertimos el JSON a objeto
-    } else {
-      console.log("No hay usuario en localStorage");
+      setUsuario(JSON.parse(usuarioData));
     }
-  }, []); // Solo se ejecuta una vez cuando el componente se monta
-
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // hacemos la funcion que este fija
-      if (window.scrollY > 50) {
-        // window es la venta que vemos en cada vista le decimos que cunado se scrolee 50 px de true
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll); // le decimos caundo pasas la funciom
-    return () => window.removeEventListener("scroll", handleScroll); //es para qu ele componente no quede siempre activo
   }, []);
 
-  const [heroHeight, setHeroHeight] = useState(615); // altura inicial
-
-  useEffect(() => {
-    const elScroll = () => {
-      const scrolledAmount = window.scrollY;
-
-      if (scrolledAmount > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-
-      // Reduce la altura de la imagen del héroe al hacer scroll
-      const newHeight = Math.max(400, 615 - scrolledAmount); // no deja que quede menor a 400px
-      setHeroHeight(newHeight);
-    };
-
-    window.addEventListener("scroll", elScroll);
-    return () => window.removeEventListener("scroll", elScroll);
-  }, []);
-
-  const [menu, setMenu] = useState([]);
-
+  // 🔹 Simula carga de datos con animación
   useEffect(() => {
     fetch("http://127.0.0.1:5000/menu")
       .then((res) => res.json())
       .then((data) => setMenu(data))
       .catch((err) => console.error(err));
+
+    const timer = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(timer);
   }, []);
+
+  // 🔹 Scroll para header y héroe
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolledAmount = window.scrollY;
+      setScrolled(scrolledAmount > 50);
+      setHeroHeight(Math.max(400, 615 - scrolledAmount));
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // 🔥 Animación de carga
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <DotLottieReact
+          src="../src/assets/burger-loading.lottie"
+          loop
+          autoplay
+        />
+        <p className="loader-text">🍔✨ Preparando el menú más sabroso para vos...</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -96,13 +89,14 @@ function Sesion() {
             <a href="/inicio">Página principal</a>
             <a href="/contacto/sesion">Contacto</a>
             <a href="/Promociones/sesion">Promociones</a>
+
             {usuario && (
               <SidebarUsuario
                 usuario={usuario}
                 onLogout={() => {
                   localStorage.removeItem("Usuario");
                   setUsuario(null);
-                  navigate("/"); // ✅ te redirige correctamente al inicio
+                  navigate("/");
                 }}
               />
             )}
@@ -112,6 +106,7 @@ function Sesion() {
         </nav>
       </header>
 
+      {/* 🔹 Imagen de inicio (NO TOCAR) */}
       <div className="hero-imagen" style={{ height: `${heroHeight}px` }}>
         <img src="img/imagen_incio.png" alt="Inicio" />
       </div>
@@ -125,17 +120,40 @@ function Sesion() {
       <div className="producto">
         <ul>
           {menu.map((item) => (
-            <ol key={item.id_Stock}>
+            <ol key={item.id_Stock} style={{ position: "relative" }}>
               <img src={`img/${item.Imagen}`} alt={item.Producto} />
               <h3>{item.Producto}</h3>
               <p>Precio: ${item.Costo}</p>
-              <button onClick={() => agregarCarrito(item.id_Stock)}>
+              <button
+                onClick={() => {
+                  agregarCarrito(item.id_Stock);
+                  setMostrarAnimacion(true);
+                  setTimeout(() => setMostrarAnimacion(false), 1000);
+                }}
+              >
                 Añadir al carrito
               </button>
+
+              {/* 🔹 Animación de carrito */}
+              {mostrarAnimacion && (
+                <DotLottieReact
+                  src="../src/assets/carrito-lottie.lottie"
+                  loop={false}
+                  autoplay
+                  style={{
+                    width: 50,
+                    height: 50,
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                  }}
+                />
+              )}
             </ol>
           ))}
         </ul>
       </div>
+
       <div className="presentacion">
         <img src="img/mano_de_hamburguesa.png" alt="Mano con hamburguesa" />
 
@@ -165,14 +183,13 @@ function Sesion() {
           </p>
         </div>
       </div>
+
       <footer className="derechos">
         <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
-        <h2></h2>
         <p>
           Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de
           Contacto: +54 9 11 61138645
         </p>
-
         <p>
           Síguenos en nuestras redes sociales para enterarte de nuestras ofertas
           y novedades.

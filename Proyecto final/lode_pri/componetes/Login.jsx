@@ -6,7 +6,7 @@ import "../src/login.css";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { vaciarCarrito } = useCarrito(); // 🔹 Hook del carrito
+  const { vaciarCarrito } = useCarrito();
   const [mensaje, setMensaje] = useState("");
 
   const navigate = useNavigate();
@@ -35,15 +35,20 @@ export default function Login() {
       });
 
       const data = await res.json();
+
       if (res.ok) {
-        alert(data.mensaje);
+        // Vaciar carrito y guardar usuario
+        vaciarCarrito();
         localStorage.setItem("Email", JSON.stringify(email));
         localStorage.setItem("Usuario", JSON.stringify(data.usuario.Usuario));
-        vaciarCarrito(); // 🔹 Vaciar el carrito al iniciar sesión
-        navigate("/inicio"); // 🔹 Redirige al home
+
+        // Mostrar mensaje de bienvenida
         mostrarMensaje("😎 ¡Bienvenido de nuevo, crack del buen comer! 🍟");
-        localStorage.setItem("Usuario", JSON.stringify(data.usuario.Usuario));
-        setTimeout(() => navigate("/inicio"), 2500);
+
+        // Redirigir después de 2.5 segundos
+        setTimeout(() => {
+          navigate("/inicio");
+        }, 2500);
       } else {
         mostrarMensaje(`❌ ${data.mensaje}`);
       }

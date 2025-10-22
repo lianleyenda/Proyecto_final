@@ -53,7 +53,17 @@ def listar_productos():
 #lian
 @app.route('/stock/agregar', methods=['POST'])
 def agregar():
-    data = request.get_json()#Le envia el request en formato json
+    """
+    Endpoint para agregar un nuevo registro de Stock.
+    Recibe los datos en formato JSON con dos campos:
+      - Producto: nombre del producto
+      - Cantidad: cantidad de unidades del producto
+    """
+    
+    # 📥 Obtener los datos enviados por el cliente en formato JSON
+    data = request.get_json()  # Ej: {"Producto": "Hamburguesa", "Cantidad": 10}
+    
+    # 🔹 Crear conexión a la base de datos usando la función get_db()
     db = get_db()
     cursor = db.cursor()# el cursor es para ejecutar mejor las sentencias de sql 
     cursor.execute(   'INSERT INTO Stock (Producto, Cantidad) VALUES (%s, %s)',
@@ -66,8 +76,10 @@ def agregar():
 @app.route('/stock/<int:stock_id>', methods=['DELETE'])
 def eliminar_stock(stock_id):
     db = get_db()
-    cursor = db.execute('DELETE FROM Stock WHERE id_Stock = %s', (stock_id,))
-    db.commit()  # Guardar cambios en la base de datos
+    cursor = db.cursor()  # ← creás el cursor
+    cursor.execute('DELETE FROM Stock WHERE id_Stock = %s', (stock_id,))
+    db.commit()
+
 
     if cursor.rowcount == 0:
         return {'mensaje': 'No se encontró el registro'}, 404

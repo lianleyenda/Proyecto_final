@@ -1,10 +1,10 @@
 import "../src/contacto.css";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import SidebarUsuario from "./SidebarUsuario"; // 🔹 Importa tu sidebar
+import { Link, useNavigate } from "react-router-dom";
+import SidebarUsuario from "./SidebarUsuario";
 import { useCarrito } from "./carritocontext";
-import { useNavigate } from "react-router-dom";
 import SidebarCarrito from "./Carrito";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react"; // 🔹 Animación Lottie
 
 function ContactoSesion() {
   const [nombre, setNombre] = useState("");
@@ -12,16 +12,22 @@ function ContactoSesion() {
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [usuario, setUsuario] = useState(null); // 🔹 Estado del usuario
-  const { carrito } = useCarrito(); // si querés usar carrito en el sidebar
+  const [usuario, setUsuario] = useState(null);
+  const { carrito } = useCarrito();
   const navigate = useNavigate();
 
-  // 🔹 Recuperar usuario del localStorage al cargar
+  // 🔹 Nuevo estado para la animación de carga
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const usuarioData = localStorage.getItem("Usuario");
     if (usuarioData) {
       setUsuario(JSON.parse(usuarioData));
     }
+
+    // ⏳ Simula una carga con animación
+    const timer = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSubmit = async (event) => {
@@ -54,6 +60,22 @@ function ContactoSesion() {
     }
   };
 
+  // 🔥 Si está cargando, mostrar animación
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <DotLottieReact
+          src="../src/assets/burger-loading.lottie"
+          loop
+          autoplay
+        />
+        <p className="loader-text">
+          🍟💬 Preparando el formulario para tu mensaje sabroso...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Navbar */}
@@ -75,7 +97,6 @@ function ContactoSesion() {
             <Link to="/Contacto/sesion">Contacto</Link>
             <Link to="/Promociones/sesion">Promociones</Link>
 
-            {/* Sidebar de usuario */}
             {usuario && (
               <SidebarUsuario
                 usuario={usuario}
