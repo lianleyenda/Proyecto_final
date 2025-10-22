@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import "../src/Promociones.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import SidebarCarrito from "./Carrito";
-import SidebarUsuario from "./SidebarUsuario"; // 🔹 Importa tu sidebar
-import { useNavigate } from "react-router-dom";
+import SidebarUsuario from "./SidebarUsuario";
 
 export default function PromocionesSesion() {
   const [promos, setPromos] = useState([]);
@@ -12,9 +11,11 @@ export default function PromocionesSesion() {
   const [scrolled, setScrolled] = useState(false);
   const [heroHeight, setHeroHeight] = useState(615);
   const [loading, setLoading] = useState(true);
-  const [usuario, setUsuario] = useState(null); // 🔹 Estado del usuario
+  const [usuario, setUsuario] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1); // 👈 paginado
   const navigate = useNavigate();
 
+  // 🔹 Carga de datos
   useEffect(() => {
     Promise.all([
       fetch("http://127.0.0.1:5000/Promociones").then((res) => res.json()),
@@ -25,34 +26,29 @@ export default function PromocionesSesion() {
       .then(([promosData, vendidosData]) => {
         setPromos(promosData);
         setProductosMasVendidos(vendidosData);
-
-        // ⏳ Esperar 2 segundos antes de quitar la animación
         setTimeout(() => setLoading(false), 2000);
       })
       .catch((err) => console.error(err));
   }, []);
 
+  // 🔹 Scroll y altura del hero
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-      const scrolledAmount = window.scrollY;
-      setHeroHeight(Math.max(400, 615 - scrolledAmount));
+      setHeroHeight(Math.max(400, 615 - window.scrollY));
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 🔹 Recuperar usuario del localStorage al cargar
+  // 🔹 Usuario desde localStorage
   useEffect(() => {
     const usuarioData = localStorage.getItem("Usuario");
-    if (usuarioData) {
-      setUsuario(JSON.parse(usuarioData));
-    }
+    if (usuarioData) setUsuario(JSON.parse(usuarioData));
   }, []);
 
-  // 🔥 Mostrar animación de carga
-  if (loading) {
+  // 🔥 Animación de carga
+if (loading) {
     return (
       <div className="loader-container">
         <DotLottieReact
@@ -60,12 +56,19 @@ export default function PromocionesSesion() {
           loop
           autoplay
         />
-        <p className="loader-text">
-          🍔💥 ¡Preparando ofertas irresistibles para VOS!
-        </p>
+        <p className="loader-text">🍔💥 ¡Preparando ofertas irresistibles para VOS!</p>
       </div>
     );
   }
+
+  // 🔹 Paginado simple
+  const totalPages = 2;
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
   return (
     <>
@@ -94,65 +97,85 @@ export default function PromocionesSesion() {
                 onLogout={() => {
                   localStorage.removeItem("Usuario");
                   setUsuario(null);
-                  navigate("/"); // ✅ te redirige correctamente al inicio
+                  navigate("/");
                 }}
               />
             )}
-
             <SidebarCarrito />
           </div>
         </nav>
       </header>
 
-      <div
-        className="promociones-hero-imagen"
-        style={{ height: `${heroHeight}px` }}
-      >
+      {/* 🔹 Imagen de inicio intacta */}
+      <div className="promociones-hero-imagen" style={{ height: `${heroHeight}px` }}>
         <img src="/img/imagen_incio.png" alt="Inicio" />
       </div>
 
       <div className="promociones-mensage">
-        <h2>¡Explora nuestras promociones exclusivas!</h2>
+        {currentPage === 1 ? (
+          <h2>¡Explora nuestras promociones exclusivas!</h2>
+        ) : (
+          <h2>🔥 Nuestros productos más vendidos 🔥</h2>
+        )}
       </div>
 
-      <div className="promociones-producto">
-        <ul>
-          {promos.map((item) => (
-            <ol key={item.id}>
-              <img src={`/img/${item.imagen_nombre}`} alt={item.nombre} />
-              <h3>{item.nombre}</h3>
-              <p>{item.descripcion}</p>
-              <p>Precio: ${item.precio}</p>
-              <button>Añadir al carrito</button>
-            </ol>
-          ))}
-        </ul>
-      </div>
+      {/* 📦 Página 1 → Promociones */}
+      {currentPage === 1 && (
+        <div className="promociones-producto">
+          <ul>
+            {promos.map((item) => (
+              <ol key={item.id}>
+                <img src={`/img/${item.imagen_nombre}`} alt={item.nombre} />
+                <h3>{item.nombre}</h3>
+                <p>{item.descripcion}</p>
+                <p>Precio: ${item.precio}</p>
+                <button>Añadir al carrito</button>
+              </ol>
+            ))}
+          </ul>
+        </div>
+      )}
 
-      <div className="promociones-producto">
-        <h2>Productos Más Vendidos</h2>
-        <ul>
-          {productosMasVendidos.map((item) => (
-            <ol key={item.Producto}>
-              <img
-                src={`img/${item.imagen}`}
-                alt={item.Producto}
-                style={{ width: "100%", height: "auto", borderRadius: "10px" }}
-              />
-              <h3>{item.Producto}</h3>
-              <p>Total Vendido: {item.total_vendido}</p>
-              <p>Precio: ${item.Costo}</p>
-              <button>Añadir al carrito</button>
-            </ol>
-          ))}
-        </ul>
+      {/* 📈 Página 2 → Más vendidos */}
+      {currentPage === 2 && (
+        <div className="promociones-producto">
+          <ul>
+            {productosMasVendidos.map((item) => (
+              <ol key={item.Producto}>
+                <img
+                  src={`/img/${item.imagen}`}
+                  alt={item.Producto}
+                  style={{ width: "100%", height: "auto", borderRadius: "10px" }}
+                />
+                <h3>{item.Producto}</h3>
+                <p>Total Vendido: {item.total_vendido}</p>
+                <p>Precio: ${item.Costo}</p>
+                <button>Añadir al carrito</button>
+              </ol>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* 📄 Paginado */}
+      <div className="paginado-simple">
+        {currentPage === 2 && (
+          <button onClick={prevPage} className="volver-btn">
+            ← Volver
+          </button>
+        )}
+        <span className="numero-pagina">{currentPage}</span>
+        {currentPage === 1 && (
+          <button onClick={nextPage} className="mas-vendidos-btn">
+            🔥 Ver los productos más vendidos
+          </button>
+        )}
       </div>
 
       <footer className="footer-promociones">
         <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
         <p>
-          Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono: +54 9 11
-          61138645
+          Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono: +54 9 11 61138645
         </p>
         <p>Seguinos en redes para más novedades.</p>
       </footer>

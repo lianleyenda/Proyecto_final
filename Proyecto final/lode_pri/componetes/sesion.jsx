@@ -5,53 +5,50 @@ import { TiShoppingCart } from "react-icons/ti";
 import SidebarCarrito from "./Carrito";
 import { useCarrito } from "./carritocontext";
 import SidebarUsuario from "./SidebarUsuario";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react"; // 🔹 Animación Lottie
+import { DotLottieReact } from "@lottiefiles/dotlottie-react"; // 🔹 Animaciones Lottie
 
 function Sesion() {
   const [usuario, setUsuario] = useState(null);
   const { agregarCarrito } = useCarrito();
   const navigate = useNavigate();
 
-  // 🔹 Estado de carga con animación
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // 🔹 Estado de carga
+  const [scrolled, setScrolled] = useState(false);
+  const [heroHeight, setHeroHeight] = useState(615);
+  const [menu, setMenu] = useState([]);
+  const [mostrarAnimacion, setMostrarAnimacion] = useState(false); // 🔹 Animación al agregar carrito
 
+  // 🔹 Recuperar usuario
   useEffect(() => {
     const usuarioData = localStorage.getItem("Usuario");
     if (usuarioData) {
       setUsuario(JSON.parse(usuarioData));
-    } else {
-      console.log("No hay usuario en localStorage");
     }
+  }, []);
 
-    // ⏳ Simula la carga por 2 segundos
+  // 🔹 Simula carga de datos con animación
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/menu")
+      .then((res) => res.json())
+      .then((data) => setMenu(data))
+      .catch((err) => console.error(err));
+
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  const [scrolled, setScrolled] = useState(false);
-  const [heroHeight, setHeroHeight] = useState(615);
-
+  // 🔹 Scroll para header y héroe
   useEffect(() => {
     const handleScroll = () => {
       const scrolledAmount = window.scrollY;
       setScrolled(scrolledAmount > 50);
       setHeroHeight(Math.max(400, 615 - scrolledAmount));
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const [menu, setMenu] = useState([]);
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:5000/menu")
-      .then((res) => res.json())
-      .then((data) => setMenu(data))
-      .catch((err) => console.error(err));
-  }, []);
-
-  // 🔥 Si está cargando, mostrar animación
+  // 🔥 Animación de carga
   if (loading) {
     return (
       <div className="loader-container">
@@ -60,9 +57,7 @@ function Sesion() {
           loop
           autoplay
         />
-        <p className="loader-text">
-          🍔✨ Preparando el menú más sabroso para vos...
-        </p>
+        <p className="loader-text">🍔✨ Preparando el menú más sabroso para vos...</p>
       </div>
     );
   }
@@ -111,6 +106,7 @@ function Sesion() {
         </nav>
       </header>
 
+      {/* 🔹 Imagen de inicio (NO TOCAR) */}
       <div className="hero-imagen" style={{ height: `${heroHeight}px` }}>
         <img src="img/imagen_incio.png" alt="Inicio" />
       </div>
@@ -124,13 +120,35 @@ function Sesion() {
       <div className="producto">
         <ul>
           {menu.map((item) => (
-            <ol key={item.id_Stock}>
+            <ol key={item.id_Stock} style={{ position: "relative" }}>
               <img src={`img/${item.Imagen}`} alt={item.Producto} />
               <h3>{item.Producto}</h3>
               <p>Precio: ${item.Costo}</p>
-              <button onClick={() => agregarCarrito(item.id_Stock)}>
+              <button
+                onClick={() => {
+                  agregarCarrito(item.id_Stock);
+                  setMostrarAnimacion(true);
+                  setTimeout(() => setMostrarAnimacion(false), 1000);
+                }}
+              >
                 Añadir al carrito
               </button>
+
+              {/* 🔹 Animación de carrito */}
+              {mostrarAnimacion && (
+                <DotLottieReact
+                  src="../src/assets/carrito-lottie.lottie"
+                  loop={false}
+                  autoplay
+                  style={{
+                    width: 50,
+                    height: 50,
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                  }}
+                />
+              )}
             </ol>
           ))}
         </ul>
