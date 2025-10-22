@@ -1,63 +1,45 @@
 import { useEffect, useState } from "react";
 import "../src/App.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TiShoppingCart } from "react-icons/ti";
 import SidebarCarrito from "./Carrito";
 import { useCarrito } from "./carritocontext";
 import SidebarUsuario from "./SidebarUsuario";
-import { useNavigate } from "react-router-dom";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react"; // 🔹 Animación Lottie
 
 function Sesion() {
   const [usuario, setUsuario] = useState(null);
   const { agregarCarrito } = useCarrito();
   const navigate = useNavigate();
 
+  // 🔹 Estado de carga con animación
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    // Recuperamos los datos del usuario desde el localStorage
     const usuarioData = localStorage.getItem("Usuario");
     if (usuarioData) {
-      setUsuario(JSON.parse(usuarioData)); // Convertimos el JSON a objeto
+      setUsuario(JSON.parse(usuarioData));
     } else {
       console.log("No hay usuario en localStorage");
     }
-  }, []); // Solo se ejecuta una vez cuando el componente se monta
+
+    // ⏳ Simula la carga por 2 segundos
+    const timer = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const [scrolled, setScrolled] = useState(false);
+  const [heroHeight, setHeroHeight] = useState(615);
 
   useEffect(() => {
     const handleScroll = () => {
-      // hacemos la funcion que este fija
-      if (window.scrollY > 50) {
-        // window es la venta que vemos en cada vista le decimos que cunado se scrolee 50 px de true
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll); // le decimos caundo pasas la funciom
-    return () => window.removeEventListener("scroll", handleScroll); //es para qu ele componente no quede siempre activo
-  }, []);
-
-  const [heroHeight, setHeroHeight] = useState(615); // altura inicial
-
-  useEffect(() => {
-    const elScroll = () => {
       const scrolledAmount = window.scrollY;
-
-      if (scrolledAmount > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-
-      // Reduce la altura de la imagen del héroe al hacer scroll
-      const newHeight = Math.max(400, 615 - scrolledAmount); // no deja que quede menor a 400px
-      setHeroHeight(newHeight);
+      setScrolled(scrolledAmount > 50);
+      setHeroHeight(Math.max(400, 615 - scrolledAmount));
     };
 
-    window.addEventListener("scroll", elScroll);
-    return () => window.removeEventListener("scroll", elScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const [menu, setMenu] = useState([]);
@@ -68,6 +50,22 @@ function Sesion() {
       .then((data) => setMenu(data))
       .catch((err) => console.error(err));
   }, []);
+
+  // 🔥 Si está cargando, mostrar animación
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <DotLottieReact
+          src="../src/assets/burger-loading.lottie"
+          loop
+          autoplay
+        />
+        <p className="loader-text">
+          🍔✨ Preparando el menú más sabroso para vos...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -96,13 +94,14 @@ function Sesion() {
             <a href="/inicio">Página principal</a>
             <a href="/contacto/sesion">Contacto</a>
             <a href="/Promociones/sesion">Promociones</a>
+
             {usuario && (
               <SidebarUsuario
                 usuario={usuario}
                 onLogout={() => {
                   localStorage.removeItem("Usuario");
                   setUsuario(null);
-                  navigate("/"); // ✅ te redirige correctamente al inicio
+                  navigate("/");
                 }}
               />
             )}
@@ -136,6 +135,7 @@ function Sesion() {
           ))}
         </ul>
       </div>
+
       <div className="presentacion">
         <img src="img/mano_de_hamburguesa.png" alt="Mano con hamburguesa" />
 
@@ -165,14 +165,13 @@ function Sesion() {
           </p>
         </div>
       </div>
+
       <footer className="derechos">
         <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
-        <h2></h2>
         <p>
           Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de
           Contacto: +54 9 11 61138645
         </p>
-
         <p>
           Síguenos en nuestras redes sociales para enterarte de nuestras ofertas
           y novedades.
