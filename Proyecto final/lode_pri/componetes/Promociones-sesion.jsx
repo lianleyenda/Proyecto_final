@@ -52,7 +52,20 @@ export default function PromocionesSesion() {
   }, []);
 
   // 🔥 Mostrar animación de carga
-
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <DotLottieReact
+          src="../src/assets/burger-loading.lottie"
+          loop
+          autoplay
+        />
+        <p className="loader-text">
+          🍔💥 ¡Preparando ofertas irresistibles para VOS!
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
