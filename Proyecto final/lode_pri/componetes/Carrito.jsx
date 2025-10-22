@@ -12,7 +12,7 @@ function SidebarCarrito() {
     vaciarCarrito,
     incrementarItem,
     decrementarItem,
-    pagarConMercadoPago,
+    
   } = useCarrito();
 
   //actualizar la cantidad en el backend tambien
@@ -30,6 +30,11 @@ function SidebarCarrito() {
     } else {
       decrementarItem(id_Stock); // Aquí llamas a decrementarItem para actualizar en el context
     }
+  };
+
+   // Redirigir a la página de pago
+  const handlePagar = () => {
+    window.location.href = "/pago"; // Usamos window.location.href para redirigir
   };
 
   return (
@@ -96,7 +101,7 @@ function SidebarCarrito() {
             <h3 className="pagar-vaciar-btn">Total: ${total}</h3>
             <div className="pagar-vaciar-btn">
               <button onClick={vaciarCarrito}>Vaciar carrito</button>
-              <button onClick={pagarConMercadoPago}>Pagar</button>
+              <button onClick={handlePagar} >Pagar</button>
             </div>
           </div>
         ) : (

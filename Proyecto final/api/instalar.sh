@@ -18,7 +18,6 @@ pip install mysql-connector-python
 pip install python-dotenv
 pip install flask-cors
 pip install werkzeug
-pip install mercadopago
 pip install pytest pytest-flask
 
 

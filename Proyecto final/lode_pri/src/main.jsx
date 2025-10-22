@@ -16,6 +16,7 @@ import { CarritoProvider } from "../componetes/carritocontext.jsx"; // 🔹 Impo
 import PagoExitoso from "../componetes/pago_exitosos.jsx";
 import ContactoSesion from "../componetes/contacto-sesion.jsx";
 import PromocionesSesion from "../componetes/Promociones-sesion.jsx";
+import Pago from "../componetes/pago.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -34,6 +35,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/pago/exitoso" element={<PagoExitoso />} />
           <Route path="contacto/sesion" element={<ContactoSesion />} />
           <Route path="promociones/sesion" element={<PromocionesSesion />} />
+          <Route path="/pago"  element={<Pago/>}/>
           {/* 👇 Cualquier ruta no encontrada muestra el error 404 */}
           <Route path="*" element={<Error404 />} />
         </Routes>
