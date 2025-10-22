@@ -38,7 +38,7 @@ def get_db():
 
 
 
-
+#lian
 @app.route('/menu', methods=['GET'])
 def listar_productos():
     db = get_db()
@@ -50,7 +50,7 @@ def listar_productos():
     return jsonify(resultado)  # 🔹 Solo la lista
 
 
-
+#lian
 @app.route('/stock/agregar', methods=['POST'])
 def agregar():
     data = request.get_json()#Le envia el request en formato json
@@ -60,9 +60,9 @@ def agregar():
         (data['Producto'], data['Cantidad']))
     
     db.commit()#para guardar los cambios
-    return "funciono"
+    return jsonify({"mensaje": "Producto agregado exitosamente"})
 
-
+#valen
 @app.route('/stock/<int:stock_id>', methods=['DELETE'])
 def eliminar_stock(stock_id):
     db = get_db()
@@ -81,7 +81,7 @@ def eliminar_stock(stock_id):
 
 
 
-
+#valen
 @app.route('/stock/<int:stock_id>', methods=['PUT']) 
 def modificar_stock(stock_id):
     data = request.get_json()  # Recibe datos en formato JSON
@@ -106,7 +106,7 @@ def modificar_stock(stock_id):
 
 
 
-
+#valen
 @app.route('/registro', methods=['POST'])
 def registrar_usuario():
     # 1. Validación de la solicitud (sin cambios)
@@ -170,7 +170,7 @@ def registrar_usuario():
             # Asume que get_db() crea una conexión que debe ser cerrada.
             db.close()
 
-
+#valen
 @app.route('/inicio', methods=['POST'])
 def inicio():
     data = request.get_json()
@@ -200,7 +200,7 @@ def inicio():
 
 
 
-
+#lian
 @app.route('/inicio/cambiar/<int:id_Usuarios>', methods=['PUT'])
 def modificar(id_Usuarios):
     data = request.get_json()
@@ -255,7 +255,7 @@ def modificar(id_Usuarios):
 
 
 
-
+ #lian
 @app.route('/inicio/borrar/<int:id_usuarios>', methods=['DELETE'])
 def borrar_cuenta(id_usuarios):
     db = get_db()
@@ -282,6 +282,7 @@ app.secret_key = "clave_secreta_super_segura"
 
 # Middleware que se ejecuta antes de cada request.
 # Su función es asegurarse de que la sesión SIEMPRE tenga un carrito.
+#lian
 @app.before_request
 def iniciar_carrito():
     # Si el carrito no existe en la sesión, lo creamos como una lista vacía.
@@ -294,6 +295,7 @@ def iniciar_carrito():
 # -----------------------------
 # 📌 Ver carrito
 # -----------------------------
+#lian
 @app.route("/carrito", methods=["GET"])
 def ver_carrito():
     carrito = session.get("carrito", [])
@@ -304,6 +306,7 @@ def ver_carrito():
 # -----------------------------
 # 📌 Agregar producto al carrito
 # -----------------------------
+#lian
 @app.route("/carrito/agregar/<int:id_Stock>", methods=["POST"])
 def agregar_carrito(id_Stock):
     db = get_db()
@@ -336,6 +339,7 @@ def agregar_carrito(id_Stock):
 # -----------------------------
 # 📌 Eliminar producto del carrito
 # -----------------------------
+#lian
 @app.route("/carrito/eliminar/<int:id_Stock>", methods=["POST"])
 def eliminar_carrito(id_Stock):
     carrito = session.get("carrito", [])
@@ -347,6 +351,7 @@ def eliminar_carrito(id_Stock):
 # -----------------------------
 # 📌 Vaciar carrito
 # -----------------------------
+#lian
 @app.route("/carrito/vaciar", methods=["POST"])
 def vaciar_carrito():
     session["carrito"] = []
@@ -359,6 +364,7 @@ def vaciar_carrito():
 # --------------------------
 # GET: Listar todas las promociones
 # --------------------------
+#valen
 @app.route('/Promociones', methods=['GET'])
 def obtener_promociones():
     db = get_db()
@@ -374,6 +380,7 @@ def obtener_promociones():
 # --------------------------
 # GET: Obtener una promoción por ID
 # --------------------------
+#valen
 @app.route('/Promociones/<int:id>', methods=['GET'])
 def obtener_promocion(id):
     db = get_db()
@@ -391,6 +398,7 @@ def obtener_promocion(id):
 # --------------------------
 # POST: Agregar una nueva promoción
 # --------------------------
+#valen
 @app.route('/Promociones', methods=['POST'])
 def agregar_promocion():
     datos = request.get_json()
@@ -407,6 +415,7 @@ def agregar_promocion():
 # --------------------------
 # PUT: Actualizar una promoción existente
 # --------------------------
+#valen
 @app.route('/Promociones/<int:id>', methods=['PUT'])
 
 def actualizar_promocion(id):
@@ -424,7 +433,7 @@ def actualizar_promocion(id):
 # --------------------------
 # DELETE: Eliminar una promoción
 # --------------------------
-
+#valen
 @app.route('/Promociones/<int:id>', methods=['DELETE'])
 def eliminar_promocion(id):
  db = get_db()
@@ -440,7 +449,7 @@ def eliminar_promocion(id):
 
 
 
-
+#valen
 @app.route('/contacto', methods=['POST'])
 def guardar_contacto():
     data = request.get_json()
@@ -465,7 +474,7 @@ def guardar_contacto():
     
     return {'mensaje': 'Mensaje de contacto guardado exitosamente'}, 201
 
-
+#lian
 @app.route('/carrito/total', methods=['GET'])
 def total_carrito():
     # Verificamos que haya usuario logueado
@@ -486,7 +495,7 @@ def total_carrito():
 
 # Agrega credenciales
 sdk = mercadopago.SDK("APP_USR-5763249349845009-100909-bc1e9b0beeb732567e21720be994d136-2915372170")
-
+#lian
 @app.route("/crear_preferencia", methods=["POST"])
 def crear_preferencia():
     try:
@@ -528,7 +537,8 @@ def crear_preferencia():
         return jsonify({"error": str(e)}), 500
 
 
-# Endpoint para obtener los productos más vendidos
+# Endpoint para obtener los productos más 
+#valen
 @app.route('/productos-mas-vendidos', methods=['GET'])
 def productos_mas_vendidos():
     # Conexión a la base de datos
@@ -556,7 +566,7 @@ def productos_mas_vendidos():
     return jsonify(resultados)
 
 
-
+#lian
 @app.route('/productos/promedio-precios', methods=['GET'])
 def promedio_precios():
     db = get_db()
@@ -569,7 +579,7 @@ def promedio_precios():
     promedio = resultado['promedio_precio'] if resultado['promedio_precio'] else 0
     return jsonify({'promedio_precio_productos': promedio}), 200
 
-
+#lian
 @app.route('/productos/mas-caro', methods=['GET'])
 def producto_mas_caro():
     db = get_db()
@@ -585,7 +595,7 @@ def producto_mas_caro():
 
 
 
-
+#lian
 @app.route('/ventas/ganancia-mensual', methods=['GET'])
 def ganancia_mensual():
     db = get_db()
@@ -609,7 +619,7 @@ def ganancia_mensual():
 
 
 
-
+#valen
 @app.route('/usuarios/top-compradores', methods=['GET'])
 def top_compradores():
     db = get_db()
@@ -631,7 +641,7 @@ def top_compradores():
     return jsonify(resultado), 200
 
 
-
+#lian
 @app.route('/productos/agregar', methods=['POST'])
 def agregar_producto():
     db = get_db()
