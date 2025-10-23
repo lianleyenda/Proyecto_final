@@ -1,5 +1,4 @@
 import mysql.connector
-import mercadopago
 from flask import Flask, g, request, jsonify, session, redirect, url_for, render_template
 from dotenv import load_dotenv
 from flask_cors import CORS
@@ -505,8 +504,7 @@ def total_carrito():
 
     return jsonify({"total": total, "items": carrito}), 200
 
-# Agrega credenciales
-sdk = mercadopago.SDK("APP_USR-5763249349845009-100909-bc1e9b0beeb732567e21720be994d136-2915372170")
+
 #lian
 @app.route("/crear_preferencia", methods=["POST"])
 def crear_preferencia():
@@ -693,6 +691,107 @@ def eliminar_producto(id_producto):
     return jsonify({"mensaje": "Producto eliminado correctamente"}), 200
 
 
+
+
+@app.route("/carrito/agregarPromo/<int:id>", methods=["POST"])
+def agregar_promo_carrito(id):
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute(
+        "SELECT id, nombre AS Producto, precio AS Costo FROM Promociones WHERE id = %s",
+        (id,),
+    )
+    promo = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if not promo:
+        return jsonify({"mensaje": "Promoción no encontrada"}), 404
+
+    carrito = session.get("carrito", [])
+    encontrado = False
+
+    for item in carrito:
+        if item.get("id") == id:
+            item["cantidad"] += 1
+            encontrado = True
+            break
+
+    if not encontrado:
+        promo["cantidad"] = 1
+        carrito.append(promo)
+
+    session["carrito"] = carrito
+    return jsonify(
+        {"mensaje": f"{promo['Producto']} agregado al carrito", "carrito": carrito}
+    ), 200
+
+
+
+
+##valen
+@app.route("/sucursales_tempranas", methods=["GET"])
+def sucursales_tempranas():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    
+    cursor.execute("""
+        SELECT Ciudad, Pais, Horario_abierto
+        FROM Sucursales
+        WHERE Horario_abierto < '09:00:00'
+        ORDER BY Horario_abierto ASC
+    """)
+    
+    resultado = cursor.fetchall()
+    cursor.close()
+    db.close()
+    
+    # Convertir Horario_abierto a string HH:MM:SS
+    for fila in resultado:
+        if 'Horario_abierto' in fila and fila['Horario_abierto'] is not None:
+            fila['Horario_abierto'] = str(fila['Horario_abierto'])
+    
+    return jsonify(resultado)
+
+##valen
+@app.route("/empleados", methods=["GET"])
+def obtener_empleados():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    
+    cursor.execute("""
+        SELECT id_Empleados, Nombre, Apellido, Email, Numero, id_Sucursales
+        FROM Empleados
+        ORDER BY id_Empleados ASC
+    """)
+    
+    empleados = cursor.fetchall()
+    cursor.close()
+    db.close()
+    
+    return jsonify(empleados), 200
+
+
+
+
+
+@app.route("/empleados/por_sucursal", methods=["GET"])
+def empleados_por_sucursal():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    
+    cursor.execute("""
+        SELECT id_Sucursales, COUNT(*) AS Total_Empleados
+        FROM Empleados
+        GROUP BY id_Sucursales
+        ORDER BY id_Sucursales ASC
+    """)
+    
+    resultado = cursor.fetchall()
+    cursor.close()
+    db.close()
+    
+    return jsonify(resultado), 200
 
 
 

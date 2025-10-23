@@ -19,9 +19,6 @@ export function CarritoProvider({ children }) {
 especial que representa todo lo que está dentro de un componente.*/
   const [carrito, setCarrito] = useState([]);
   const [total, setTotal] = useState(0);
-  
-
-  
 
   // Cargar carrito desde el backend
   const cargarCarrito = () => {
@@ -117,7 +114,19 @@ especial que representa todo lo que está dentro de un componente.*/
     });
   };
 
- 
+  // Agregar producto o promoción
+  const agregarCarritoPromo = (id1) => {
+    fetch(`http://127.0.0.1:5000/carrito/agregarPromo/${id1}`, {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        cargarCarrito();
+      })
+      .catch((err) => console.error("Error agregando producto:", err));
+  };
+
   return (
     //.Provider es el componente que “proporciona” los datos a todos los hijos que usen useCarrito()
     <CarritoContext.Provider
@@ -129,7 +138,7 @@ especial que representa todo lo que está dentro de un componente.*/
         vaciarCarrito,
         incrementarItem,
         decrementarItem,
-        
+        agregarCarritoPromo,
       }}
     >
       {children}
