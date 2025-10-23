@@ -1,0 +1,67 @@
+.fondo-pago {
+  margin: 0;
+  background: linear-gradient(135deg, #3b79e3, #0288d1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Tarjeta de mensaje */
+.card-pago {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0px 6px 25px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  animation: fadeIn 0.8s ease;
+}
+
+/* Título principal */
+.card-pago h1 {
+  margin: 0;
+  color: #28a745; /* verde éxito */
+  font-size: 30px;
+  font-weight: 700;
+}
+
+/* Texto secundario */
+.card-pago p {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Link volver */
+.card-pago a {
+  display: inline-block;
+  margin-top: 15px;
+  color: #3b79e3;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 12px;
+  background: rgba(59, 121, 227, 0.15);
+  transition: all 0.3s ease;
+}
+
+.card-pago a:hover {
+  background: rgba(59, 121, 227, 0.3);
+  color: #01579b;
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }

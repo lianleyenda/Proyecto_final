@@ -1,5 +1,4 @@
 import mysql.connector
-import mercadopago
 from flask import Flask, g, request, jsonify, session, redirect, url_for, render_template
 from dotenv import load_dotenv
 from flask_cors import CORS
@@ -506,7 +505,7 @@ def total_carrito():
     return jsonify({"total": total, "items": carrito}), 200
 
 # Agrega credenciales
-sdk = mercadopago.SDK("APP_USR-5763249349845009-100909-bc1e9b0beeb732567e21720be994d136-2915372170")
+
 #lian
 @app.route("/crear_preferencia", methods=["POST"])
 def crear_preferencia():
@@ -691,6 +690,51 @@ def eliminar_producto(id_producto):
     db.close()
 
     return jsonify({"mensaje": "Producto eliminado correctamente"}), 200
+
+
+
+
+@app.route('/stock/filtro', methods=['GET'])
+def filtrar_stock():
+    distribuidora = request.args.get('distribuidora')
+    producto = request.args.get('producto')
+
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    query = "SELECT * FROM Stock WHERE 1=1"
+    params = []
+
+    if distribuidora:
+        query += " AND Distribuidora LIKE %s"
+        params.append(f"%{distribuidora}%")
+    if producto:
+        query += " AND Producto LIKE %s"
+        params.append(f"%{producto}%")
+
+    cursor.execute(query, params)
+    resultados = cursor.fetchall()
+    conn.close()
+
+    if len(resultados) == 0:
+        return jsonify({"mensaje": "No se encontraron coincidencias"}), 404
+
+    return jsonify(resultados)
+
+@app.route('/stock/resumen', methods=['GET'])
+def resumen_stock():
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT Distribuidora, SUM(Cantidad) AS Total_Unidades, COUNT(*) AS Cantidad_Productos
+        FROM Stock
+        GROUP BY Distribuidora
+        ORDER BY Total_Unidades DESC
+    """)
+    resumen = cursor.fetchall()
+    conn.close()
+
+    return jsonify(resumen)
 
 
 

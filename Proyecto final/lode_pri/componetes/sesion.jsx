@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "../src/App.css";
-import { Link, useNavigate } from "react-router-dom";
-import { TiShoppingCart } from "react-icons/ti";
+import { useNavigate } from "react-router-dom";
 import SidebarCarrito from "./Carrito";
 import { useCarrito } from "./carritocontext";
 import SidebarUsuario from "./SidebarUsuario";
@@ -101,7 +100,7 @@ function Sesion() {
               />
             )}
 
-            <SidebarCarrito />
+            <SidebarCarrito abrirAutomaticamente={true}/>
           </div>
         </nav>
       </header>

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TiShoppingCart } from "react-icons/ti";
 import { useCarrito } from "../componetes/carritocontext";
 import "../src/Carrito.css";
 
-function SidebarCarrito() {
+function SidebarCarrito({ abrirAutomaticamente = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const {
     carrito,
@@ -36,6 +36,14 @@ function SidebarCarrito() {
   const handlePagar = () => {
     window.location.href = "/pago"; // Usamos window.location.href para redirigir
   };
+
+
+   useEffect(() => {
+    if (abrirAutomaticamente && carrito.length > 0) {
+      setIsOpen(true);
+    }
+  }, [carrito, abrirAutomaticamente]);
+
 
   return (
     <div className="tipografia">

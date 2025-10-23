@@ -1,0 +1,105 @@
+@import url("https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap");
+
+.pago-fondo {
+   background: linear-gradient(135deg, #3b79e3, #0288d1);
+  min-height: 100vh;            /* ocupa al menos toda la altura de la pantalla */
+  width: 100vw;                 /* ocupa todo el ancho */
+  display: flex;
+  
+  
+}
+
+.pago-container {
+  font-family: "Bree Serif", serif;
+  width: 500px;
+  margin: 140px auto; /* separa del header fijo */
+  background-color: #ffffff;
+  padding: 30px 40px;
+  border-radius: 20px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.pago-container h2 {
+  color: #5a1a00;
+  font-size: 28px;
+  margin-bottom: 25px;
+}
+
+.pago-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pago-container label {
+  display: block;
+  text-align: left;
+  margin-bottom: 5px;
+  color: #023973;
+  font-size: 16px;
+}
+
+.pago-container input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: "Bree Serif", serif;
+}
+
+.pago-container input:focus {
+  border-color: #3b79e3;
+  box-shadow: 0 0 6px rgba(59, 121, 227, 0.3);
+  outline: none;
+}
+
+.pago-container p {
+  color: red;
+  font-size: 14px;
+  margin-top: -10px;
+}
+
+.pago-total {
+  margin-top: 10px;
+  font-size: 20px;
+  color: #5a1a00;
+  font-weight: bold;
+}
+
+.pago-boton {
+  background-color: #3b79e3;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 0;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-family: "Bree Serif", serif;
+}
+
+.pago-boton:hover {
+  background-color: #5a1a00;
+  transform: scale(1.03);
+}
+
+.pago-boton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 600px) {
+  .pago-container {
+    margin: 120px 20px;
+    padding: 25px;
+  }
+
+  .pago-container h2 {
+    font-size: 24px;
+  }
+}

@@ -136,7 +136,7 @@
   justify-content: space-between; /* separa los botones */
   align-items: center;
   margin-top: 15px;
-  padding-left: 10px;
+  padding-left: 5px;
   gap: 15px; /* espacio entre ellos */
 }
 
@@ -151,6 +151,8 @@
   font-family: "Bree Serif", serif;
   transition: 0.2s;
   border: 2px solid #023973;
+  margin: 0px;
+  
 }
 
 .pagar-vaciar-btn button:hover {
