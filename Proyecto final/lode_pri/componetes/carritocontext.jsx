@@ -127,6 +127,17 @@ especial que representa todo lo que está dentro de un componente.*/
       .catch((err) => console.error("Error agregando producto:", err));
   };
 
+  const eliminarItemPromo = (id) => {
+    fetch(`http://127.0.0.1:5000/carrito/eliminar/promo/${id}`, {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        cargarCarrito();
+      })
+      .catch((err) => console.error("Error eliminando producto:", err));
+}
   return (
     //.Provider es el componente que “proporciona” los datos a todos los hijos que usen useCarrito()
     <CarritoContext.Provider
@@ -139,6 +150,7 @@ especial que representa todo lo que está dentro de un componente.*/
         incrementarItem,
         decrementarItem,
         agregarCarritoPromo,
+        eliminarItemPromo,
       }}
     >
       {children}

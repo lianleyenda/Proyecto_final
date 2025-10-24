@@ -839,6 +839,25 @@ def empleados_por_sucursal():
     
     return jsonify(resultado), 200
 
+
+
+# -----------------------------
+# 📌 Eliminar producto del carrito PROMOCIONES
+# -----------------------------
+#lian
+@app.route("/carrito/eliminar/promo/<int:id>", methods=["POST"])
+def eliminar_carrito_promo(id):
+    carrito = session.get("carrito", [])
+    carrito = [item for item in carrito if item["id"] != id]
+    session["carrito"] = carrito
+    return jsonify({"mensaje": "Producto eliminado del carrito", "carrito": carrito}), 200
+
+
+
+
+
+
+
 # Iniciar el servidor Flask
 if __name__ == '__main__':
     app.run(debug=True)
