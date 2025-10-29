@@ -1,13 +1,3 @@
-import pytest
-from app import app, get_db  # Importa tu aplicación Flask
-
-# Configurar el cliente para realizar solicitudes de prueba
-@pytest.fixture #Fixture en pytest es una función que se utiliza para preparar 
-#y devolver algún recurso o dato que pueda ser utilizado en tus pruebas
-def client():#la fucnion que va a simular las peticiones
-    with app.test_client() as client:# es uan funcion que devulve un cliente de prueba
-        yield client#puede remplazar el returno y cuando termina la prueba vuelve al estado natural
-
 def test_menu(client):
     """Test para el endpoint '/menu' que lista los productos"""
 
