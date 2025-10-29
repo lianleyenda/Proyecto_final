@@ -1,7 +1,8 @@
 import "../src/contacto.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { TiShoppingCart } from "react-icons/ti";
 
 function Contacto() {
   const [nombre, setNombre] = useState("");
@@ -10,9 +11,20 @@ function Contacto() {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [scrolled, setScrolled] = useState(false); // 👈 agregado
 
-  // 🔥 Animación de carga
-  setTimeout(() => setLoading(false), 2000);
+  useEffect(() => {
+    // 🔥 Animación de carga
+    setTimeout(() => setLoading(false), 2000);
+
+    // 👇 Detecta scroll
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -46,7 +58,6 @@ function Contacto() {
     }
   };
 
-  // 🕓 Pantalla de carga divertida
   if (loading) {
     return (
       <div className="loader-container">
@@ -68,10 +79,9 @@ function Contacto() {
       <div className="contacto-promo">
         <span>¿Tienes dudas o querés contactarnos? ¡Escribinos!</span>
       </div>
-      <div className="contacto-root"></div>
 
-      {/* Navbar */}
-      <header className="contacto-navbar">
+      {/* Navbar con scroll dinámico */}
+      <header className={`contacto-navbar ${scrolled ? "scrolled" : ""}`}>
         <nav className="contacto-navbar">
           <div className="contacto-navbar-left">
             <Link to="/">
@@ -86,6 +96,9 @@ function Contacto() {
             <Link to="/Contacto">Contacto</Link>
             <Link to="/Promociones">Promociones</Link>
             <Link to="/Login">Iniciar Sesión</Link>
+            <Link to="/Login">
+              <TiShoppingCart size={40} />
+            </Link>
           </div>
         </nav>
       </header>
@@ -98,14 +111,13 @@ function Contacto() {
       {/* Mapa */}
       <div className="contacto-mapa">
         <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3281.005135349687!2d-58.453684225046224!3d-34.67981986151993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccc0884322765%3A0xc2713b6b5831d8c1!2sEscuela%20Secundaria%20T%C3%A9cnica%20UBA%20en%20Villa%20Lugano!5e0!3m2!1ses-419!2sar!4v1761311983959!5m2!1ses-419!2sar" 
-        width="600" 
-        height="450" 
-        allowfullscreen="" 
-        loading="lazy" 
-        referrerpolicy="no-referrer-when-downgrade">
-
-        </iframe>
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3281.005135349687!2d-58.453684225046224!3d-34.67981986151993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccc0884322765%3A0xc2713b6b5831d8c1!2sEscuela%20Secundaria%20T%C3%A9cnica%20UBA%20en%20Villa%20Lugano!5e0!3m2!1ses-419!2sar!4v1761311983959!5m2!1ses-419!2sar" 
+          width="600" 
+          height="450" 
+          allowFullScreen="" 
+          loading="lazy" 
+          referrerPolicy="no-referrer-when-downgrade"
+        ></iframe>
       </div>
 
       {/* Texto descriptivo */}

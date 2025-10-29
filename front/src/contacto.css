@@ -88,23 +88,30 @@
 .contacto-navbar-left span {
   font-size: 18px;
   font-weight: bold;
-  color: black;
+  color: #000;
 }
+
+
+
+
+
+
 
 .contacto-navbar-right {
   display: flex;
   align-items: center;
   gap: 20px;
+  color: white;
 }
 
 .contacto-navbar-right a {
-  color: black;
+  color: #023973;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .contacto-navbar-right a:hover {
-  color: #5a1a00;
+  color: #D4D4D4;
 }
 
 /* MENSAJE PRINCIPAL */
