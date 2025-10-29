@@ -56,4 +56,65 @@ def test_eliminar_stock(client, stock_creado):
   
 
 
+def test_modificar_usuario_exitoso(client, db, email_unico ):
+    """Prueba que se modifique correctamente un usuario existente"""
+
+    
+    cursor = db.cursor()
+
+
+     
+
+    # Insertamos un usuario temporal
+    cursor.execute("INSERT INTO Usuarios (Usuario, Email, Password) VALUES (%s, %s, %s)", 
+                   ("usuario_original", email_unico, "1234"))
+    id_usuario = cursor.lastrowid
+    db.commit()
+
+    # Datos modificados
+    data = {
+        "Usuario": "usuario_modificado",
+        "Email": f"mod_{email_unico}",
+        "Password": "123"
+    }
+
+    # Ejecutamos el PUT
+    response = client.put(f"/inicio/cambiar/{id_usuario}", json=data)
+
+    # Verificaciones
+    assert response.status_code == 200
+    assert "Usuario con ID" in response.get_json()["mensaje"]
+
+def test_carrito(client):
+    """Test para el endpoint '/menu' que lista los productos"""
+    with client.session_transaction() as sess:
+        sess['carrito'] = [
+            {"Producto": "Juguete", "Costo": "100", "cantidad": 2},
+            {"Producto": "Libro", "Costo": "50", "cantidad": 1},
+        ]
+
+    # Realiza la solicitud GET al endpoint '/menu'
+    response = client.get('/carrito')
+    
+    # Verifica que el código de estado sea 200
+    assert response.status_code == 200
+    
+    # Verifica que la respuesta sea un JSON (asegúrate que sea la estructura correcta)
+    assert response.is_json
+    
+    # Si tienes datos de ejemplo, puedes verificar que algunos productos estén presentes
+    # Ejemplo: Verificar si el nombre de algún producto aparece en la respuesta
+    # Esto depende de cómo se almacenen los productos en tu base de datos.
+    # Supongamos que hay un producto con el nombre 'Hamburguesa'
+    productos = response.get_json()  # Convierte la respuesta en JSON
+    assert len(productos["carrito"]) == 2
+    assert productos["carrito"][0]["Producto"] == "Juguete"
+    assert productos["carrito"][1]["Producto"] == "Libro"
+
+    # Verificamos el total
+    assert productos["total"] == 250.0
+
+
+
+
 
