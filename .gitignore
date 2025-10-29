@@ -2,6 +2,8 @@
 
 hamburgueseria.db
 
+.vscode/
+
 node_modules/
 .env
 

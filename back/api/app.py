@@ -69,7 +69,11 @@ def agregar():
         (data['Producto'], data['Cantidad']))
     
     db.commit()#para guardar los cambios
-    return jsonify({"mensaje": "Producto agregado exitosamente"})
+    nuevo_id = cursor.lastrowid
+    return jsonify({
+        "mensaje": "Producto agregado exitosamente",
+        "id": nuevo_id  # 👈 devolvemos el ID
+    }), 200
 
 #valen
 @app.route('/stock/<int:stock_id>', methods=['DELETE'])

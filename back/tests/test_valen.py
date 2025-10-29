@@ -6,8 +6,8 @@
 def test_registro_exitoso(client): 
 ##crea un diccionario. Simula enviar un registro para probarlo.  
     datos = {
-        "Usuario": "vvalenTest",
-        "Email": "Vvalentest@gmail.com",
+        "Usuario": "alteenTest",
+        "Email": "lenetntest@gmail.com",
         "Password": "123"
     }
 ##hace una peticion post al endpoint registro     

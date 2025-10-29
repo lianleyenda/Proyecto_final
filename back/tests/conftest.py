@@ -33,4 +33,4 @@ def stock_creado(client, nuevo_stock):
      response = client.post('/stock/agregar', json=nuevo_stock)
      assert response.status_code == 200
      data = response.get_json()
-
+     return data["id"] 
