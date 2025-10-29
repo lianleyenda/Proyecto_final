@@ -855,7 +855,8 @@ def eliminar_carrito_promo(id):
 
 
 
-
+def create_app():
+    return app
 
 
 # Iniciar el servidor Flask

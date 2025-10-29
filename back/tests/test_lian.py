@@ -1,3 +1,7 @@
+
+
+
+
 def test_menu(client):
     """Test para el endpoint '/menu' que lista los productos"""
 
@@ -17,14 +21,10 @@ def test_menu(client):
     productos = response.get_json()  # Convierte la respuesta en JSON
     assert any(producto['Producto'] == 'Doble LTC' for producto in productos)
 
-def test_agregar_stock(client):
+
+
+def test_agregar_stock(client, nuevo_stock):
     "Test par el endpoint '/stock/agregar' que agrega productos a la tabla stock"
-
-    nuevo_stock ={
-        "Producto": "Pan de larbas",
-        "Cantidad": 10
-
-    }
 
 
 
@@ -39,6 +39,21 @@ def test_agregar_stock(client):
     stock= response.get_json()
     assert (stock['mensaje'] == "Producto agregado exitosamente")
 
+
+def test_eliminar_stock(client, stock_creado):
+    """Test para el endpoint DELETE /stock/<id>"""
+
+    # Ejecutamos la petición DELETE usando el ID recién creado
+    response = client.delete(f'/stock/{stock_creado}')
+
+    # Verificamos que la respuesta sea exitosa
+    assert response.status_code == 200
+    assert response.is_json
+
+    data = response.get_json()
+    assert data["mensaje"] == f"Stock con ID {stock_creado} eliminado correctamente"
+
+  
 
 
 

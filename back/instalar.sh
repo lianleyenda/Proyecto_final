@@ -12,12 +12,12 @@ fi
 . .venv/bin/activate
 
 # Instalar dependencias
-pip install --upgrade pip
-pip install flask
-pip install mysql-connector-python
-pip install python-dotenv
-pip install flask-cors
-pip install werkzeug
-pip install pytest pytest-flask
+#pipenv install --upgrade pipenv
+pipenv install flask
+pipenv install mysql-connector-python
+pipenv install python-dotenv
+pipenv install flask-cors
+pipenv install werkzeug
+pipenv install pytest pytest-flask
 
 

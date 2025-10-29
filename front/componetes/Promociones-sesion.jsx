@@ -5,7 +5,6 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import SidebarCarrito from "./Carrito";
 import SidebarUsuario from "./SidebarUsuario";
 import { useCarrito } from "./carritocontext"; // ✅ Para poder usar agregarCarrito()
-import SidebarCarritoPromo from "./Carrito-promociones";
 
 export default function PromocionesSesion() {
   const [promos, setPromos] = useState([]);
@@ -106,7 +105,7 @@ export default function PromocionesSesion() {
                 }}
               />
             )}
-            <SidebarCarritoPromo />
+            <Sidebar />
           </div>
         </nav>
       </header>
