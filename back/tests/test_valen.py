@@ -3,11 +3,11 @@
 ###verificamos que el registro sea exitoso. 
 
 #definimos una funcion test, y ponemos clien para que sepa que es un cliente prueba
-def test_registro_exitoso(client): 
+def test_registro_exitoso(client, email_unico): 
 ##crea un diccionario. Simula enviar un registro para probarlo.  
     datos = {
         "Usuario": "alteenTest",
-        "Email": "lenetntest@gmail.com",
+        "Email": f"Prue_{email_unico}",
         "Password": "123"
     }
 ##hace una peticion post al endpoint registro     
@@ -20,6 +20,7 @@ def test_registro_exitoso(client):
 ##verifica si es true o false= assert.
     assert "Usuario registrado con éxito" in data["mensaje"]
     print(response.get_json())
+    
 
     
     
