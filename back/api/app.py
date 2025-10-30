@@ -681,7 +681,7 @@ def agregar_producto():
 
 
 
-
+#valen
 @app.route('/productos/<int:id_producto>', methods=['DELETE'])
 def eliminar_producto(id_producto):
     db = get_db()
@@ -740,39 +740,6 @@ def resumen_stock():
     conn.close()
 
     return jsonify(resumen)
-#valen
-@app.route("/carrito/agregarPromo/<int:id>", methods=["POST"])
-def agregar_promo_carrito(id):
-    db = get_db()
-    cursor = db.cursor(dictionary=True)
-    cursor.execute(
-        "SELECT id, nombre AS Producto, precio AS Costo FROM Promociones WHERE id = %s",
-        (id,),
-    )
-    promo = cursor.fetchone()
-    cursor.close()
-    db.close()
-
-    if not promo:
-        return jsonify({"mensaje": "Promoción no encontrada"}), 404
-
-    carrito = session.get("carrito", [])
-    encontrado = False
-
-    for item in carrito:
-        if item.get("id") == id:
-            item["cantidad"] += 1
-            encontrado = True
-            break
-
-    if not encontrado:
-        promo["cantidad"] = 1
-        carrito.append(promo)
-
-    session["carrito"] = carrito
-    return jsonify(
-        {"mensaje": f"{promo['Producto']} agregado al carrito", "carrito": carrito}
-    ), 200
 
 
 
@@ -824,7 +791,6 @@ def obtener_empleados():
 
 
 #valen
-
 @app.route("/empleados/por_sucursal", methods=["GET"])
 def empleados_por_sucursal():
     db = get_db()
@@ -855,6 +821,113 @@ def eliminar_carrito_promo(id):
     carrito = [item for item in carrito if item["id"] != id]
     session["carrito"] = carrito
     return jsonify({"mensaje": "Producto eliminado del carrito", "carrito": carrito}), 200
+
+
+
+
+##valen
+@app.route("/opiniones", methods=["GET"])
+def obtener_opiniones():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT nombre, mensaje, fecha FROM Contacto ORDER BY fecha DESC")
+    opiniones = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(opiniones)
+
+
+
+#valen
+@app.route("/opiniones/buscar/<string:palabra>", methods=["GET"])
+def buscar_opiniones(palabra):
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute(
+        "SELECT nombre, mensaje, fecha FROM Contacto WHERE mensaje LIKE %s OR nombre LIKE %s",
+        (f"%{palabra}%", f"%{palabra}%")
+    )
+    resultados = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(resultados)
+# Busca en la tabla Contacto los registros donde el nombre o el mensaje
+# contengan la palabra ingresada.
+# El % antes y después permite buscar coincidencias parciales (ej: "Juan" -> "Juanita").
+# Se usan %s como parámetros seguros para evitar inyecciones SQL.
+
+
+
+
+
+#valen
+@app.route("/carrito/agregarPromo/<int:id>", methods=["POST"])
+def agregar_promo_carrito(id):
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute(
+        "SELECT id, nombre AS Producto, precio AS Costo FROM Promociones WHERE id = %s",
+        (id,),
+    )
+    promo = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if not promo:
+        return jsonify({"mensaje": "Promoción no encontrada"}), 404
+
+    carrito = session.get("carrito", [])
+    encontrado = False
+
+    for item in carrito:
+        if item.get("id") == id:
+            item["cantidad"] += 1
+            encontrado = True
+            break
+
+    if not encontrado:
+        promo["cantidad"] = 1
+        carrito.append(promo)
+
+    session["carrito"] = carrito
+    return jsonify(
+        {"mensaje": f"{promo['Producto']} agregado al carrito", "carrito": carrito}
+    ), 200
+
+
+
+
+##opiniones totales
+##valen 
+@app.route("/opiniones/total", methods=["GET"])
+def contar_opiniones():
+    db = get_db()
+    cursor = db.cursor()
+    # 🔹 Cuenta la cantidad total de registros en la tabla Contacto
+    cursor.execute("SELECT COUNT(*) AS total_opiniones FROM Contacto")
+    total = cursor.fetchone()[0]
+    cursor.close()
+    db.close()
+    return jsonify({"total_opiniones": total})
+
+
+##valen
+##obtener todos los mensajes ordenados por fecha.
+@app.route("/opiniones/recientes", methods=["GET"])
+def opiniones_recientes():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    # 🔹 Muestra todas las opiniones, ordenadas desde la más nueva
+    cursor.execute("SELECT nombre, mensaje, fecha FROM Contacto ORDER BY fecha DESC")
+    opiniones = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(opiniones)
+
+
+
+
+
 
 
 
