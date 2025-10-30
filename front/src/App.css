@@ -355,3 +355,38 @@ height: 150px;
 
 
 
+contenedor-admin {
+  padding: 20px;
+  text-align: center;
+}
+
+.form-admin {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.form-admin input {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 200px;
+}
+
+.form-admin button {
+  background-color: #ff8c00;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.form-admin button:hover {
+  background-color: #e67e00;
+}
+
+

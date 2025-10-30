@@ -857,6 +857,135 @@ def eliminar_carrito_promo(id):
     return jsonify({"mensaje": "Producto eliminado del carrito", "carrito": carrito}), 200
 
 
+#lian
+@app.route('/empleados/sucursales', methods=['GET'])
+def empleadosSucursales():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT e.Nombre, e.Apellido, s.Pais, s.Ciudad FROM `Empleados` AS e
+INNER JOIN `Sucursales` as s 
+ON s.id_Sucursales = e.id_Sucursales
+    """)
+
+    resultado = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return jsonify(resultado), 200
+
+
+@app.route('/ventas', methods=['GET'])
+def ventas():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+    MIN(a.Total) AS menor_venta,
+    MAX(a.Total) AS mayor_venta,
+    SUM(a.Total) AS total_ventas,
+    AVG(a.Total) AS promedio_ventas
+                
+                   
+FROM Ventas as a
+ inner join Stock as s
+ on s.id_Stock = a.id_Stock ;
+                
+
+    """)
+
+    resultado = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return jsonify(resultado), 200
+
+
+
+
+@app.route('/ventas/producto', methods=['GET'])
+def vanteasProducto():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+    a.Total AS venta,
+    s.Producto,
+    a.Cantidad                                   
+FROM Ventas as a
+ inner join Stock as s
+ on s.id_Stock = a.id_Stock;
+                
+
+    """)
+
+    resultado = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return jsonify(resultado), 200
+
+
+
+# --------------------------------------
+# 📌 ADMIN: Agregar un nuevo producto
+# --------------------------------------
+@app.route('/admin/productos', methods=['POST'])
+def admin_agregar_producto():
+    data = request.get_json()
+    
+    nombre = data.get('Producto')
+    costo = data.get('Costo')
+    descripcion = data.get('Descripcion', '')
+    categoria = data.get('Categoria', '')
+
+    # Validar campos obligatorios
+    if not nombre or costo is None:
+        return jsonify({'error': 'Faltan campos obligatorios (Producto, Costo)'}), 400
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        INSERT INTO Productos (Producto, Costo, Descripcion, Categoria)
+        VALUES (%s, %s, %s, %s)
+    """, (nombre, costo, descripcion, categoria))
+    db.commit()
+
+    nuevo_id = cursor.lastrowid
+    cursor.close()
+    db.close()
+
+    return jsonify({'mensaje': 'Producto agregado exitosamente', 'id': nuevo_id}), 201
+
+
+# --------------------------------------
+# 📌 ADMIN: Eliminar producto
+# --------------------------------------
+@app.route('/admin/productos/<int:id_Stock>', methods=['DELETE'])
+def admin_eliminar_producto(id_Stock):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("DELETE FROM Productos WHERE id_Stock = %s", (id_Stock,))
+    db.commit()
+    filas_afectadas = cursor.rowcount
+
+    cursor.close()
+    db.close()
+
+    if filas_afectadas == 0:
+        return jsonify({'mensaje': 'No se encontró el producto'}), 404
+
+    return jsonify({'mensaje': f'Producto con ID {id_Stock} eliminado correctamente'}), 200
+
+
+
+
+
 
 
 def create_app():

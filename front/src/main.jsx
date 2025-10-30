@@ -17,6 +17,7 @@ import PagoExitoso from "../componetes/pago_exitosos.jsx";
 import ContactoSesion from "../componetes/contacto-sesion.jsx";
 import PromocionesSesion from "../componetes/Promociones-sesion.jsx";
 import Pago from "../componetes/pago.jsx";
+import Admin from "../componetes/admin.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -36,6 +37,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="contacto/sesion" element={<ContactoSesion />} />
           <Route path="promociones/sesion" element={<PromocionesSesion />} />
           <Route path="/pago"  element={<Pago/>}/>
+          <Route path="/inicio/admin" element={<Admin/>}/>
           {/* 👇 Cualquier ruta no encontrada muestra el error 404 */}
           <Route path="*" element={<Error404 />} />
         </Routes>
