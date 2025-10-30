@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import SidebarUsuario from "./SidebarUsuario";
 import { useCarrito } from "./carritocontext";
 import SidebarCarrito from "./Carrito";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react"; // 🔹 Animación Lottie
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 function ContactoSesion() {
   const [nombre, setNombre] = useState("");
@@ -16,7 +16,14 @@ function ContactoSesion() {
   const { carrito } = useCarrito();
   const navigate = useNavigate();
 
-  // 🔹 Nuevo estado para la animación de carga
+  // 🔹 Opiniones y buscador
+  const [opiniones, setOpiniones] = useState([]);
+  const [mostrarOpiniones, setMostrarOpiniones] = useState(false);
+  const [busqueda, setBusqueda] = useState("");
+
+  // 🔹 Scroll del navbar
+  const [scrolled, setScrolled] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,27 +31,31 @@ function ContactoSesion() {
     if (usuarioData) {
       setUsuario(JSON.parse(usuarioData));
     }
-
-    // ⏳ Simula una carga con animación
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
+  // 🔹 Efecto scroll (navbar blanco al bajar)
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     if (!nombre || !email || !mensaje) {
       setError("Todos los campos son requeridos.");
       return;
     }
-
     try {
       const response = await fetch("http://localhost:5000/contacto", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre, email, mensaje }),
       });
-
       const data = await response.json();
       if (response.ok) {
         setSuccessMessage(data.mensaje);
@@ -60,7 +71,36 @@ function ContactoSesion() {
     }
   };
 
-  // 🔥 Si está cargando, mostrar animación
+  // 🔹 Obtener todas las opiniones
+  const obtenerOpiniones = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/opiniones");
+      const data = await res.json();
+      setOpiniones(data);
+      setMostrarOpiniones(!mostrarOpiniones);
+    } catch (error) {
+      console.error("Error al obtener opiniones:", error);
+    }
+  };
+
+  // 🔹 Buscar opiniones por palabra (en tiempo real)
+  useEffect(() => {
+    if (busqueda.trim() === "") return;
+    const buscarOpiniones = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/opiniones/buscar/${busqueda}`
+        );
+        const data = await res.json();
+        setOpiniones(data);
+      } catch (error) {
+        console.error("Error al buscar opiniones:", error);
+      }
+    };
+    const delay = setTimeout(buscarOpiniones, 400);
+    return () => clearTimeout(delay);
+  }, [busqueda]);
+
   if (loading) {
     return (
       <div className="loader-container">
@@ -78,8 +118,8 @@ function ContactoSesion() {
 
   return (
     <>
-      {/* Navbar */}
-      <header className="contacto-navbar">
+      {/* 🔹 Navbar con scroll */}
+      <header className={`contacto-navbar ${scrolled ? "scrolled" : ""}`}>
         <nav className="contacto-navbar">
           <div className="contacto-navbar-left">
             <Link to="/inicio">
@@ -107,7 +147,6 @@ function ContactoSesion() {
                 }}
               />
             )}
-
             <SidebarCarrito />
           </div>
         </nav>
@@ -125,15 +164,13 @@ function ContactoSesion() {
 
       {/* Mapa */}
       <div className="contacto-mapa">
-        <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3281.005135349687!2d-58.453684225046224!3d-34.67981986151993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccc0884322765%3A0xc2713b6b5831d8c1!2sEscuela%20Secundaria%20T%C3%A9cnica%20UBA%20en%20Villa%20Lugano!5e0!3m2!1ses-419!2sar!4v1761311983959!5m2!1ses-419!2sar" 
-        width="600" 
-        height="450" 
-        allowfullscreen="" 
-        loading="lazy" 
-        referrerpolicy="no-referrer-when-downgrade">
-
-        </iframe>
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3281.005135349687!2d-58.453684225046224!3d-34.67981986151993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccc0884322765%3A0xc2713b6b5831d8c1!2sEscuela%20Secundaria%20T%C3%A9cnica%20UBA%20en%20Villa%20Lugano!5e0!3m2!1ses-419!2sar!4v1761311983959!5m2!1ses-419!2sar"
+          width="600"
+          height="450"
+          allowFullScreen=""
+          loading="lazy"
+        ></iframe>
       </div>
 
       {/* Texto descriptivo */}
@@ -145,7 +182,43 @@ function ContactoSesion() {
         </p>
         <p>👑 ¡Vení a probarla y descubrí por qué todos vuelven por más!</p>
         <h3>Envíanos tu consulta</h3>
+
+        {/* 🔹 Botón para mostrar opiniones */}
+        <button onClick={obtenerOpiniones} className="boton-opiniones">
+          {mostrarOpiniones ? "Ocultar Opiniones" : "Ver Opiniones de Clientes"}
+        </button>
       </div>
+
+      {/* 🔹 Opiniones con buscador */}
+      {mostrarOpiniones && (
+        <div className="opiniones-lista">
+          <h3>💬 Opiniones de nuestros clientes</h3>
+
+          <input
+            type="text"
+            placeholder="Buscar por palabra o nombre..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="buscador-opiniones"
+          />
+
+          {opiniones.length > 0 ? (
+            opiniones.map((op, i) => (
+              <div key={i} className="opinion-item">
+                <p>
+                  <strong>{op.nombre}</strong> dijo:
+                </p>
+                <p>"{op.mensaje}"</p>
+                <p className="opinion-fecha">
+                  {new Date(op.fecha).toLocaleString()}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p>No hay opiniones para mostrar.</p>
+          )}
+        </div>
+      )}
 
       {/* Formulario */}
       <div className="contacto-formulario">
@@ -189,12 +262,8 @@ function ContactoSesion() {
       <footer className="footer-contacto">
         <p>© 2025 VAPALEPEN | Todos los derechos reservados</p>
         <p>
-          Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono de
-          Contacto: +54 9 11 61138645
-        </p>
-        <p>
-          Síguenos en nuestras redes sociales para enterarte de nuestras ofertas
-          y novedades.
+          Dirección: 4578 Alberto Demiddi, Barrio Olímpico | Teléfono: +54 9 11
+          61138645
         </p>
       </footer>
     </>
