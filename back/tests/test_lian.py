@@ -23,10 +23,13 @@ def test_menu(client):
 
 
 
-def test_agregar_stock(client, nuevo_stock):
+def test_agregar_stock_exito(client):
     "Test par el endpoint '/stock/agregar' que agrega productos a la tabla stock"
 
-
+    nuevo_stock={
+    "Producto": "ravioles",
+    "Cantidad": 10
+             }
 
 
     response = client.post('/stock/agregar', json=nuevo_stock)
@@ -39,20 +42,58 @@ def test_agregar_stock(client, nuevo_stock):
     stock= response.get_json()
     assert (stock['mensaje'] == "Producto agregado exitosamente")
 
+def test_agregar_stock_productoExistente(client):
+    "Test par el endpoint '/stock/agregar' que agrega productos a la tabla stock"
 
-def test_eliminar_stock(client, stock_creado):
+    nuevo_stock={
+    "Producto": "Pan francés",
+    "Cantidad": 10
+             }
+
+
+    response = client.post('/stock/agregar', json=nuevo_stock)
+
+    assert response.status_code ==  400 #asser es como un true o false si es true da 200
+#si es false tira algo com assertError
+
+    assert response.is_json #verivifa que se json con is_json
+
+    stock= response.get_json()
+    assert (stock['mensaje'] == "El producto ya está registrado")
+
+
+
+
+def test_eliminar_stock(client):
     """Test para el endpoint DELETE /stock/<id>"""
 
-    # Ejecutamos la petición DELETE usando el ID recién creado
-    response = client.delete(f'/stock/{stock_creado}')
+    # Paso 1: Crear un stock (producto) en la base de datos
+    data_crear = {"Producto": "jamon serrano", "Cantidad": 10}
+    response_crear = client.post('/stock/agregar', json=data_crear)
+    
+    # Verificar que la creación del stock fue exitosa
+    assert response_crear.status_code == 200
+    assert response_crear.is_json
+    
+    data_creado = response_crear.get_json()
+    stock_creado_id = data_creado['id']  # Obtener el ID del stock creado
+    
+    # Paso 2: Ejecutar la petición DELETE usando el ID recién creado
+    response_eliminar = client.delete(f'/stock/{stock_creado_id}')
 
-    # Verificamos que la respuesta sea exitosa
-    assert response.status_code == 200
-    assert response.is_json
-
-    data = response.get_json()
-    assert data["mensaje"] == f"Stock con ID {stock_creado} eliminado correctamente"
-
+    # Verificar que la respuesta sea exitosa
+    assert response_eliminar.status_code == 200
+    assert response_eliminar.is_json
+    
+    data_eliminado = response_eliminar.get_json()
+    assert data_eliminado["mensaje"] == f"Stock con ID {stock_creado_id} eliminado correctamente"
+    
+    # Paso 3: Verificar que el stock ha sido efectivamente eliminado
+    # Intentamos obtener el producto que acabamos de eliminar
+  
+    
+    # Verificamos que al intentar obtenerlo, el stock no existe (suponiendo que la API devuelve 404 si no existe)
+  
   
 
 

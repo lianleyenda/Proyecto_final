@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "../src/App.css";
-import { Link } from "react-router-dom";
 import { TiShoppingCart } from "react-icons/ti";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
@@ -9,6 +8,7 @@ function Inicio() {
   const [heroHeight, setHeroHeight] = useState(615);
   const [loading, setLoading] = useState(true);
   const [menu, setMenu] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // 🌀 Animación de carga
   useEffect(() => {
@@ -46,7 +46,9 @@ function Inicio() {
           loop
           autoplay
         />
-        <p className="loader-text">🍔💥 Preparando el menú más sabroso para vos...</p>
+        <p className="loader-text">
+          🍔💥 Preparando el menú más sabroso para vos...
+        </p>
       </div>
     );
   }
@@ -74,15 +76,32 @@ function Inicio() {
               <span>LODEPRI</span>
             </a>
           </div>
+          {/* 🔹 BOTÓN HAMBURGUESA (solo visible en móvil) */}
+          <button
+            className="hamburger"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Abrir menú"
+          >
+            &#9776;
+          </button>
 
-          <div className="navbar-right">
-            <a href="/">Página principal</a>
-            <a href="/Contacto">Contacto</a>
-            <a href="/Promociones">Promociones</a>
-            <a href="/Login">Iniciar Sesión</a>
-            <a href="/Login">
-              <TiShoppingCart size={40} />
+          {/* 🔹 MENÚ (se abre/cierra en versión móvil) */}
+          <div className={`navbar-right ${menuOpen ? "open" : ""}`}>
+            <a href="/" onClick={() => setMenuOpen(false)}>
+              Página principal
             </a>
+            <a href="/Contacto" onClick={() => setMenuOpen(false)}>
+              Contacto
+            </a>
+            <a href="/Promociones" onClick={() => setMenuOpen(false)}>
+              Promociones
+            </a>
+            <a href="/Login" onClick={() => setMenuOpen(false)}>
+              Iniciar Sesión
+            </a>
+            <a href="/Login" onClick={() => setMenuOpen(false)}>
+              <TiShoppingCart size={40} />
+            </a>{" "}
           </div>
         </nav>
       </header>

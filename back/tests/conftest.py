@@ -48,21 +48,7 @@ def my_fixture():
     "delete * from Usuarios where id_usuario = 999;"
      # Cleanup code here, e.g., closing a database connection, deleting a file
 
-@pytest.fixture   #este codigo define los datos de un nuevo producto
-def nuevo_stock():
-     """Datos del producto de prueba."""
-     return {
-        "Producto": "Pan de larbas",
-        "Cantidad": 10
-     }   
 
-@pytest.fixture #me tra su id para el test de eliminar
-def stock_creado(client, nuevo_stock):
-     """Crea el stock y devuelve su ID."""
-     response = client.post('/stock/agregar', json=nuevo_stock)
-     assert response.status_code == 200
-     data = response.get_json()
-     return data["id"] 
 
 
 @pytest.fixture

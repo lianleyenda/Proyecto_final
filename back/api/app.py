@@ -62,19 +62,36 @@ def agregar():
     # 📥 Obtener los datos enviados por el cliente en formato JSON
     data = request.get_json()  # Ej: {"Producto": "Hamburguesa", "Cantidad": 10}
     
-    # 🔹 Crear conexión a la base de datos usando la función get_db()
-    db = get_db()
-    cursor = db.cursor()# el cursor es para ejecutar mejor las sentencias de sql 
-    cursor.execute(   'INSERT INTO Stock (Producto, Cantidad) VALUES (%s, %s)',
-        (data['Producto'], data['Cantidad']))
+    # Verificar que los campos 'Producto' y 'Cantidad' estén presentes
+    if not data.get('Producto') or not data.get('Cantidad'):
+        return {'mensaje': 'Faltan datos: Producto y/o Cantidad'}, 400
     
-    db.commit()#para guardar los cambios
-    nuevo_id = cursor.lastrowid
-    return jsonify({
-        "mensaje": "Producto agregado exitosamente",
-        "id": nuevo_id  # 👈 devolvemos el ID
-    }), 200
+    try:
+        # 🔹 Crear conexión a la base de datos usando la función get_db()
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
 
+        # 1. Verificar si el producto ya existe
+        cursor.execute('SELECT 1 FROM Stock WHERE Producto = %s', (data['Producto'],))
+        if cursor.fetchone():
+            return {'mensaje': 'El producto ya está registrado'}, 400
+
+        # 2. Insertar nuevo producto
+        cursor.execute('INSERT INTO Stock (Producto, Cantidad) VALUES (%s, %s)',
+                       (data['Producto'], data['Cantidad']))
+
+        db.commit()  # Guardar los cambios
+
+        # Obtener el ID del nuevo producto agregado
+        nuevo_id = cursor.lastrowid
+        return jsonify({
+            "mensaje": "Producto agregado exitosamente",
+            "id": nuevo_id  # Devolvemos el ID
+        }), 200
+    
+    except Exception as e:  # Captura cualquier excepción y la maneja
+        db.rollback()  # En caso de error, revertir cambios
+        return {'mensaje': f'Error al agregar el producto: {str(e)}'}, 500
 #valen
 @app.route('/stock/<int:stock_id>', methods=['DELETE'])
 def eliminar_stock(stock_id):
@@ -135,6 +152,7 @@ def registrar_usuario():
 
     db = None
     cursor = None
+    #intenta si no fuunciona lo envia al excute
     try:
         db = get_db()  # Asume que esta función abre la conexión
         cursor = db.cursor(dictionary=True)
@@ -664,16 +682,16 @@ def agregar_producto():
 
     data = request.get_json()
     nombre = data.get('Nombre')
-    descripcion = data.get('Descripcion')
-    categoria = data.get('Categoria')
+    costo = data.get('Costo')
+    
 
-    if not nombre or not descripcion or not categoria:
+    if not nombre or not costo:
         return jsonify({"error": "Faltan campos obligatorios"}), 400
 
     cursor.execute("""
         INSERT INTO Producto (Nombre, Descripcion, Categoria)
         VALUES (%s, %s, %s);
-    """, (nombre, descripcion, categoria))
+    """, (nombre, costo))
     db.commit()
 
     cursor.close()

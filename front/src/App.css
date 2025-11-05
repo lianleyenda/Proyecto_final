@@ -5,9 +5,7 @@
 }
 
 #root {
-  
   max-width: 1280px;
-
 }
 
 #side-tab {
@@ -120,8 +118,6 @@
   transition: background 0.3s ease;
 }
 
-
-
 header {
   position: fixed;
   top: 50px; /* justo debajo de la promo */
@@ -133,13 +129,11 @@ header {
 
 header.scrolled {
   background: white;
- 
 }
 
-header.scrolled h2{
+header.scrolled h2 {
   color: #023973;
 }
-
 
 .navbar-left {
   display: flex;
@@ -171,21 +165,17 @@ header.scrolled h2{
   flex-grow: 1; /* cada link se estira proporcionalmente */
   text-align: center; /* centra el texto dentro de cada espacio */
   color: #023973;
-  
 }
 
 .navbar-right a:hover {
-  color: #D4D4D4; /* marrón al pasar el mouse */
+  color: #d4d4d4; /* marrón al pasar el mouse */
 }
 
-.navbar-right button{
+.navbar-right button {
   margin-left: -20px;
   color: #023973;
-  flex-grow: 1; 
+  flex-grow: 1;
 }
-
-
-
 
 .search-bar {
   color: black;
@@ -246,13 +236,12 @@ header.scrolled h2{
   width: 105%;
 }
 
-
-.producto{
+.producto {
   color: black;
-   background-color: white;
+  background-color: white;
 }
 
-.producto ul{
+.producto ul {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
   gap: 20px;
@@ -282,13 +271,12 @@ header.scrolled h2{
   transform: scale(1.05); /* Efecto al pasar el cursor sobre la imagen */
 }
 
-.producto button{
-background-color: #3b79e3;
-width: 335px;
-text-align: center;
- cursor: pointer;
- transition: all 0.2s ease; /* suaviza los cambios */
-
+.producto button {
+  background-color: #3b79e3;
+  width: 335px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease; /* suaviza los cambios */
 }
 
 /* Cuando pasás el mouse */
@@ -303,15 +291,15 @@ text-align: center;
   transform: scale(0.95);
 }
 
-.fondo{
+.fondo {
   background-color: black;
 }
 
 .presentacion {
- display: flex;           /* Pone los hijos (imagen y texto) uno al lado del otro */
-  align-items: center;     /* Centra verticalmente */
+  display: flex; /* Pone los hijos (imagen y texto) uno al lado del otro */
+  align-items: center; /* Centra verticalmente */
   justify-content: center; /* Centra horizontalmente */
-  gap: 20px;               /* Espacio entre la imagen y el texto */
+  gap: 20px; /* Espacio entre la imagen y el texto */
   padding: 42px;
 }
 
@@ -337,21 +325,230 @@ text-align: center;
 .presentacion-texto p {
   font-size: 18px;
   line-height: 1.5;
-  
 }
 
-
-.derechos{
-  color:white;
+.derechos {
+  color: white;
   text-align: center;
   font-weight: bold; /* Negrita */
   padding-top: 10px;
-   background-color: #5a1a00;
-width: 107%;
-height: 150px;
-
+  background-color: #5a1a00;
+  width: 107%;
+  height: 150px;
 }
 
+.hamburger {
+  display: none;
+  font-size: 28px;
+  background: none;
+  border: none;
+  color: #023973;
+  cursor: pointer;
+  margin-right: 10px;
+}
 
+/* 🌐 RESPONSIVE DESIGN */
+/* ------------------------------------------------------------- */
+/* 📱 Para tablets y pantallas medianas (menores a 1024px) */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block; /* Muestra el icono ☰ */
+  }
+  .navbar-right {
+    flex-direction: column;
+    background-color: white;
+    width: 100%;
+    position: absolute;
+    top: 65px; /* justo debajo del header */
+    left: 0;
+    max-height: 0;
+    overflow: hidden;
+    border-top: 1px solid #ddd;
+    transition: max-height 0.3s ease;
+    z-index: 999;
+  }
 
+  .navbar-right.open {
+    max-height: 300px; /* se despliega */
+  }
 
+  .navbar-right a {
+    color: #023973;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+  }
+
+  .navbar-right a:hover {
+    background: #f5f5f5;
+  }
+}
+
+.producto ul {
+  grid-template-columns: repeat(2, 1fr); /* de 3 a 2 columnas */
+}
+
+.presentacion {
+  flex-direction: column; /* imagen y texto uno debajo del otro */
+  text-align: center;
+}
+
+.presentacion img {
+  width: 80%;
+  padding-left: 0;
+}
+
+.presentacion-texto {
+  padding: 0;
+  align-items: center;
+}
+
+.mensage {
+  font-size: 20px;
+  padding: 20px;
+  height: auto;
+}
+
+.promo {
+  background: #5a1a00;
+  color: white;
+  display: flex;
+  flex-wrap: wrap; /* ✅ permite que el texto pase a otra línea */
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-family: "Bree Serif", serif;
+  font-size: 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  gap: 10px;
+  text-align: center; /* ✅ centra texto cuando pasa de línea */
+  line-height: 1.4; /* ✅ mejora legibilidad */
+  box-sizing: border-box; /* evita que el padding rompa el ancho */
+}
+
+.promo button {
+  margin-top: 5px;
+}
+
+/* 📱 Para celulares (menores a 768px) */
+@media (max-width: 480px) {
+  /* 🔹 Navbar adaptable */
+  .navbar-navegacion {
+    flex-direction: column;
+    height: auto;
+    gap: 10px;
+    padding: 10px 5px;
+  }
+
+  .navbar-left img {
+    height: 35px;
+  }
+
+  .navbar-right {
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .navbar-right a {
+    font-size: 14px;
+  }
+
+  /* 🔹 Imagen principal */
+  .hero-imagen {
+    height: 300px;
+  }
+
+  .hero-imagen img {
+    top: 0;
+  }
+
+  /* 🔹 Productos: una sola columna */
+  .producto ul {
+    grid-template-columns: 1fr;
+  }
+
+  .producto img,
+  .producto button {
+    width: 100%;
+  }
+
+  /* 🔹 Presentación */
+  .presentacion {
+    flex-direction: column;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .presentacion img {
+    width: 100%;
+    padding: 0;
+  }
+
+  .presentacion-texto {
+    padding: 0;
+    align-items: center;
+  }
+
+  /* 🔹 Mensaje */
+  .mensage {
+    font-size: 18px;
+    text-align: center;
+    height: auto;
+  }
+
+  /* 🔹 Footer */
+  .derechos {
+    font-size: 12px;
+    height: auto;
+    padding: 15px;
+  }
+
+  /* 🔹 Promo */
+  .promo {
+    flex-direction: column;
+    text-align: center;
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .promo button {
+    margin-top: 5px;
+  }
+}
+
+/* 📱 Extra pequeño (menores a 480px) */
+@media (max-width: 480px) {
+  .navbar-right a {
+    font-size: 12px;
+  }
+
+  .promo {
+    font-size: 13px;
+  }
+
+  .mensage h2 {
+    font-size: 16px;
+  }
+
+  .presentacion-texto p {
+    font-size: 15px;
+  }
+
+  .producto h3 {
+    font-size: 18px;
+  }
+
+  .producto p {
+    font-size: 14px;
+  }
+
+  .producto button {
+    font-size: 14px;
+  }
+}
