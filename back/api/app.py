@@ -5,7 +5,8 @@ from flask_cors import CORS
 import os
 request
 from werkzeug.security import generate_password_hash, check_password_hash
-
+import cloudinary
+import cloudinary.uploader
 
 
 load_dotenv()#lee la funciones
@@ -20,6 +21,14 @@ data = {
    'password': os.getenv("DB_PASS"),
    'database': os.getenv("DB_NAME")
 }
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUND_NAME"),
+    api_key=int(os.getenv("CLOUND_KEY")),
+    api_secret=os.getenv("CLOUND_SECRET"),
+    secure=True
+)
+
 
 
 # Datos de conexión
@@ -921,20 +930,26 @@ FROM Ventas as a
 def admin_agregar_producto():
     data = request.get_json()
     
-    nombre = data.get('Producto')
-    costo = data.get('Costo')
+    imagen = request.files.get("Imagen")#trae el file deñ front al back
     
     # Validar campos obligatorios
-    if not nombre or costo is None:
-        return jsonify({'error': 'Faltan campos obligatorios (Producto, Costo)'}), 400
-
+   
+    
+    imagen_url = None
+    if imagen:
+        try:
+            upload_result = cloudinary.uploader.upload(imagen)
+            imagen_url = upload_result["secure_url"]
+        except Exception as e:
+            return jsonify({"error": f"Error al subir imagen: {str(e)}"}), 500
+    
     db = get_db()
     cursor = db.cursor()
 
     cursor.execute("""
-        INSERT INTO Productos (Producto, Costo)
-        VALUES (%s, %s)
-    """, (nombre, costo))
+        INSERT INTO Productos (Imagen)
+        VALUES (%s)
+    """, (imagen_url))
     db.commit()
 
     nuevo_id = cursor.lastrowid

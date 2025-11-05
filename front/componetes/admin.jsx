@@ -21,16 +21,22 @@ function Admin() {
   const agregarProducto = async (e) => {
     e.preventDefault();
 
-    if (!nuevoProducto.Producto || !nuevoProducto.Costo) {
-      alert("El nombre y costo son obligatorios");
-      return;
-    }
+    // if (!nuevoProducto.Producto || !nuevoProducto.Costo) {
+    //   alert("El nombre y costo son obligatorios");
+    //   return;
+    // }
 
     try {
+      // Crear un objeto FormData para enviar los datos
+      const formData = new FormData();
+      formData.append("Producto", nuevoProducto.Producto);
+      formData.append("Costo", nuevoProducto.Costo);
+      formData.append("Imagen", nuevoProducto.Imagen); // Agregar la imagen
+
       const res = await fetch("http://127.0.0.1:5000/admin/productos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nuevoProducto),
+        body: formData,
       });
 
       const data = await res.json();
@@ -41,6 +47,7 @@ function Admin() {
         setNuevoProducto({
           Producto: "",
           Costo: "",
+          Imagen: null,
         });
       } else {
         alert(data.error || "❌ Error al agregar producto");
@@ -116,6 +123,13 @@ function Admin() {
             value={nuevoProducto.Costo}
             onChange={(e) =>
               setNuevoProducto({ ...nuevoProducto, Costo: e.target.value })
+            }
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setNuevoProducto({ ...nuevoProducto, Imagen: e.target.files[0] })
             }
           />
 
