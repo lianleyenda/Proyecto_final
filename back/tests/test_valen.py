@@ -19,34 +19,48 @@ def test_registro_exitoso(client, email_unico):
 ##comprueba que el servidor responda con    
 ##verifica si es true o false= assert.
     assert "Usuario registrado con éxito" in data["mensaje"]
-    print(response.get_json())
+    # print(response.get_json())
     
+
+
+def test_registro_campos_incompletos(client):
+    # No enviamos todos los campos (falta "Password")
+    datos = {
+        "Usuario": "TestSinPassword",
+        "Email": "correo@prueba.com"
+    }
+    response = client.post("/registro", json=datos)
+    # Debe devolver código 400 (Bad Request)
+    assert response.status_code == 400
+    data = response.get_json()
+    # Verificamos que el mensaje sea el correcto
+    assert data["mensaje"] == "Faltan datos"
+    # print(response.get_json())
+
 
     
     
-
-##test para verificar que me traiga todas las promociones.    
 def test_promociones(client):
     """Test para el endpoint '/Promociones' que lista las promociones"""
-#  Realiza la solicitud GET al endpoint '/Promociones'
     response = client.get('/Promociones')
-#  Verifica que el código de estado sea 200 (OK)
+    # Debe responder OK
     assert response.status_code == 200
-# Verifica que la respuesta sea JSON
     assert response.is_json
-# Convierte la respuesta a formato Python (lista de promociones)
     promociones = response.get_json()
-#  Verifica que sea una lista
+    # Verifica que la respuesta sea una lista
     assert isinstance(promociones, list)
-# Si hay promociones, comprobá que tengan las claves esperadas
-    if len(promociones) > 0:##si promociones tien al menos un elemento
-        promo = promociones[0]
-        assert "id" in promo
-        assert "nombre" in promo
-        assert "descripcion" in promo
-        assert "precio" in promo
-        assert "productos" in promo
-
+    # Verifica que exista al menos una promoción
+    assert len(promociones) > 0
+    # Toma la primera promoción
+    promo = promociones[0]
+    # Verifica que tenga las claves esperadas
+    assert "id" in promo
+    assert "nombre" in promo
+    assert "descripcion" in promo
+    assert "precio" in promo
+    assert "productos" in promo
+    # Nuevo: Verifica que el nombre contenga "Combo"
+    assert "Combo" in promo["nombre"]
 
 
 
@@ -68,6 +82,40 @@ def test_obtener_promocion_por_id(client):
     assert "descripcion" in data
     assert "precio" in data
     assert "productos" in data
-#(Opcional) Verificamos que sea la promoción correcta
+#comprobamos que el id sea 1
     assert data["id"] == 1 or data["nombre"] == "ComboGordo"
-        
+
+
+
+
+
+def test_guardar_contacto_exitoso(client, email_unico):
+    """Test que guarda un mensaje de contacto correctamente"""
+
+    datos = {
+        "nombre": "Valentín Test",
+        "email": f"{email_unico}",
+        "mensaje": "Este es un mensaje de prueba"
+    }
+    response = client.post("/contacto", json=datos)
+    # Verifica que la respuesta sea 201 (creado)
+    assert response.status_code == 201
+    assert response.is_json
+    data = response.get_json()
+    assert data["mensaje"] == "Mensaje de contacto guardado exitosamente"
+
+
+    
+def test_guardar_contacto_campos_incompletos(client):
+    """Test que falla si faltan campos obligatorios"""
+    datos = {
+        "nombre": "Valentín Test",
+        # "email" falta
+        "mensaje": "Mensaje sin email"
+    }
+    response = client.post("/contacto", json=datos)
+    # Debe devolver 400 (Bad Request)
+    assert response.status_code == 400
+    assert response.is_json
+    data = response.get_json()
+    assert data["mensaje"] == "Todos los campos son requeridos"
