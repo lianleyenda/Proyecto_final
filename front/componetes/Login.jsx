@@ -41,13 +41,20 @@ export default function Login() {
         vaciarCarrito();
         localStorage.setItem("Email", JSON.stringify(email));
         localStorage.setItem("Usuario", JSON.stringify(data.usuario.Usuario));
+        localStorage.setItem("Rol", JSON.stringify(data.usuario.rol)); // 👈 Guardamos el rol
 
         // Mostrar mensaje de bienvenida
         mostrarMensaje("😎 ¡Bienvenido de nuevo, crack del buen comer! 🍟");
 
-        // Redirigir después de 2.5 segundos
+        // Redirigir después de 2.5 segundos según el rol
         setTimeout(() => {
-          navigate("/inicio");
+          if (data.usuario.rol === "admin") {
+            navigate("/inicio/admin"); // 👈 redirige al panel de administración
+          } else if (data.usuario.rol === "usuario") {
+            navigate("/inicio"); // 👈 usuarios normales
+          } else {
+            navigate("/"); // 👈 por si no tiene rol o algo falla
+          }
         }, 2500);
       } else {
         mostrarMensaje(`❌ ${data.mensaje}`);
@@ -56,6 +63,8 @@ export default function Login() {
       console.error("Error en login:", error);
       mostrarMensaje("❌ Error al iniciar sesión. Inténtalo otra vez.");
     }
+    localStorage.setItem("Rol", JSON.stringify(data.usuario.rol)); 
+
   };
 
   return (

@@ -552,3 +552,57 @@ header.scrolled h2 {
     font-size: 14px;
   }
 }
+
+contenedor-admin {
+  padding: 20px;
+  text-align: center;
+}
+
+.form-admin {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.form-admin input {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 200px;
+}
+
+.form-admin button {
+  background-color: #ff8c00;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.form-admin button:hover {
+  background-color: #e67e00;
+}
+
+/* 🔹 Header exclusivo del panel Admin */
+.header-admin {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 1100;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 🔹 Ajustar el contenido para que no quede oculto debajo */
+.contenedor-admin {
+  padding-top: 100px; /* Deja espacio para el header fijo */
+}
+
+.contenedor-admin {
+  padding-top: 100px; /* Deja espacio para el header fijo */
+}

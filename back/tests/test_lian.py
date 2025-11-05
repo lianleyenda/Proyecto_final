@@ -27,7 +27,7 @@ def test_agregar_stock_exito(client):
     "Test par el endpoint '/stock/agregar' que agrega productos a la tabla stock"
 
     nuevo_stock={
-    "Producto": "ravioles",
+    "Producto": "ravioless",
     "Cantidad": 10
              }
 

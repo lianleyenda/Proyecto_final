@@ -115,19 +115,20 @@
 .promociones-navbar-right {
   display: flex;
   align-items: center;
-  justify-content: right;
-  gap: 20px;
+  justify-content: right; /* reparte el espacio entre ellos */
+  gap: 20px; /* ocupa todo el espacio disponible de la navbar */
   margin-right: 10px;
+  color: white;
 }
-
 .promociones-navbar-right a {
-  flex-grow: 1;
-  text-align: center;
-  color: black;
+   flex-grow: 1; /* cada link se estira proporcionalmente */
+  text-align: center; /* centra el texto dentro de cada espacio */
+  color: #023973;
+  
 }
 
 .promociones-navbar-right a:hover {
-  color: #5a1a00;
+  color: #D4D4D4;
 }
 
 .promociones-search-bar {

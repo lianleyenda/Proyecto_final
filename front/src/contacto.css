@@ -1,18 +1,14 @@
 /* DESCRIPCIÓN Y INFO */
 .contacto-descripcion {
- 
-  
   background: transparent;
   border-radius: 12px;
- 
+
   font-size: 18px;
   color: #5a1a00;
-  box-shadow: 0 2px 8px rgba(90,26,0,0.08);
+  box-shadow: 0 2px 8px rgba(90, 26, 0, 0.08);
   text-align: center;
   padding-left: 50px;
 }
-
-
 
 .contacto-col h3 {
   color: #5a1a00;
@@ -29,7 +25,6 @@
   display: flex;
   gap: 15px;
 }
-
 
 @import url("https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap");
 
@@ -60,7 +55,7 @@
 
 /* NAVBAR */
 .contacto-navbar {
-   display: flex;
+  display: flex;
   justify-content: space-between;
   align-items: center;
   background: transparent;
@@ -88,23 +83,24 @@
 .contacto-navbar-left span {
   font-size: 18px;
   font-weight: bold;
-  color: black;
+  color: #000;
 }
 
 .contacto-navbar-right {
   display: flex;
   align-items: center;
   gap: 20px;
+  color: white;
 }
 
 .contacto-navbar-right a {
-  color: black;
+  color: #023973;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .contacto-navbar-right a:hover {
-  color: #5a1a00;
+  color: #d4d4d4;
 }
 
 /* MENSAJE PRINCIPAL */
@@ -115,16 +111,14 @@
   padding-left: 50px;
   font-size: 30px;
   font-family: "Bree Serif", serif;
-  
 }
 
 /* MAPA */
 .contacto-mapa {
   display: flex;
- 
+
   margin: 20px 0;
   padding-left: 170px;
- 
 }
 
 .contacto-mapa iframe {
@@ -133,7 +127,6 @@
   max-width: 1000px;
   width: 98%;
   height: 400px;
-  
 }
 
 .contacto-mapa iframe {
@@ -144,14 +137,12 @@
   transform: scale(1.05);
 }
 
-
 /* FORMULARIO */
 .contacto-formulario {
   display: flex;
   justify-content: center;
   margin: 30px 0;
   color: #5a1a00;
-
 }
 
 .contacto-formulario form {
@@ -172,7 +163,11 @@
   color: #333;
   font-size: 14px;
 }
-
+@media (prefers-color-scheme: light) {
+  button {
+    background-color: #3b79e3;
+  }
+}
 .contacto-formulario input,
 .contacto-formulario textarea {
   padding: 12px;
@@ -201,7 +196,6 @@
   color: white;
 }
 
-
 /* FOOTER */
 .footer-contacto {
   color: white;
@@ -218,4 +212,83 @@
   flex-direction: column;
 
   background-color: #fdfdfd;
+}
+
+.boton-opiniones {
+  background-color: #5a1a00;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: "Bree Serif", serif;
+  transition: transform 0.2s ease;
+  margin-top: 10px;
+}
+.boton-opiniones:hover {
+  transform: scale(1.05);
+  background-color: #7a2d00;
+}
+
+.opiniones-lista {
+  margin: 30px auto;
+  max-width: 700px;
+  background: #fff7f2;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  color: #5a1a00;
+}
+
+.opinion-item {
+  border-bottom: 1px solid #e0c9b6;
+  padding: 10px 0;
+}
+
+.opinion-fecha {
+  font-size: 12px;
+  color: #777;
+}
+
+.boton-opiniones {
+  background-color: #5a1a00;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "Bree Serif", serif;
+  transition: 0.3s;
+}
+
+.boton-opiniones:hover {
+  background-color: #8b3d00;
+  transform: scale(1.05);
+}
+
+.opiniones-lista {
+  margin: 30px auto;
+  text-align: center;
+  width: 70%;
+}
+
+.buscador-opiniones {
+  width: 60%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.opinion-item {
+  background-color: #fff8f3;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(90, 26, 0, 0.15);
+}
+
+.opinion-fecha {
+  font-size: 12px;
+  color: gray;
 }

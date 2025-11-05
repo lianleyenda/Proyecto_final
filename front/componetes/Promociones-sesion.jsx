@@ -105,7 +105,7 @@ export default function PromocionesSesion() {
                 }}
               />
             )}
-            <Sidebar />
+            <SidebarCarrito />
           </div>
         </nav>
       </header>

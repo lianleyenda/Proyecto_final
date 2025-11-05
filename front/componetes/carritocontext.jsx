@@ -1,22 +1,13 @@
 // src/CarritoContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 
-const CarritoContext =
-  createContext(); /* es como una "caja" donde guardás datos globales
-(ejemplo: usuario logueado, carrito de compras, tema claro/oscuro).
-Se usa una vez y después todos los componentes pueden leerlo
-*/
+const CarritoContext = createContext(); /* es como una "caja" donde guardás datos globales */
 
 export function useCarrito() {
-  return useContext(
-    CarritoContext
-  ); /* useContext Es un hook que te permite leer el contexto desde cualquier
- componente.En vez de pasar props de un componente padre a hijo, usás useContext y accedés directo.*/
+  return useContext(CarritoContext); /* useContext permite leer el contexto desde cualquier componente */
 }
 
 export function CarritoProvider({ children }) {
-  /*children En React, children es una prop
-especial que representa todo lo que está dentro de un componente.*/
   const [carrito, setCarrito] = useState([]);
   const [total, setTotal] = useState(0);
 
@@ -29,15 +20,15 @@ especial que representa todo lo que está dentro de un componente.*/
       .then((res) => res.json())
       .then((data) => {
         const carritoConCantidad = data.carrito.map((item) => ({
-          ...item, //abre el item con el operador
+          ...item,
           cantidad: item.cantidad || 1,
-          Costo: Number(item.Costo), // Asegurarse que sea número
+          Costo: Number(item.Costo),
         }));
         setCarrito(carritoConCantidad);
         setTotal(
           carritoConCantidad.reduce(
             (acc, item) => acc + item.Costo * item.cantidad,
-            0 //El método reduce() recorre un array y acumula un valor a lo largo de todas sus iteraciones
+            0
           )
         );
       })
@@ -73,9 +64,7 @@ especial que representa todo lo que está dentro de un componente.*/
       .catch((err) => console.error("Error eliminando producto:", err));
   };
 
-  // -----------------------------
   // Vaciar carrito
-  // -----------------------------
   const vaciarCarrito = () => {
     fetch("http://127.0.0.1:5000/carrito/vaciar", {
       method: "POST",
@@ -88,6 +77,7 @@ especial que representa todo lo que está dentro de un componente.*/
       .catch((err) => console.error("Error vaciando carrito:", err));
   };
 
+  // Incrementar cantidad de un producto
   const incrementarItem = (id) => {
     setCarrito((prev) => {
       const nuevoCarrito = prev.map((item) =>
@@ -100,6 +90,7 @@ especial que representa todo lo que está dentro de un componente.*/
     });
   };
 
+  // Decrementar cantidad de un producto
   const decrementarItem = (id) => {
     setCarrito((prev) => {
       const nuevoCarrito = prev.map((item) =>
@@ -137,9 +128,9 @@ especial que representa todo lo que está dentro de un componente.*/
         cargarCarrito();
       })
       .catch((err) => console.error("Error eliminando producto:", err));
-}
+  };
+
   return (
-    //.Provider es el componente que “proporciona” los datos a todos los hijos que usen useCarrito()
     <CarritoContext.Provider
       value={{
         carrito,

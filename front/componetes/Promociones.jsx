@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "../src/Promociones.css";
 import { Link } from "react-router-dom";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { TiShoppingCart } from "react-icons/ti";
+
 
 export default function Promociones() {
   const [promos, setPromos] = useState([]);
@@ -10,6 +12,7 @@ export default function Promociones() {
   const [heroHeight, setHeroHeight] = useState(615);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1); // 👈 control de página
+  
 
   useEffect(() => {
     Promise.all([
@@ -78,10 +81,14 @@ export default function Promociones() {
           </div>
 
           <div className="promociones-navbar-right">
-            <Link to="/">Página principal</Link>
-            <Link to="/Contacto">Contacto</Link>
-            <Link to="/Promociones">Promociones</Link>
-            <Link to="/Login">Iniciar Sesión</Link>
+            <a href="/">Página principal</a>
+            <a href="/Contacto">Contacto</a>
+            <a href="/Promociones">Promociones</a>
+            <a href="/Login">Iniciar Sesión</a>
+             <a href="/Login">
+             <TiShoppingCart size={40} />
+             </a>
+            
           </div>
         </nav>
       </header>
