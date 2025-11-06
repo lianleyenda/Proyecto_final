@@ -22,12 +22,7 @@ data = {
    'database': os.getenv("DB_NAME")
 }
 
-cloudinary.config(
-    cloud_name=os.getenv("CLOUND_NAME"),
-    api_key=int(os.getenv("CLOUND_KEY")),
-    api_secret=os.getenv("CLOUND_SECRET"),
-    secure=True
-)
+
 
 
 
@@ -1053,6 +1048,47 @@ def agregar_promo_carrito(id):
     return jsonify(
         {"mensaje": f"{promo['Producto']} agregado al carrito", "carrito": carrito}
     ), 200
+
+
+
+@app.route("/carrito/agregarPromo/<int:idPromo>", methods=["POST"])
+def agregar_carrito_promo(idPromo):
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    
+    # Buscar promo
+    cursor.execute("SELECT id, nombre, precio, imagen_nombre FROM Promociones WHERE id = %s", (idPromo,))
+    promo = cursor.fetchone()
+
+    if not promo:
+        return jsonify({"mensaje": "Promoción no encontrada"}), 404
+
+    carrito = session.get("carrito", [])
+
+    for item in carrito:
+        if item.get("idPromo") == idPromo:
+            item["cantidad"] += 1
+            session["carrito"] = carrito
+            return jsonify({"mensaje": f"{promo['nombre']} agregada", "carrito": carrito}), 200
+
+    carrito.append({
+        "idPromo": promo["id"],
+        "Producto": promo["nombre"],
+        "Costo": promo["precio"],
+        "imagen": promo["imagen_nombre"],
+        "cantidad": 1
+    })
+
+    session["carrito"] = carrito
+    return jsonify({"mensaje": "Promoción agregada", "carrito": carrito}), 200
+
+cloudinary.config(
+   cloud_name=os.getenv("CLOUND_NAME"),
+   api_key=int(os.getenv("CLOUND_KEY")),
+   api_secret=os.getenv("CLOUND_SECRET"),
+   secure=True
+)
+
 
 
 
