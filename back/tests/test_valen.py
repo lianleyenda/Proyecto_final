@@ -119,3 +119,50 @@ def test_guardar_contacto_campos_incompletos(client):
     assert response.is_json
     data = response.get_json()
     assert data["mensaje"] == "Todos los campos son requeridos"
+
+
+
+
+def test_productos_mas_vendidos(client):
+    """Test para el endpoint '/productos-mas-vendidos' que devuelve los productos más vendidos"""
+    # Realiza una solicitud GET al endpoint
+    response = client.get("/productos-mas-vendidos")
+    # Verificamos que la respuesta sea exitosa
+    assert response.status_code == 200
+    assert response.is_json
+    # Convertimos la respuesta a formato Python
+    data = response.get_json()
+    # Verifica que la respuesta sea una lista
+    assert isinstance(data, list)
+    # Si hay productos, revisamos el primero
+    if len(data) > 0:
+        producto = data[0]
+        # Verifica que tenga las claves esperadas
+        assert "Producto" in producto
+        assert "total_vendido" in producto
+        # Verifica que total_vendido sea un número entero o flotante
+        assert isinstance(producto["total_vendido"], (int, float))
+        # Verifica que el total vendido sea mayor o igual a 0
+        assert producto["total_vendido"] >= 0
+    # Verifica que haya 10 o menos resultados
+    assert len(data) <= 10
+
+
+def test_productos_mas_vendidos_vacio(client, mocker):
+    """Test que simula el caso cuando no hay productos vendidos"""
+    # Simulamos que la base de datos devuelve una lista vacía
+    mock_cursor = mocker.MagicMock()
+    mock_cursor.fetchall.return_value = []
+    mock_conn = mocker.MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    mocker.patch("tu_archivo.get_db", return_value=mock_conn)  
+    # 👆 reemplazá "tu_archivo" por el nombre real del archivo donde está la función get_db
+    # Llamamos al endpoint
+    response = client.get("/productos-mas-vendidos")
+    # Verificamos que responda con 200 aunque no haya resultados
+    assert response.status_code == 200
+    assert response.is_json
+    # Debe devolver una lista vacía
+    data = response.get_json()
+    assert isinstance(data, list)
+    assert len(data) == 0
