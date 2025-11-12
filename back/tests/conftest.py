@@ -64,3 +64,5 @@ def db(app):
 def email_unico():
     """Genera un email único para tests"""
     return f"test_{uuid.uuid4().hex[:8]}@example.com"
+
+
