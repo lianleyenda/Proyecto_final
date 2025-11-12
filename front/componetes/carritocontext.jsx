@@ -1,17 +1,18 @@
 // src/CarritoContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 
-const CarritoContext = createContext(); /* es como una "caja" donde guardás datos globales */
+const CarritoContext = createContext();
 
 export function useCarrito() {
-  return useContext(CarritoContext); /* useContext permite leer el contexto desde cualquier componente */
+  return useContext(CarritoContext);
 }
 
 export function CarritoProvider({ children }) {
   const [carrito, setCarrito] = useState([]);
+  const [carrito_promo, setCarrito_promo] = useState([]);
   const [total, setTotal] = useState(0);
 
-  // Cargar carrito desde el backend
+  // 🔹 Cargar carrito desde backend
   const cargarCarrito = () => {
     fetch("http://127.0.0.1:5000/carrito", {
       method: "GET",
@@ -19,6 +20,7 @@ export function CarritoProvider({ children }) {
     })
       .then((res) => res.json())
       .then((data) => {
+        if (!data.carrito) return;
         const carritoConCantidad = data.carrito.map((item) => ({
           ...item,
           cantidad: item.cantidad || 1,
@@ -39,49 +41,54 @@ export function CarritoProvider({ children }) {
     cargarCarrito();
   }, []);
 
-  // Agregar producto
+  // 🔹 Agregar producto o promoción
   const agregarCarrito = (id) => {
-    fetch(`http://127.0.0.1:5000/carrito/agregar/${id}`, {
+    fetch(`http://127.0.0.1:5000/carrito/agregar_producto/${id}`, {
       method: "POST",
       credentials: "include",
     })
       .then((res) => res.json())
-      .then((data) => {
-        cargarCarrito();
-      })
-      .catch((err) => console.error("Error agregando producto:", err));
+      .then(() => cargarCarrito())
+      .catch((err) => console.error("Error agregando ítem:", err));
   };
 
+  const agregarCarritoPromo = (id) => {
+    fetch(`http://127.0.0.1:5000/carrito/agregar_promo/${id}`, {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then(() => cargarCarrito())
+      .catch((err) => console.error("Error agregando ítem:", err));
+  };
+
+  // 🔹 Eliminar producto o promoción
   const eliminarItem = (id) => {
     fetch(`http://127.0.0.1:5000/carrito/eliminar/${id}`, {
       method: "POST",
       credentials: "include",
     })
       .then((res) => res.json())
-      .then((data) => {
-        cargarCarrito();
-      })
-      .catch((err) => console.error("Error eliminando producto:", err));
+      .then(() => cargarCarrito())
+      .catch((err) => console.error("Error eliminando ítem:", err));
   };
 
-  // Vaciar carrito
+  // 🔹 Vaciar carrito
   const vaciarCarrito = () => {
     fetch("http://127.0.0.1:5000/carrito/vaciar", {
       method: "POST",
       credentials: "include",
     })
       .then((res) => res.json())
-      .then((data) => {
-        cargarCarrito();
-      })
+      .then(() => cargarCarrito())
       .catch((err) => console.error("Error vaciando carrito:", err));
   };
 
-  // Incrementar cantidad de un producto
+  // 🔹 Incrementar cantidad
   const incrementarItem = (id) => {
     setCarrito((prev) => {
       const nuevoCarrito = prev.map((item) =>
-        item.id_Stock === id ? { ...item, cantidad: item.cantidad + 1 } : item
+        item.id === id ? { ...item, cantidad: item.cantidad + 1 } : item
       );
       setTotal(
         nuevoCarrito.reduce((acc, item) => acc + item.Costo * item.cantidad, 0)
@@ -90,11 +97,11 @@ export function CarritoProvider({ children }) {
     });
   };
 
-  // Decrementar cantidad de un producto
+  // 🔹 Decrementar cantidad
   const decrementarItem = (id) => {
     setCarrito((prev) => {
       const nuevoCarrito = prev.map((item) =>
-        item.id_Stock === id && item.cantidad > 1
+        item.id === id && item.cantidad > 1
           ? { ...item, cantidad: item.cantidad - 1 }
           : item
       );
@@ -105,43 +112,17 @@ export function CarritoProvider({ children }) {
     });
   };
 
-  // Agregar producto o promoción
-  const agregarCarritoPromo = (id1) => {
-    fetch(`http://127.0.0.1:5000/carrito/agregarPromo/${id1}`, {
-      method: "POST",
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        cargarCarrito();
-      })
-      .catch((err) => console.error("Error agregando producto:", err));
-  };
-
-  const eliminarItemPromo = (id) => {
-    fetch(`http://127.0.0.1:5000/carrito/eliminar/promo/${id}`, {
-      method: "POST",
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        cargarCarrito();
-      })
-      .catch((err) => console.error("Error eliminando producto:", err));
-  };
-
   return (
     <CarritoContext.Provider
       value={{
         carrito,
         total,
         agregarCarrito,
+        agregarCarritoPromo,
         eliminarItem,
         vaciarCarrito,
         incrementarItem,
         decrementarItem,
-        agregarCarritoPromo,
-        eliminarItemPromo,
       }}
     >
       {children}

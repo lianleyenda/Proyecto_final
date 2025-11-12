@@ -15,7 +15,7 @@ export default function PromocionesSesion() {
   const [usuario, setUsuario] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // 👈 paginado
   const navigate = useNavigate();
-  const { agregarCarritoPromo } = useCarrito(); // ✅ Contexto del carrito
+  const { agregarCarritoProducto, agregarCarritoPromo } = useCarrito(); // ✅ Usamos ambas funciones
 
   // 🔹 Carga de datos
   useEffect(() => {
@@ -64,8 +64,6 @@ export default function PromocionesSesion() {
       </div>
     );
   }
-
-  
 
   // 🔹 Paginado simple
   const totalPages = 2;
@@ -140,7 +138,7 @@ export default function PromocionesSesion() {
                 <p>Precio: ${item.precio}</p>
                 <button
                   onClick={() => {
-                    agregarCarritoPromo(item.id);
+                    agregarCarritoPromo(item.id); // ✅ Usamos la función para promociones
                     setMostrarAnimacion(true);
                     setTimeout(() => setMostrarAnimacion(false), 1000);
                   }}
@@ -171,7 +169,15 @@ export default function PromocionesSesion() {
                 <h3>{item.Producto}</h3>
                 <p>Total Vendido: {item.total_vendido}</p>
                 <p>Precio: ${item.Costo}</p>
-                <button>Añadir al carrito</button>
+                <button
+                  onClick={() => {
+                    agregarCarritoProducto(item.id_Stock); // ✅ Usamos la función para productos
+                    setMostrarAnimacion(true);
+                    setTimeout(() => setMostrarAnimacion(false), 1000);
+                  }}
+                >
+                  Añadir al carrito
+                </button>
               </ol>
             ))}
           </ul>

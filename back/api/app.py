@@ -344,46 +344,62 @@ def ver_carrito():
 # 📌 Agregar producto al carrito
 # -----------------------------
 #lian
-@app.route("/carrito/agregar/<int:id_Stock>", methods=["POST"])
-def agregar_carrito(id_Stock):
+@app.route("/carrito/agregar_producto/<int:id_Stock>", methods=["POST"])
+def agregar_carrito_producto(id_Stock):
     db = get_db()
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT id_Stock, Producto, Costo FROM Productos WHERE id_Stock = %s", (id_Stock,))
-    producto = cursor.fetchone()
+    
+    cursor.execute("SELECT id_Stock AS id_item, Producto AS nombre, Costo AS precio FROM Productos WHERE id_Stock = %s", (id_Stock,))
+    item = cursor.fetchone()
     cursor.close()
     db.close()
 
-    if not producto:
+    if not item:
         return jsonify({"mensaje": "Producto no encontrado"}), 404
 
     carrito = session.get("carrito", [])
-    encontrado = False
-
-    for item in carrito:
-        if item["id_Stock"] == id_Stock:
-            item["cantidad"] += 1
-            encontrado = True
-            break
-
-    if not encontrado:
-        producto["cantidad"] = 1
-        carrito.append(producto)
-
+    item["tipo"] = "producto"
+    item["cantidad"] = 1
+    carrito.append(item)
     session["carrito"] = carrito
-    return jsonify({"mensaje": f"{producto['Producto']} agregado al carrito", "carrito": carrito}), 200
+
+    return jsonify({"mensaje": f"{item['nombre']} agregado al carrito", "carrito": carrito}), 200
+
+
+@app.route("/carrito/agregar_promo/<int:id>", methods=["POST"])
+def agregar_carrito_promo(id):
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    
+    cursor.execute("SELECT id AS id_item, nombre, precio FROM Promociones WHERE id = %s", (id,))
+    item = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if not item:
+        return jsonify({"mensaje": "Promoción no encontrada"}), 404
+
+    carrito = session.get("carrito_promo", [])
+    item["tipo"] = "promo"
+    item["cantidad"] = 1
+    carrito.append(item)
+    session["carrito_promo"] = carrito
+
+    return jsonify({"mensaje": f"{item['nombre']} agregado al carrito", "carrito": carrito}), 200
 
 
 # -----------------------------
 # 📌 Eliminar producto del carrito
 # -----------------------------
 #lian
-@app.route("/carrito/eliminar/<int:id_Stock>", methods=["POST"])
-def eliminar_carrito(id_Stock):
+@app.route("/carrito/eliminar/<int:id_item>", methods=["POST"])
+def eliminar_carrito(id_item):
     carrito = session.get("carrito", [])
-    carrito = [item for item in carrito if item["id_Stock"] != id_Stock]
+    carrito = [item for item in carrito if item["id"] != id_item]
     session["carrito"] = carrito
-    return jsonify({"mensaje": "Producto eliminado del carrito", "carrito": carrito}), 200
+    return jsonify({"mensaje": "Producto o promoción eliminado del carrito", "carrito": carrito}), 200
 
+#agragar borrar carrito promo
 
 # -----------------------------
 # 📌 Vaciar carrito
@@ -391,6 +407,7 @@ def eliminar_carrito(id_Stock):
 #lian
 @app.route("/carrito/vaciar", methods=["POST"])
 def vaciar_carrito():
+    session["carrito_promo"]
     session["carrito"] = []
     return jsonify({"mensaje": "Carrito vaciado", "carrito": []}), 200
 

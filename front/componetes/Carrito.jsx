@@ -12,38 +12,33 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
     vaciarCarrito,
     incrementarItem,
     decrementarItem,
-    
   } = useCarrito();
 
-  //actualizar la cantidad en el backend tambien
-  const actualizarCantidad = async (id_Stock, tipo) => {
-    const item = carrito.find((item) => item.id_Stock === id_Stock);
+  // Actualizar cantidad en frontend (y podrías hacer fetch al backend si querés sincronizar)
+  const actualizarCantidad = (id, tipo) => {
+    const item = carrito.find((item) => item.id === id);
     const nuevaCantidad =
       tipo === "incrementar" ? item.cantidad + 1 : item.cantidad - 1;
 
-    // Asegúrate de no permitir que la cantidad sea menor que 1
     if (nuevaCantidad < 1) return;
 
-    // Actualizar en el frontend
     if (tipo === "incrementar") {
-      incrementarItem(id_Stock); // Ya lo tenemos en el context
+      incrementarItem(id);
     } else {
-      decrementarItem(id_Stock); // Aquí llamas a decrementarItem para actualizar en el context
+      decrementarItem(id);
     }
   };
 
-   // Redirigir a la página de pago
+  // Redirigir a la página de pago
   const handlePagar = () => {
-    window.location.href = "/pago"; // Usamos window.location.href para redirigir
+    window.location.href = "/pago";
   };
 
-
-   useEffect(() => {
+  useEffect(() => {
     if (abrirAutomaticamente && carrito.length > 0) {
       setIsOpen(true);
     }
   }, [carrito, abrirAutomaticamente]);
-
 
   return (
     <div className="tipografia">
@@ -59,20 +54,22 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
         <button className="close-btn" onClick={() => setIsOpen(false)}>
           ✖
         </button>
-        <h2 color="#023973">Tu carrito</h2>
+        <h2 style={{ color: "#023973" }}>Tu carrito</h2>
 
         {carrito.length > 0 ? (
           <div className="pestaña">
             <ul>
               {carrito.map((item) => (
-                <li key={item.id_Stock}>
-                  <strong>🍔 {item.Producto}</strong>
+                <li key={item.id}>
+                  <strong>
+                    {item.tipo === "promocion" ? "🎁" : "🍔"} {item.nombre}
+                  </strong>
 
                   <div className="cantidad-badge">
                     {item.cantidad > 1 ? (
                       <button
                         onClick={() =>
-                          actualizarCantidad(item.id_Stock, "decrementar")
+                          actualizarCantidad(item.id, "decrementar")
                         }
                         className="circle-btn"
                       >
@@ -80,7 +77,7 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
                       </button>
                     ) : (
                       <button
-                        onClick={() => eliminarItem(item.id_Stock)}
+                        onClick={() => eliminarItem(item.id)}
                         className="circle-btn"
                       >
                         🗑
@@ -90,9 +87,7 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
                     <span className="cantidad">{item.cantidad}</span>
 
                     <button
-                      onClick={() =>
-                        actualizarCantidad(item.id_Stock, "incrementar")
-                      }
+                      onClick={() => actualizarCantidad(item.id, "incrementar")}
                       className="circle-btn"
                     >
                       +
@@ -109,7 +104,7 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
             <h3 className="pagar-vaciar-btn">Total: ${total}</h3>
             <div className="pagar-vaciar-btn">
               <button onClick={vaciarCarrito}>Vaciar carrito</button>
-              <button onClick={handlePagar} >Pagar</button>
+              <button onClick={handlePagar}>Pagar</button>
             </div>
           </div>
         ) : (

@@ -8,7 +8,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react"; // 🔹 Animacion
 
 function Sesion() {
   const [usuario, setUsuario] = useState(null);
-  const { agregarCarrito } = useCarrito();
+  const { agregarCarritoProducto, agregarCarritoPromo } = useCarrito(); // ✅ Usamos ambas funciones
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true); // 🔹 Estado de carga
@@ -56,7 +56,9 @@ function Sesion() {
           loop
           autoplay
         />
-        <p className="loader-text">🍔✨ Preparando el menú más sabroso para vos...</p>
+        <p className="loader-text">
+          🍔✨ Preparando el menú más sabroso para vos...
+        </p>
       </div>
     );
   }
@@ -100,7 +102,7 @@ function Sesion() {
               />
             )}
 
-            <SidebarCarrito abrirAutomaticamente={true}/>
+            <SidebarCarrito abrirAutomaticamente={true} />
           </div>
         </nav>
       </header>
@@ -125,7 +127,7 @@ function Sesion() {
               <p>Precio: ${item.Costo}</p>
               <button
                 onClick={() => {
-                  agregarCarrito(item.id_Stock);
+                  agregarCarritoProducto(item.id_Stock); // ✅ Usamos la función de producto
                   setMostrarAnimacion(true);
                   setTimeout(() => setMostrarAnimacion(false), 1000);
                 }}
