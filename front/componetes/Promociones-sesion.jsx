@@ -65,6 +65,8 @@ export default function PromocionesSesion() {
     );
   }
 
+  
+
   // 🔹 Paginado simple
   const totalPages = 2;
   const nextPage = () => {
