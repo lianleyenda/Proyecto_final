@@ -119,3 +119,5 @@ def test_guardar_contacto_campos_incompletos(client):
     assert response.is_json
     data = response.get_json()
     assert data["mensaje"] == "Todos los campos son requeridos"
+
+
