@@ -123,6 +123,7 @@ def test_guardar_contacto_campos_incompletos(client):
 
 
 
+
 def test_productos_mas_vendidos(client):
     """Test para el endpoint '/productos-mas-vendidos' que obtiene los 10 productos más vendidos"""
 
@@ -162,7 +163,6 @@ def test_productos_mas_vendidos_vacio(client, mocker):
     data = response.get_json()
     assert isinstance(data, list)
     assert len(data) == 0
-
 
 
 

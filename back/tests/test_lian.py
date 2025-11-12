@@ -126,6 +126,33 @@ def test_modificar_usuario_exitoso(client, db, email_unico ):
     assert response.status_code == 200
     assert "Usuario con ID" in response.get_json()["mensaje"]
 
+def test_usuario_no_cambia(client, mocker):
+    # Simula que la consulta a la base no devuelve nada (usuario inexistente)
+    mock_cursor = mocker.MagicMock()
+    mock_cursor.fetchone.return_value = None
+
+    # Simula la conexión a la base
+    mock_db = mocker.MagicMock()
+    mock_db.cursor.return_value = mock_cursor
+
+    # Parchea la función get_db para que devuelva la base simulada
+    mocker.patch("api.app.get_db", return_value=mock_db)
+
+    # Hace la solicitud PUT al endpoint /inicio/cambiar/9999
+    response = client.put("/inicio/cambiar/9999", json={
+        "Usuario": "NuevoNombre",
+        "Email": "nuevo@mail.com",
+        "Password": "1234"
+    })
+
+    # Obtiene la respuesta JSON
+    data = response.get_json()
+
+    # Verifica el código de estado y el mensaje
+    assert response.status_code == 404
+    assert data["mensaje"] == "No se encuentra el usuario"
+
+
 def test_carrito(client):
     """Test para el endpoint '/menu' que lista los productos"""
     with client.session_transaction() as sess:
@@ -154,6 +181,60 @@ def test_carrito(client):
 
     # Verificamos el total
     assert productos["total"] == 250.0
+    with client.session_transaction() as sess:
+        sess['carrito'] = []
+
+
+
+
+
+def test_Borra_usuario_exitoso(client,db, email_unico):
+    """Test de que funcione el borrado de usuario"""
+
+ # Simula que la consulta a la base no devuelve nada (usuario inexistente)
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO Usuarios (Usuario, Email, Password) VALUES (%s, %s, %s)", 
+                   ("usuario_original", email_unico, "1234"))
+    id_usuario = cursor.lastrowid
+    db.commit()
+
+    
+    
+    
+    response = client.delete(f"/inicio/borrar/{id_usuario}")
+
+    # Obtiene la respuesta JSON
+    data = response.get_json()
+
+    # Verifica el código de estado y el mensaje
+    assert response.status_code == 200
+    assert data["mensaje"] == f"Usuario con ID {id_usuario} eliminado correctamente"
+
+
+
+def test_Borrar_usuario_fallido(client, mocker):
+    # Simula cursor
+    mock_cursor = mocker.MagicMock()
+    mock_cursor.rowcount = 0  # ninguna fila afectada
+
+    # Simula la conexión a la base
+    mock_db = mocker.MagicMock()
+    mock_db.cursor.return_value = mock_cursor
+
+    # Parchea get_db
+    mocker.patch("api.app.get_db", return_value=mock_db)
+
+    # Hace la solicitud DELETE al endpoint
+    response = client.delete("/inicio/borrar/9999")
+
+    data = response.get_json()
+
+    assert response.status_code == 404
+    assert data["mensaje"] == "No se encontró el usuario"
+
+
+
+
 
 
 

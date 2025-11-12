@@ -20,6 +20,8 @@ pipenv install flask-cors
 pipenv install werkzeug
 pipenv install pytest pytest-flask
 pipenv install cloudinary
+pip install pytest-mock
+
 
 
 
