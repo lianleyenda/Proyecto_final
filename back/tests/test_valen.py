@@ -125,46 +125,76 @@ def test_guardar_contacto_campos_incompletos(client):
 
 
 def test_productos_mas_vendidos(client):
-    """Test para el endpoint '/productos-mas-vendidos' que devuelve los productos más vendidos"""
-    # Realiza una solicitud GET al endpoint
-    response = client.get("/productos-mas-vendidos")
-    # Verificamos que la respuesta sea exitosa
+    """Test para el endpoint '/productos-mas-vendidos' que obtiene los 10 productos más vendidos"""
+
+    response = client.get('/productos-mas-vendidos')
     assert response.status_code == 200
-    assert response.is_json
+    assert response.is_json  # Verifica que sea JSON
     # Convertimos la respuesta a formato Python
-    data = response.get_json()
-    # Verifica que la respuesta sea una lista
-    assert isinstance(data, list)
-    # Si hay productos, revisamos el primero
-    if len(data) > 0:
-        producto = data[0]
-        # Verifica que tenga las claves esperadas
+    productos = response.get_json()
+    assert isinstance(productos, list)
+    assert len(productos) <= 10
+    for producto in productos:
         assert "Producto" in producto
         assert "total_vendido" in producto
-        # Verifica que total_vendido sea un número entero o flotante
+        # Verificamos que total_vendido sea un número positivo o cero
         assert isinstance(producto["total_vendido"], (int, float))
-        # Verifica que el total vendido sea mayor o igual a 0
         assert producto["total_vendido"] >= 0
-    # Verifica que haya 10 o menos resultados
-    assert len(data) <= 10
+    # Opcional: Verificamos que la lista esté ordenada de mayor a menor según total_vendido
+    vendidos = [p["total_vendido"] for p in productos]
+    assert vendidos == sorted(vendidos, reverse=True)
+
+
 
 
 def test_productos_mas_vendidos_vacio(client, mocker):
     """Test que simula el caso cuando no hay productos vendidos"""
-    # Simulamos que la base de datos devuelve una lista vacía
     mock_cursor = mocker.MagicMock()
     mock_cursor.fetchall.return_value = []
     mock_conn = mocker.MagicMock()
     mock_conn.cursor.return_value = mock_cursor
-    mocker.patch("tu_archivo.get_db", return_value=mock_conn)  
-    # 👆 reemplazá "tu_archivo" por el nombre real del archivo donde está la función get_db
-    # Llamamos al endpoint
+
+    mocker.patch("api.app.get_db", return_value=mock_conn)
+
     response = client.get("/productos-mas-vendidos")
-    # Verificamos que responda con 200 aunque no haya resultados
+
     assert response.status_code == 200
     assert response.is_json
-    # Debe devolver una lista vacía
     data = response.get_json()
     assert isinstance(data, list)
     assert len(data) == 0
 
+
+
+def test_top_compradores(client):
+    response = client.get('/usuarios/top-compradores')
+    assert response.status_code == 200
+    assert response.is_json
+    usuarios = response.get_json()
+    assert isinstance(usuarios, list)
+    assert len(usuarios) <= 5
+    for u in usuarios:
+        assert "Usuario" in u
+        assert "total_compras" in u
+        assert "monto_total" in u
+        assert isinstance(u["total_compras"], (int, float))
+        assert u["total_compras"] >= 0
+        assert isinstance(u["monto_total"], (int, float))
+        assert u["monto_total"] >= 0
+    montos = [u["monto_total"] for u in usuarios]
+    assert montos == sorted(montos, reverse=True)
+
+
+
+def test_top_compradores_vacio(client, mocker):
+    mock_cursor = mocker.MagicMock()
+    mock_cursor.fetchall.return_value = []
+    mock_conn = mocker.MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    mocker.patch("api.app.get_db", return_value=mock_conn)
+    response = client.get("/usuarios/top-compradores")
+    assert response.status_code == 200
+    assert response.is_json
+    data = response.get_json()
+    assert isinstance(data, list)
+    assert len(data) == 0

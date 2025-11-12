@@ -611,14 +611,17 @@ def productos_mas_vendidos():
     
     # Obtener los resultados
     resultados = cursor.fetchall()
-    
+
+    # Convertimos total_vendido a int
+    for fila in resultados:
+        fila['total_vendido'] = int(fila['total_vendido'] or 0)  # por si es NULL
+
     # Cerrar la conexión
     cursor.close()
     conn.close()
     
     # Retornar los resultados como JSON
     return jsonify(resultados)
-
 
 #lian
 @app.route('/productos/promedio-precios', methods=['GET'])
@@ -1099,12 +1102,12 @@ def agregar_carrito_promo(idPromo):
     session["carrito"] = carrito
     return jsonify({"mensaje": "Promoción agregada", "carrito": carrito}), 200
 
-cloudinary.config(
-   cloud_name=os.getenv("CLOUND_NAME"),
-   api_key=int(os.getenv("CLOUND_KEY")),
-   api_secret=os.getenv("CLOUND_SECRET"),
-   secure=True
-)
+# cloudinary.config(
+#    cloud_name=os.getenv("CLOUND_NAME"),
+#    api_key=int(os.getenv("CLOUND_KEY")),
+#    api_secret=os.getenv("CLOUND_SECRET"),
+#    secure=True
+# )
 
 
 

@@ -213,24 +213,22 @@ def test_Borra_usuario_exitoso(client,db, email_unico):
 
 
 def test_Borrar_usuario_fallido(client, mocker):
-    # Simula que la consulta a la base no devuelve nada (usuario inexistente)
+    # Simula cursor
     mock_cursor = mocker.MagicMock()
-    mock_cursor.fetchone.return_value = None
+    mock_cursor.rowcount = 0  # ninguna fila afectada
 
     # Simula la conexión a la base
     mock_db = mocker.MagicMock()
     mock_db.cursor.return_value = mock_cursor
 
-    # Parchea la función get_db para que devuelva la base simulada
+    # Parchea get_db
     mocker.patch("api.app.get_db", return_value=mock_db)
 
-    # Hace la solicitud PUT al endpoint /inicio/cambiar/9999
-    response = client.put("/inicio/borrar/9999")
+    # Hace la solicitud DELETE al endpoint
+    response = client.delete("/inicio/borrar/9999")
 
-    # Obtiene la respuesta JSON
     data = response.get_json()
 
-    # Verifica el código de estado y el mensaje
     assert response.status_code == 404
     assert data["mensaje"] == "No se encontró el usuario"
 
