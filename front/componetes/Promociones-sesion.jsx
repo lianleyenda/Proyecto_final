@@ -15,7 +15,7 @@ export default function PromocionesSesion() {
   const [usuario, setUsuario] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // 👈 paginado
   const navigate = useNavigate();
-  const {  agregarCarritoPromo } = useCarrito(); // ✅ Usamos ambas funciones
+  const { cargarCarrito, agregarCarritoPromo } = useCarrito(); // ✅ Usamos ambas funciones
 
   // 🔹 Carga de datos
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function PromocionesSesion() {
       fetch("http://127.0.0.1:5000/Promociones").then((res) => res.json()),
       fetch("http://127.0.0.1:5000/productos-mas-vendidos").then((res) =>
         res.json()
-      ),
+      ),cargarCarrito()
     ])
       .then(([promosData, vendidosData]) => {
         setPromos(promosData);
