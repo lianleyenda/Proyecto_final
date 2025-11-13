@@ -169,16 +169,9 @@ export default function PromocionesSesion() {
                 <h3>{item.Producto}</h3>
                 <p>Total Vendido: {item.total_vendido}</p>
                 <p>Precio: ${item.Costo}</p>
-                <button
-                  onClick={() => {
-                    agregarCarritoProducto(item.id_Stock); // ✅ Usamos la función para productos
-                    setMostrarAnimacion(true);
-                    setTimeout(() => setMostrarAnimacion(false), 1000);
-                  }}
-                >
-                  Añadir al carrito
-                </button>
-              </ol>
+                
+                
+                              </ol>
             ))}
           </ul>
         </div>

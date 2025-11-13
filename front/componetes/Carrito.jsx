@@ -5,18 +5,10 @@ import "../src/Carrito.css";
 
 function SidebarCarrito({ abrirAutomaticamente = false }) {
   const [isOpen, setIsOpen] = useState(false);
-  const {
-    carrito,
-    total,
-    eliminarItem,
-    vaciarCarrito,
-    incrementarItem,
-    decrementarItem,
-  } = useCarrito();
+  const { carrito, carrito_promo, total, eliminarItem, eliminarItemPromo, vaciarCarrito, incrementarItem, decrementarItem } = useCarrito();
 
-  // Actualizar cantidad en frontend (y podrías hacer fetch al backend si querés sincronizar)
   const actualizarCantidad = (id, tipo) => {
-    const item = carrito.find((item) => item.id === id);
+    const item = carrito.find((item) => item.id === id || item.id_Stock === id);
     const nuevaCantidad =
       tipo === "incrementar" ? item.cantidad + 1 : item.cantidad - 1;
 
@@ -29,7 +21,6 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
     }
   };
 
-  // Redirigir a la página de pago
   const handlePagar = () => {
     window.location.href = "/pago";
   };
@@ -46,61 +37,50 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
         <TiShoppingCart size={40} />
       </button>
 
-      {isOpen && (
-        <div className="overlay" onClick={() => setIsOpen(false)}></div>
-      )}
+      {isOpen && <div className="overlay" onClick={() => setIsOpen(false)}></div>}
 
       <div className={`sidebar ${isOpen ? "open" : ""}`}>
         <button className="close-btn" onClick={() => setIsOpen(false)}>
           ✖
         </button>
+
         <h2 style={{ color: "#023973" }}>Tu carrito</h2>
 
         {carrito.length > 0 ? (
           <div className="pestaña">
-            <ul>
-              {carrito.map((item) => (
-                <li key={item.id}>
-                  <strong>
-                    {item.tipo === "promocion" ? "🎁" : "🍔"} {item.nombre}
-                  </strong>
+            {/* Productos */}
+            <h3 style={{ color: "#023973" }}>🛒 Tus Productos</h3>
+<ul>
+  {carrito.map((item) => (
+    <li key={item.id_Stock}>
+      <span>{item.nombre}</span>
+      <span>${item.precio}</span>
+      <div className="cantidad-badge">
+        <button onClick={() => decrementarItem(item.id_Stock)}>-</button>
+        <span>{item.cantidad}</span>
+        <button onClick={() => incrementarItem(item.id_Stock)}>+</button>
+      </div>
+      <button onClick={() => eliminarItem(item.id_Stock)}>🗑</button>
+    </li>
+  ))}
+</ul>
 
-                  <div className="cantidad-badge">
-                    {item.cantidad > 1 ? (
-                      <button
-                        onClick={() =>
-                          actualizarCantidad(item.id, "decrementar")
-                        }
-                        className="circle-btn"
-                      >
-                        −
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => eliminarItem(item.id)}
-                        className="circle-btn"
-                      >
-                        🗑
-                      </button>
-                    )}
+<h3 style={{ color: "#023973" }}>🎁 Tus Promos</h3>
+<ul>
+  {carrito_promo.map((item) => (
+    <li key={item.id}>
+      <span>{item.nombre}</span>
+      <span>${item.precio}</span>
+      <div className="cantidad-badge">
+        <button onClick={() => decrementarItem(item.id)}>-</button>
+        <span>{item.cantidad}</span>
+        <button onClick={() => incrementarItem(item.id)}>+</button>
+      </div>
+      <button onClick={() => eliminarItemPromo(item.id)}>🗑</button>
+    </li>
+  ))}
+</ul>
 
-                    <span className="cantidad">{item.cantidad}</span>
-
-                    <button
-                      onClick={() => actualizarCantidad(item.id, "incrementar")}
-                      className="circle-btn"
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  <span className="precio">
-                    ${item.Costo} x {item.cantidad} = $
-                    {item.Costo * item.cantidad}
-                  </span>
-                </li>
-              ))}
-            </ul>
             <h3 className="pagar-vaciar-btn">Total: ${total}</h3>
             <div className="pagar-vaciar-btn">
               <button onClick={vaciarCarrito}>Vaciar carrito</button>

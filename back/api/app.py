@@ -5,8 +5,8 @@ from flask_cors import CORS
 import os
 request
 from werkzeug.security import generate_password_hash, check_password_hash
-import cloudinary
-import cloudinary.uploader
+# import cloudinary
+# import cloudinary.uploader
 
 
 load_dotenv()#lee la funciones
@@ -325,6 +325,8 @@ def iniciar_carrito():
     # Si el carrito no existe en la sesión, lo creamos como una lista vacía.
     if "carrito" not in session:
         session["carrito"] = []
+    if "carrito_promo" not in session:
+        session["carrito_promo"] = []
 
 
     
@@ -336,70 +338,111 @@ def iniciar_carrito():
 @app.route("/carrito", methods=["GET"])
 def ver_carrito():
     carrito = session.get("carrito", [])
-    total = sum(float(item["Costo"]) * item["cantidad"] for item in carrito)
-    return jsonify({"carrito": carrito, "total": total}), 200
+    carrito_promo = session.get("carrito_promo", [])
 
+    # 🔹 Unificamos para calcular el total
+    total_productos = sum(float(item.get("Costo", 0)) * item.get("cantidad", 1) for item in carrito)
+    total_promos = sum(float(item.get("precio", 0)) * item.get("cantidad", 1) for item in carrito_promo)
+    total = total_productos + total_promos
+
+    return jsonify({
+        "carrito": carrito,
+        "carrito_promo": carrito_promo,
+        "total": total
+    }), 200
 
 # -----------------------------
 # 📌 Agregar producto al carrito
 # -----------------------------
 #lian
-@app.route("/carrito/agregar_producto/<int:id_Stock>", methods=["POST"])
-def agregar_carrito_producto(id_Stock):
+# 🟩 Agregar producto
+@app.route("/carrito/agregar_producto/<int:id>", methods=["POST"])
+def agregar_producto(id):
     db = get_db()
     cursor = db.cursor(dictionary=True)
-    
-    cursor.execute("SELECT id_Stock AS id_item, Producto AS nombre, Costo AS precio FROM Productos WHERE id_Stock = %s", (id_Stock,))
+
+    cursor.execute(
+        "SELECT id_Stock AS id_item, Producto AS nombre, Costo FROM Productos WHERE id_Stock = %s",
+        (id,)
+    )
     item = cursor.fetchone()
-    cursor.close()
-    db.close()
-
     if not item:
-        return jsonify({"mensaje": "Producto no encontrado"}), 404
+        return jsonify({"error": "Producto no encontrado"}), 404
 
-    carrito = session.get("carrito", [])
-    item["tipo"] = "producto"
-    item["cantidad"] = 1
-    carrito.append(item)
+    if "carrito" not in session:
+        session["carrito"] = []
+
+    carrito = session["carrito"]
+
+    for p in carrito:
+        if p["id"] == item["id_item"]:
+            p["cantidad"] += 1
+            session.modified = True
+            break
+    else:
+        carrito.append({
+            "id": item["id_item"],
+            "nombre": item["nombre"],
+            "Costo": float(item["Costo"]),  # 👈 mantenemos Costo
+            "cantidad": 1
+        })
+        session.modified = True
+
     session["carrito"] = carrito
+    return jsonify({"mensaje": "Producto agregado", "carrito": carrito}), 200
 
-    return jsonify({"mensaje": f"{item['nombre']} agregado al carrito", "carrito": carrito}), 200
-
-
+# 🟦 Agregar promo
 @app.route("/carrito/agregar_promo/<int:id>", methods=["POST"])
-def agregar_carrito_promo(id):
+def agregar_promo(id):
     db = get_db()
     cursor = db.cursor(dictionary=True)
-    
-    cursor.execute("SELECT id AS id_item, nombre, precio FROM Promociones WHERE id = %s", (id,))
+
+    cursor.execute("SELECT id, nombre, precio FROM Promos WHERE id = %s", (id,))
     item = cursor.fetchone()
-    cursor.close()
-    db.close()
-
     if not item:
-        return jsonify({"mensaje": "Promoción no encontrada"}), 404
+        return jsonify({"error": "Promoción no encontrada"}), 404
 
-    carrito = session.get("carrito_promo", [])
-    item["tipo"] = "promo"
-    item["cantidad"] = 1
-    carrito.append(item)
-    session["carrito_promo"] = carrito
+    if "carrito_promo" not in session:
+        session["carrito_promo"] = []
 
-    return jsonify({"mensaje": f"{item['nombre']} agregado al carrito", "carrito": carrito}), 200
+    carrito_promo = session["carrito_promo"]
 
+    for p in carrito_promo:
+        if p["id"] == item["id"]:
+            p["cantidad"] += 1
+            session.modified = True
+            break
+    else:
+        carrito_promo.append({
+            "id": item["id"],
+            "nombre": item["nombre"],
+            "precio": float(item["precio"]),  # 👈 mantenemos precio
+            "cantidad": 1
+        })
+        session.modified = True
+
+    session["carrito_promo"] = carrito_promo
+    return jsonify({"mensaje": "Promoción agregada", "carrito_promo": carrito_promo}), 200
 
 # -----------------------------
 # 📌 Eliminar producto del carrito
 # -----------------------------
 #lian
-@app.route("/carrito/eliminar/<int:id_item>", methods=["POST"])
-def eliminar_carrito(id_item):
+@app.route("/carrito/eliminar/<int:id_Stock>", methods=["POST"])
+def eliminar_carrito(id_Stock):
     carrito = session.get("carrito", [])
-    carrito = [item for item in carrito if item["id"] != id_item]
+    carrito = [item for item in carrito if item["id_Stock"] != id_Stock]
     session["carrito"] = carrito
-    return jsonify({"mensaje": "Producto o promoción eliminado del carrito", "carrito": carrito}), 200
+    return jsonify({"mensaje": "Producto eliminado del carrito", "carrito": carrito}), 200
 
-#agragar borrar carrito promo
+
+@app.route("/carrito/eliminar_promo/<int:id>", methods=["POST"])
+def eliminar_carrito_promo(id):
+    carrito_promo = session.get("carrito_promo", [])
+    carrito_promo = [item for item in carrito_promo if item["id"] != id]
+    session["carrito_promo"] = carrito_promo
+    return jsonify({"mensaje": "Promoción eliminada del carrito", "carrito_promo": carrito_promo}), 200
+
 
 # -----------------------------
 # 📌 Vaciar carrito
@@ -407,9 +450,9 @@ def eliminar_carrito(id_item):
 #lian
 @app.route("/carrito/vaciar", methods=["POST"])
 def vaciar_carrito():
-    session["carrito_promo"]
     session["carrito"] = []
-    return jsonify({"mensaje": "Carrito vaciado", "carrito": []}), 200
+    session["carrito_promo"] = []
+    return jsonify({"mensaje": "Carrito vaciado", "carrito": [], "carrito_promo": []}), 200
 
 
 
@@ -700,7 +743,7 @@ def top_compradores():
 
 #lian
 @app.route('/productos/agregar', methods=['POST'])
-def agregar_producto():
+def agregar_producto2():
     db = get_db()
     cursor = db.cursor()
 
@@ -857,12 +900,6 @@ def empleados_por_sucursal():
 # 📌 Eliminar producto del carrito PROMOCIONES
 # -----------------------------
 #lian
-@app.route("/carrito/eliminar/promo/<int:id>", methods=["POST"])
-def eliminar_carrito_promo(id):
-    carrito = session.get("carrito", [])
-    carrito = [item for item in carrito if item["id"] != id]
-    session["carrito"] = carrito
-    return jsonify({"mensaje": "Producto eliminado del carrito", "carrito": carrito}), 200
 
 
 #lian
@@ -941,37 +978,37 @@ FROM Ventas as a
 # --------------------------------------
 # 📌 ADMIN: Agregar un nuevo producto
 # --------------------------------------
-@app.route('/admin/productos', methods=['POST'])
-def admin_agregar_producto():
-    data = request.get_json()
+# @app.route('/admin/productos', methods=['POST'])
+# def admin_agregar_producto():
+#     data = request.get_json()
     
-    imagen = request.files.get("Imagen")#trae el file deñ front al back
+#     imagen = request.files.get("Imagen")#trae el file deñ front al back
     
-    # Validar campos obligatorios
+#     # Validar campos obligatorios
    
     
-    imagen_url = None
-    if imagen:
-        try:
-            upload_result = cloudinary.uploader.upload(imagen)
-            imagen_url = upload_result["secure_url"]
-        except Exception as e:
-            return jsonify({"error": f"Error al subir imagen: {str(e)}"}), 500
+#     # imagen_url = None
+#     # if imagen:
+#     #     try:
+#     #         upload_result = cloudinary.uploader.upload(imagen)
+#     #         imagen_url = upload_result["secure_url"]
+#     #     except Exception as e:
+#     #         return jsonify({"error": f"Error al subir imagen: {str(e)}"}), 500
     
-    db = get_db()
-    cursor = db.cursor()
+#     db = get_db()
+#     cursor = db.cursor()
 
-    cursor.execute("""
-        INSERT INTO Productos (Imagen)
-        VALUES (%s)
-    """, (imagen_url))
-    db.commit()
+#     cursor.execute("""
+#         INSERT INTO Productos (Imagen)
+#         VALUES (%s)
+#     """, (imagen_url))
+#     db.commit()
 
-    nuevo_id = cursor.lastrowid
-    cursor.close()
-    db.close()
+#     nuevo_id = cursor.lastrowid
+#     cursor.close()
+#     db.close()
 
-    return jsonify({'mensaje': 'Producto agregado exitosamente', 'id': nuevo_id}), 201
+#     return jsonify({'mensaje': 'Producto agregado exitosamente', 'id': nuevo_id}), 201
 
 
 # --------------------------------------
@@ -1036,71 +1073,9 @@ def buscar_opiniones(palabra):
 
 
 #valen
-@app.route("/carrito/agregarPromo/<int:id>", methods=["POST"])
-def agregar_promo_carrito(id):
-    db = get_db()
-    cursor = db.cursor(dictionary=True)
-    cursor.execute(
-        "SELECT id, nombre AS Producto, precio AS Costo FROM Promociones WHERE id = %s",
-        (id,),
-    )
-    promo = cursor.fetchone()
-    cursor.close()
-    db.close()
-
-    if not promo:
-        return jsonify({"mensaje": "Promoción no encontrada"}), 404
-
-    carrito = session.get("carrito", [])
-    encontrado = False
-
-    for item in carrito:
-        if item.get("id") == id:
-            item["cantidad"] += 1
-            encontrado = True
-            break
-
-    if not encontrado:
-        promo["cantidad"] = 1
-        carrito.append(promo)
-
-    session["carrito"] = carrito
-    return jsonify(
-        {"mensaje": f"{promo['Producto']} agregado al carrito", "carrito": carrito}
-    ), 200
 
 
 
-@app.route("/carrito/agregarPromo/<int:idPromo>", methods=["POST"])
-def agregar_carrito_promo(idPromo):
-    db = get_db()
-    cursor = db.cursor(dictionary=True)
-    
-    # Buscar promo
-    cursor.execute("SELECT id, nombre, precio, imagen_nombre FROM Promociones WHERE id = %s", (idPromo,))
-    promo = cursor.fetchone()
-
-    if not promo:
-        return jsonify({"mensaje": "Promoción no encontrada"}), 404
-
-    carrito = session.get("carrito", [])
-
-    for item in carrito:
-        if item.get("idPromo") == idPromo:
-            item["cantidad"] += 1
-            session["carrito"] = carrito
-            return jsonify({"mensaje": f"{promo['nombre']} agregada", "carrito": carrito}), 200
-
-    carrito.append({
-        "idPromo": promo["id"],
-        "Producto": promo["nombre"],
-        "Costo": promo["precio"],
-        "imagen": promo["imagen_nombre"],
-        "cantidad": 1
-    })
-
-    session["carrito"] = carrito
-    return jsonify({"mensaje": "Promoción agregada", "carrito": carrito}), 200
 
 # cloudinary.config(
 #    cloud_name=os.getenv("CLOUND_NAME"),

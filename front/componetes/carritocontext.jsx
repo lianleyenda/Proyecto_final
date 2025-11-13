@@ -1,3 +1,4 @@
+
 // src/CarritoContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 
@@ -14,32 +15,31 @@ export function CarritoProvider({ children }) {
 
   // 🔹 Cargar carrito desde backend
   const cargarCarrito = () => {
-    fetch("http://127.0.0.1:5000/carrito", {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.carrito) return;
-        const carritoConCantidad = data.carrito.map((item) => ({
-          ...item,
-          cantidad: item.cantidad || 1,
-          Costo: Number(item.Costo),
-        }));
-        setCarrito(carritoConCantidad);
-        setTotal(
-          carritoConCantidad.reduce(
-            (acc, item) => acc + item.Costo * item.cantidad,
-            0
-          )
-        );
-      })
-      .catch((err) => console.error("Error cargando carrito:", err));
-  };
+  fetch("http://127.0.0.1:5000/carrito", {
+    method: "GET",
+    credentials: "include",
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      const carritoProductos = data.carrito?.map((item) => ({
+        ...item,
+        cantidad: item.cantidad || 1,
+        precio: Number(item.Costo), // 🔹 de Productos
+      })) || [];
 
-  useEffect(() => {
-    cargarCarrito();
-  }, []);
+      const carritoPromos = data.carrito_promo?.map((item) => ({
+        ...item,
+        cantidad: item.cantidad || 1,
+        precio: Number(item.precio), // 🔹 de Promos
+      })) || [];
+
+      setCarrito(carritoProductos);
+      setCarrito_promo(carritoPromos);
+      setTotal(data.total || 0);
+    })
+    .catch((err) => console.error("Error cargando carrito:", err));
+};
+
 
   // 🔹 Agregar producto o promoción
   const agregarCarrito = (id) => {
@@ -72,6 +72,18 @@ export function CarritoProvider({ children }) {
       .then(() => cargarCarrito())
       .catch((err) => console.error("Error eliminando ítem:", err));
   };
+
+
+  const eliminarItemPromo = (id) => {
+    fetch(`http://127.0.0.1:5000/carrito/eliminar_promo/${id}`, {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then(() => cargarCarrito())
+      .catch((err) => console.error("Error eliminando ítem:", err));
+  };
+
 
   // 🔹 Vaciar carrito
   const vaciarCarrito = () => {
@@ -116,10 +128,12 @@ export function CarritoProvider({ children }) {
     <CarritoContext.Provider
       value={{
         carrito,
+        carrito_promo,
         total,
         agregarCarrito,
         agregarCarritoPromo,
         eliminarItem,
+        eliminarItemPromo,
         vaciarCarrito,
         incrementarItem,
         decrementarItem,
