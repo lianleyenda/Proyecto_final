@@ -124,6 +124,35 @@ export function CarritoProvider({ children }) {
     });
   };
 
+
+   // 🔹 Incrementar cantidad
+  const incrementarItemPromo = (id) => {
+    setCarrito_promo((prev) => {
+      const nuevoCarrito = prev.map((item) =>
+        item.id === id ? { ...item, cantidad: item.cantidad + 1 } : item
+      );
+      setTotal(
+        nuevoCarrito.reduce((acc, item) => acc + <item className="precio"></item> * item.cantidad, 0)
+      );
+      return nuevoCarrito;
+    });
+  };
+
+  // 🔹 Decrementar cantidad
+  const decrementarItemPromo = (id) => {
+    setCarrito_promo((prev) => {
+      const nuevoCarrito = prev.map((item) =>
+        item.id === id && item.cantidad > 1
+          ? { ...item, cantidad: item.cantidad - 1 }
+          : item
+      );
+      setTotal(
+        nuevoCarrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0)
+      );
+      return nuevoCarrito;
+    });
+  };
+
   return (
     <CarritoContext.Provider
       value={{
@@ -133,10 +162,13 @@ export function CarritoProvider({ children }) {
         agregarCarrito,
         agregarCarritoPromo,
         eliminarItem,
+        cargarCarrito,
         eliminarItemPromo,
         vaciarCarrito,
         incrementarItem,
         decrementarItem,
+        incrementarItemPromo,
+        decrementarItemPromo,
       }}
     >
       {children}

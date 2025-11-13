@@ -172,7 +172,7 @@ header.scrolled h2 {
 }
 
 .navbar-right button {
-  margin-left: -20px;
+  /*margin-left: -20px;*/
   color: #023973;
   flex-grow: 1;
 }

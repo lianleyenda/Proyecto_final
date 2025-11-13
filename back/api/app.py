@@ -397,7 +397,7 @@ def agregar_promo(id):
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT id, nombre, precio FROM Promos WHERE id = %s", (id,))
+    cursor.execute("SELECT id, nombre, precio FROM Promociones WHERE id = %s", (id,))
     item = cursor.fetchone()
     if not item:
         return jsonify({"error": "Promoción no encontrada"}), 404
@@ -431,7 +431,7 @@ def agregar_promo(id):
 @app.route("/carrito/eliminar/<int:id_Stock>", methods=["POST"])
 def eliminar_carrito(id_Stock):
     carrito = session.get("carrito", [])
-    carrito = [item for item in carrito if item["id_Stock"] != id_Stock]
+    carrito = [item for item in carrito if item["id"] != id_Stock]
     session["carrito"] = carrito
     return jsonify({"mensaje": "Producto eliminado del carrito", "carrito": carrito}), 200
 

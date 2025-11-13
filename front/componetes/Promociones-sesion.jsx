@@ -15,7 +15,7 @@ export default function PromocionesSesion() {
   const [usuario, setUsuario] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // 👈 paginado
   const navigate = useNavigate();
-  const { agregarCarritoProducto, agregarCarritoPromo } = useCarrito(); // ✅ Usamos ambas funciones
+  const {  agregarCarritoPromo } = useCarrito(); // ✅ Usamos ambas funciones
 
   // 🔹 Carga de datos
   useEffect(() => {
@@ -105,7 +105,7 @@ export default function PromocionesSesion() {
                 }}
               />
             )}
-            <SidebarCarrito />
+            <SidebarCarrito abrirAutomaticamente={true}/>
           </div>
         </nav>
       </header>
@@ -139,8 +139,8 @@ export default function PromocionesSesion() {
                 <button
                   onClick={() => {
                     agregarCarritoPromo(item.id); // ✅ Usamos la función para promociones
-                    setMostrarAnimacion(true);
-                    setTimeout(() => setMostrarAnimacion(false), 1000);
+                    // setMostrarAnimacion(true);
+                    // setTimeout(() => setMostrarAnimacion(false), 1000);
                   }}
                 >
                   Añadir al carrito

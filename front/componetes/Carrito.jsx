@@ -5,7 +5,7 @@ import "../src/Carrito.css";
 
 function SidebarCarrito({ abrirAutomaticamente = false }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { carrito, carrito_promo, total, eliminarItem, eliminarItemPromo, vaciarCarrito, incrementarItem, decrementarItem } = useCarrito();
+  const { carrito, carrito_promo, cargarCarrito, total, eliminarItem, eliminarItemPromo, vaciarCarrito, incrementarItem, decrementarItem, incrementarItemPromo, decrementarItemPromo } = useCarrito();
 
   const actualizarCantidad = (id, tipo) => {
     const item = carrito.find((item) => item.id === id || item.id_Stock === id);
@@ -31,6 +31,7 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
     }
   }, [carrito, abrirAutomaticamente]);
 
+
   return (
     <div className="tipografia">
       <button className="carrito-btn" onClick={() => setIsOpen(true)}>
@@ -52,15 +53,15 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
             <h3 style={{ color: "#023973" }}>🛒 Tus Productos</h3>
 <ul>
   {carrito.map((item) => (
-    <li key={item.id_Stock}>
+    <li key={item.id}>
       <span>{item.nombre}</span>
       <span>${item.precio}</span>
       <div className="cantidad-badge">
-        <button onClick={() => decrementarItem(item.id_Stock)}>-</button>
+        <button onClick={() => decrementarItem(item.id)}>-</button>
         <span>{item.cantidad}</span>
-        <button onClick={() => incrementarItem(item.id_Stock)}>+</button>
+        <button onClick={() => incrementarItem(item.id)}>+</button>
       </div>
-      <button onClick={() => eliminarItem(item.id_Stock)}>🗑</button>
+      <button onClick={() => eliminarItem(item.id)}>🗑</button>
     </li>
   ))}
 </ul>
@@ -72,9 +73,9 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
       <span>{item.nombre}</span>
       <span>${item.precio}</span>
       <div className="cantidad-badge">
-        <button onClick={() => decrementarItem(item.id)}>-</button>
+        <button onClick={() => decrementarItemPromo(item.id)}>-</button>
         <span>{item.cantidad}</span>
-        <button onClick={() => incrementarItem(item.id)}>+</button>
+        <button onClick={() => incrementarItemPromo(item.id)}>+</button>
       </div>
       <button onClick={() => eliminarItemPromo(item.id)}>🗑</button>
     </li>
