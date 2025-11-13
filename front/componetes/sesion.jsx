@@ -8,7 +8,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react"; // 🔹 Animacion
 
 function Sesion() {
   const [usuario, setUsuario] = useState(null);
-  const { cargarCarrito,agregarCarrito} = useCarrito(); // ✅ Usamos ambas funciones
+  const { cargarCarrito, agregarCarrito } = useCarrito(); // ✅ Usamos ambas funciones
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true); // 🔹 Estado de carga
@@ -37,8 +37,8 @@ function Sesion() {
   }, []);
 
   useEffect(() => {
-  cargarCarrito();
-  },[])
+    cargarCarrito();
+  }, []);
   // 🔹 Scroll para header y héroe
   useEffect(() => {
     const handleScroll = () => {

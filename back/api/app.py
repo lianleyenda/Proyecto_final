@@ -1,29 +1,37 @@
 import mysql.connector
-from flask import Flask, g, request, jsonify, session, redirect, url_for, render_template
+from flask import (
+    Flask,
+    g,
+    request,
+    jsonify,
+    session,
+    redirect,
+    url_for,
+    render_template,
+)
 from dotenv import load_dotenv
 from flask_cors import CORS
 import os
+
 request
 from werkzeug.security import generate_password_hash, check_password_hash
+
 # import cloudinary
 # import cloudinary.uploader
 
 
-load_dotenv()#lee la funciones
+load_dotenv()  # lee la funciones
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
 data = {
-   'host': os.getenv("DB_HOST"),
-   'port': int(os.getenv("DB_PORT")),
-   'user': os.getenv("DB_USER"),
-   'password': os.getenv("DB_PASS"),
-   'database': os.getenv("DB_NAME")
+    "host": os.getenv("DB_HOST"),
+    "port": int(os.getenv("DB_PORT")),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASS"),
+    "database": os.getenv("DB_NAME"),
 }
-
-
-
 
 
 # Datos de conexión
@@ -32,29 +40,26 @@ data = {
 # Crear conexión
 
 
-#crea la conxion
+# crea la conxion
 def get_db():
     conn = mysql.connector.connect(**data)
     return conn
 
 
-
-
-
-#lian
-@app.route('/menu', methods=['GET'])
+# lian
+@app.route("/menu", methods=["GET"])
 def listar_productos():
     db = get_db()
     cursor = db.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM Productos')
+    cursor.execute("SELECT * FROM Productos")
     resultado = cursor.fetchall()
     cursor.close()
     db.close()
     return jsonify(resultado)  # 🔹 Solo la lista
 
 
-#lian
-@app.route('/stock/agregar', methods=['POST'])
+# lian
+@app.route("/stock/agregar", methods=["POST"])
 def agregar():
     """
     Endpoint para agregar un nuevo registro de Stock.
@@ -62,142 +67,152 @@ def agregar():
       - Producto: nombre del producto
       - Cantidad: cantidad de unidades del producto
     """
-    
+
     # 📥 Obtener los datos enviados por el cliente en formato JSON
     data = request.get_json()  # Ej: {"Producto": "Hamburguesa", "Cantidad": 10}
-    
+
     # Verificar que los campos 'Producto' y 'Cantidad' estén presentes
-    if not data.get('Producto') or not data.get('Cantidad'):
-        return {'mensaje': 'Faltan datos: Producto y/o Cantidad'}, 400
-    
+    if not data.get("Producto") or not data.get("Cantidad"):
+        return {"mensaje": "Faltan datos: Producto y/o Cantidad"}, 400
+
     try:
         # 🔹 Crear conexión a la base de datos usando la función get_db()
         db = get_db()
         cursor = db.cursor(dictionary=True)
 
         # 1. Verificar si el producto ya existe
-        cursor.execute('SELECT 1 FROM Stock WHERE Producto = %s', (data['Producto'],))
+        cursor.execute("SELECT 1 FROM Stock WHERE Producto = %s", (data["Producto"],))
         if cursor.fetchone():
-            return {'mensaje': 'El producto ya está registrado'}, 400
+            return {"mensaje": "El producto ya está registrado"}, 400
 
         # 2. Insertar nuevo producto
-        cursor.execute('INSERT INTO Stock (Producto, Cantidad) VALUES (%s, %s)',
-                       (data['Producto'], data['Cantidad']))
+        cursor.execute(
+            "INSERT INTO Stock (Producto, Cantidad) VALUES (%s, %s)",
+            (data["Producto"], data["Cantidad"]),
+        )
 
         db.commit()  # Guardar los cambios
 
         # Obtener el ID del nuevo producto agregado
         nuevo_id = cursor.lastrowid
-        return jsonify({
-            "mensaje": "Producto agregado exitosamente",
-            "id": nuevo_id  # Devolvemos el ID
-        }), 200
-    
+        return (
+            jsonify(
+                {
+                    "mensaje": "Producto agregado exitosamente",
+                    "id": nuevo_id,  # Devolvemos el ID
+                }
+            ),
+            200,
+        )
+
     except Exception as e:  # Captura cualquier excepción y la maneja
         db.rollback()  # En caso de error, revertir cambios
-        return {'mensaje': f'Error al agregar el producto: {str(e)}'}, 500
-#valen
-@app.route('/stock/<int:stock_id>', methods=['DELETE'])
+        return {"mensaje": f"Error al agregar el producto: {str(e)}"}, 500
+
+
+# valen
+@app.route("/stock/<int:stock_id>", methods=["DELETE"])
 def eliminar_stock(stock_id):
     db = get_db()
     cursor = db.cursor()  # ← creás el cursor
-    cursor.execute('DELETE FROM Stock WHERE id_Stock = %s', (stock_id,))
+    cursor.execute("DELETE FROM Stock WHERE id_Stock = %s", (stock_id,))
     db.commit()
 
-
     if cursor.rowcount == 0:
-        return {'mensaje': 'No se encontró el registro'}, 404
+        return {"mensaje": "No se encontró el registro"}, 404
 
-    return {'mensaje': f'Stock con ID {stock_id} eliminado correctamente'}
-
+    return {"mensaje": f"Stock con ID {stock_id} eliminado correctamente"}
 
 
 # mas adelante modificar la ruta por que son las misma que la de borrar
 
 
-
-
-#valen
-@app.route('/stock/<int:stock_id>', methods=['PUT']) 
+# valen
+@app.route("/stock/<int:stock_id>", methods=["PUT"])
 def modificar_stock(stock_id):
     data = request.get_json()  # Recibe datos en formato JSON
 
     # Validar que vengan los datos necesarios
-    if not data or 'cantidad' not in data:
-        return {'mensaje': 'Falta el campo cantidad'}, 400
+    if not data or "cantidad" not in data:
+        return {"mensaje": "Falta el campo cantidad"}, 400
 
-    nueva_cantidad = data['cantidad']
+    nueva_cantidad = data["cantidad"]
 
     db = get_db()
     cursor = db.execute(
-        'UPDATE Stock SET cantidad = %s WHERE id_Stock = %s',
-        (nueva_cantidad, stock_id)
-    ) 
+        "UPDATE Stock SET cantidad = %s WHERE id_Stock = %s", (nueva_cantidad, stock_id)
+    )
     db.commit()
 
     if cursor.rowcount == 0:
-        return {'mensaje': 'No se encontró el registro'}, 404
+        return {"mensaje": "No se encontró el registro"}, 404
 
-    return {'mensaje': f'Stock con ID {stock_id} actualizado correctamente'}
+    return {"mensaje": f"Stock con ID {stock_id} actualizado correctamente"}
 
 
-
-#valen
-@app.route('/registro', methods=['POST'])
+# valen
+@app.route("/registro", methods=["POST"])
 def registrar_usuario():
     # 1. Validación de la solicitud (sin cambios)
     data = request.get_json()
-    if not data or 'Usuario' not in data or 'Email' not in data or 'Password' not in data:
-        return {'mensaje': 'Faltan datos'}, 400
+    if (
+        not data
+        or "Usuario" not in data
+        or "Email" not in data
+        or "Password" not in data
+    ):
+        return {"mensaje": "Faltan datos"}, 400
 
-    nombre = data['Usuario']
-    email = data['Email']
-    password = data['Password']
+    nombre = data["Usuario"]
+    email = data["Email"]
+    password = data["Password"]
 
     db = None
     cursor = None
-    #intenta si no fuunciona lo envia al excute
+    # intenta si no fuunciona lo envia al excute
     try:
         db = get_db()  # Asume que esta función abre la conexión
         cursor = db.cursor(dictionary=True)
 
         # 2. Verificar si el email ya existe (SELECT)
         # Una SELECT también es una transacción, aunque ligera.
-        cursor.execute('SELECT 1 FROM Usuarios WHERE Email = %s', (email,))
+        cursor.execute("SELECT 1 FROM Usuarios WHERE Email = %s", (email,))
         if cursor.fetchone():
             # No necesitamos hacer commit/rollback para un SELECT si no está en una transacción explícita
-            return {'mensaje': 'El email ya está registrado'}, 400
+            return {"mensaje": "El email ya está registrado"}, 400
 
         # 3. Encriptar la contraseña
         password_hash = generate_password_hash(password)
 
         # 4. Insertar usuario (INSERT)
         cursor.execute(
-            'INSERT INTO Usuarios (Usuario, Email, Password) VALUES (%s, %s, %s)',
-            (nombre, email, password_hash)
+            "INSERT INTO Usuarios (Usuario, Email, Password) VALUES (%s, %s, %s)",
+            (nombre, email, password_hash),
         )
-        
-        # 5. Confirmar la transacción
-        db.commit() # ¡IMPORTANTE! Este libera los bloqueos de fila del INSERT.
 
-        return {'mensaje': 'Usuario registrado con éxito'}, 201
+        # 5. Confirmar la transacción
+        db.commit()  # ¡IMPORTANTE! Este libera los bloqueos de fila del INSERT.
+
+        return {"mensaje": "Usuario registrado con éxito"}, 201
 
     except mysql.connector.Error as err:
         # En caso de cualquier error de MySQL (incluyendo Lock wait timeout exceeded)
         print(f"Error de base de datos: {err}")
         if db:
-            db.rollback() # Deshace la transacción para liberar cualquier bloqueo residual.
-        
+            db.rollback()  # Deshace la transacción para liberar cualquier bloqueo residual.
+
         # Puedes revisar códigos de error específicos si es necesario
-        if err.errno == 1205: # Código de error para Lock wait timeout exceeded
-             return {'mensaje': 'Error de concurrencia: El sistema está ocupado. Intente de nuevo.'}, 503
-             
-        return {'mensaje': 'Error al registrar el usuario en la base de datos.'}, 500
+        if err.errno == 1205:  # Código de error para Lock wait timeout exceeded
+            return {
+                "mensaje": "Error de concurrencia: El sistema está ocupado. Intente de nuevo."
+            }, 503
+
+        return {"mensaje": "Error al registrar el usuario en la base de datos."}, 500
 
     except Exception as e:
         # Manejo de cualquier otro error no relacionado con MySQL
         print(f"Error inesperado: {e}")
-        return {'mensaje': 'Error interno del servidor.'}, 500
+        return {"mensaje": "Error interno del servidor."}, 500
 
     finally:
         # 6. Cerrar recursos (¡Siempre debe ejecutarse!)
@@ -207,108 +222,123 @@ def registrar_usuario():
             # Asume que get_db() crea una conexión que debe ser cerrada.
             db.close()
 
-#valen
-@app.route('/inicio', methods=['POST'])
+
+# valen
+@app.route("/inicio", methods=["POST"])
 def inicio():
     data = request.get_json()
-    if not data or 'Email' not in data or 'Password' not in data:
-        return {'mensaje': 'Faltan datos'}, 400
+    if not data or "Email" not in data or "Password" not in data:
+        return {"mensaje": "Faltan datos"}, 400
 
-    email = data['Email']
-    password = data['Password']
+    email = data["Email"]
+    password = data["Password"]
 
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
     # Buscar usuario
-    cursor.execute('SELECT * FROM Usuarios WHERE Email = %s', (email,))
+    cursor.execute("SELECT * FROM Usuarios WHERE Email = %s", (email,))
     user = cursor.fetchone()
     cursor.close()
     db.close()
 
     if user is None:
-        return {'mensaje': 'Usuario no encontrado'}, 404
+        return {"mensaje": "Usuario no encontrado"}, 404
 
-    if check_password_hash(user['Password'], password):
-        return {'mensaje': 'Inicio de sesión exitoso', 'usuario': user}, 200
+    if check_password_hash(user["Password"], password):
+        return {"mensaje": "Inicio de sesión exitoso", "usuario": user}, 200
     else:
-        return {'mensaje': 'Contraseña incorrecta'}, 401
+        return {"mensaje": "Contraseña incorrecta"}, 401
 
 
-
-
-#lian
-@app.route('/inicio/cambiar/<int:id_Usuarios>', methods=['PUT'])
+# lian
+@app.route("/inicio/cambiar/<int:id_Usuarios>", methods=["PUT"])
 def modificar(id_Usuarios):
     data = request.get_json()
     if not data:
-        return {'mensaje': 'No se enviaron datos'}, 400
+        return {"mensaje": "No se enviaron datos"}, 400
 
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
     # Primero obtenemos los valores actuales de la fila
-    cursor.execute('SELECT Usuario, Email, Password FROM Usuarios WHERE id_usuarios = %s', (id_Usuarios,))
+    cursor.execute(
+        "SELECT Usuario, Email, Password FROM Usuarios WHERE id_usuarios = %s",
+        (id_Usuarios,),
+    )
     fila = cursor.fetchone()
     if not fila:
         cursor.close()
-        return {'mensaje': 'No se encuentra el usuario'}, 404
+        return {"mensaje": "No se encuentra el usuario"}, 404
 
     # Si no se envía un campo, se mantiene el valor actual
-    mod_Usuario = data.get('Usuario', fila['Usuario'])
-    mod_Email = data.get('Email', fila['Email'])
-    mod_Password = data.get('Password', fila['Password'])
+    mod_Usuario = data.get("Usuario", fila["Usuario"])
+    mod_Email = data.get("Email", fila["Email"])
+    mod_Password = data.get("Password", fila["Password"])
 
     # Ahora ejecutamos la consulta UPDATE fija
     cursor.execute(
-        'UPDATE Usuarios SET Usuario = %s, Email = %s, Password = %s WHERE id_usuarios = %s',
-        (mod_Usuario, mod_Email, mod_Password, id_Usuarios)
+        "UPDATE Usuarios SET Usuario = %s, Email = %s, Password = %s WHERE id_usuarios = %s",
+        (mod_Usuario, mod_Email, mod_Password, id_Usuarios),
     )
     db.commit()
     cursor.close()
 
-    if fila['Usuario'] != mod_Usuario and fila['Password'] != mod_Password and fila['Email'] != mod_Email:
-        return {'mensaje': f'Usuario con ID {id_Usuarios} cambió Usuario, Email y Password correctamente'}, 200
+    if (
+        fila["Usuario"] != mod_Usuario
+        and fila["Password"] != mod_Password
+        and fila["Email"] != mod_Email
+    ):
+        return {
+            "mensaje": f"Usuario con ID {id_Usuarios} cambió Usuario, Email y Password correctamente"
+        }, 200
 
-    if fila['Usuario'] != mod_Usuario and fila['Password'] != mod_Password:
-        return {'mensaje': f'Usuario con ID {id_Usuarios} cambió Usuario y Password correctamente'}, 200
+    if fila["Usuario"] != mod_Usuario and fila["Password"] != mod_Password:
+        return {
+            "mensaje": f"Usuario con ID {id_Usuarios} cambió Usuario y Password correctamente"
+        }, 200
 
-    if fila['Usuario'] != mod_Usuario and fila['Email'] != mod_Email:
-        return {'mensaje': f'Usuario con ID {id_Usuarios} cambió Usuario y Email correctamente'}, 200
+    if fila["Usuario"] != mod_Usuario and fila["Email"] != mod_Email:
+        return {
+            "mensaje": f"Usuario con ID {id_Usuarios} cambió Usuario y Email correctamente"
+        }, 200
 
-    if fila['Password'] != mod_Password and fila['Email'] != mod_Email:
-        return {'mensaje': f'Usuario con ID {id_Usuarios} cambió Password y Email correctamente'}, 200
+    if fila["Password"] != mod_Password and fila["Email"] != mod_Email:
+        return {
+            "mensaje": f"Usuario con ID {id_Usuarios} cambió Password y Email correctamente"
+        }, 200
 
-    if fila['Usuario'] != mod_Usuario:
-        return {'mensaje': f'Usuario con ID {id_Usuarios} cambió su Usuario correctamente a: {mod_Usuario}'}, 200
+    if fila["Usuario"] != mod_Usuario:
+        return {
+            "mensaje": f"Usuario con ID {id_Usuarios} cambió su Usuario correctamente a: {mod_Usuario}"
+        }, 200
 
-    if fila['Password'] != mod_Password:
-        return {'mensaje': f'Usuario con ID {id_Usuarios} cambió su Password correctamente'}, 200
+    if fila["Password"] != mod_Password:
+        return {
+            "mensaje": f"Usuario con ID {id_Usuarios} cambió su Password correctamente"
+        }, 200
 
-    if fila['Email'] != mod_Email:
-        return {'mensaje': f'Usuario con ID {id_Usuarios} cambió su Email correctamente a: {mod_Email}'}, 200
+    if fila["Email"] != mod_Email:
+        return {
+            "mensaje": f"Usuario con ID {id_Usuarios} cambió su Email correctamente a: {mod_Email}"
+        }, 200
 
-    return {'mensaje': 'No se hicieron cambios'}, 200
+    return {"mensaje": "No se hicieron cambios"}, 200
 
 
-
- #lian
-@app.route('/inicio/borrar/<int:id_usuarios>', methods=['DELETE'])
+# lian
+@app.route("/inicio/borrar/<int:id_usuarios>", methods=["DELETE"])
 def borrar_cuenta(id_usuarios):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute('DELETE FROM Usuarios WHERE id_usuarios = %s', (id_usuarios,))
+    cursor.execute("DELETE FROM Usuarios WHERE id_usuarios = %s", (id_usuarios,))
     db.commit()
     filas_afectadas = cursor.rowcount
     cursor.close()
     db.close()
     if filas_afectadas == 0:
-        return {'mensaje': 'No se encontró el usuario'}, 404
-    return {'mensaje': f'Usuario con ID {id_usuarios} eliminado correctamente'}, 200
-
-
-
-
+        return {"mensaje": "No se encontró el usuario"}, 404
+    return {"mensaje": f"Usuario con ID {id_usuarios} eliminado correctamente"}, 200
 
 
 # Configuración de la clave secreta.
@@ -319,7 +349,7 @@ app.secret_key = "clave_secreta_super_segura"
 
 # Middleware que se ejecuta antes de cada request.
 # Su función es asegurarse de que la sesión SIEMPRE tenga un carrito.
-#lian
+# lian
 @app.before_request
 def iniciar_carrito():
     # Si el carrito no existe en la sesión, lo creamos como una lista vacía.
@@ -329,32 +359,37 @@ def iniciar_carrito():
         session["carrito_promo"] = []
 
 
-    
-
 # -----------------------------
 # 📌 Ver carrito
 # -----------------------------
-#lian
+# lian
 @app.route("/carrito", methods=["GET"])
 def ver_carrito():
     carrito = session.get("carrito", [])
     carrito_promo = session.get("carrito_promo", [])
 
     # 🔹 Unificamos para calcular el total
-    total_productos = sum(float(item.get("Costo", 0)) * item.get("cantidad", 1) for item in carrito)
-    total_promos = sum(float(item.get("precio", 0)) * item.get("cantidad", 1) for item in carrito_promo)
+    total_productos = sum(
+        float(item.get("Costo", 0)) * item.get("cantidad", 1) for item in carrito
+    )
+    total_promos = sum(
+        float(item.get("precio", 0)) * item.get("cantidad", 1) for item in carrito_promo
+    )
     total = total_productos + total_promos
 
-    return jsonify({
-        "carrito": carrito,
-        "carrito_promo": carrito_promo,
-        "total": total
-    }), 200
+    print("-------GET------carrito")
+    print("carrito:")
+    print({"carrito": carrito, "carrito_promo": carrito_promo, "total": total})
+    return (
+        jsonify({"carrito": carrito, "carrito_promo": carrito_promo, "total": total}),
+        200,
+    )
+
 
 # -----------------------------
 # 📌 Agregar producto al carrito
 # -----------------------------
-#lian
+# lian
 # 🟩 Agregar producto
 @app.route("/carrito/agregar_producto/<int:id>", methods=["POST"])
 def agregar_producto(id):
@@ -362,8 +397,8 @@ def agregar_producto(id):
     cursor = db.cursor(dictionary=True)
 
     cursor.execute(
-        "SELECT id_Stock AS id_item, Producto AS nombre, Costo FROM Productos WHERE id_Stock = %s",
-        (id,)
+        "SELECT id_Stock AS id_item, Producto AS nombre, Costo FROM Productos WHERE id_Stock = %s LIMIT 1",
+        (id,),
     )
     item = cursor.fetchone()
     if not item:
@@ -374,22 +409,30 @@ def agregar_producto(id):
 
     carrito = session["carrito"]
 
-    for p in carrito:
-        if p["id"] == item["id_item"]:
-            p["cantidad"] += 1
-            session.modified = True
-            break
-    else:
-        carrito.append({
-            "id": item["id_item"],
-            "nombre": item["nombre"],
-            "Costo": float(item["Costo"]),  # 👈 mantenemos Costo
-            "cantidad": 1
-        })
+    if len(carrito) == 0:
+        carrito.append(
+            {
+                "id": item["id_item"],
+                "nombre": item["nombre"],
+                "Costo": float(item["Costo"]),  # 👈 mantenemos Costo
+                "cantidad": 1,
+            }
+        )
         session.modified = True
+    else:
+        for p in carrito:
+            if p["id"] == item["id_item"]:
+                p["cantidad"] += 1
+                print(p)
+                session.modified = True
+                break
 
     session["carrito"] = carrito
+    print("-------POST------carrito")
+    print("carrito:")
+    print(carrito)
     return jsonify({"mensaje": "Producto agregado", "carrito": carrito}), 200
+
 
 # 🟦 Agregar promo
 @app.route("/carrito/agregar_promo/<int:id>", methods=["POST"])
@@ -413,27 +456,36 @@ def agregar_promo(id):
             session.modified = True
             break
     else:
-        carrito_promo.append({
-            "id": item["id"],
-            "nombre": item["nombre"],
-            "precio": float(item["precio"]),  # 👈 mantenemos precio
-            "cantidad": 1
-        })
+        carrito_promo.append(
+            {
+                "id": item["id"],
+                "nombre": item["nombre"],
+                "precio": float(item["precio"]),  # 👈 mantenemos precio
+                "cantidad": 1,
+            }
+        )
         session.modified = True
 
     session["carrito_promo"] = carrito_promo
-    return jsonify({"mensaje": "Promoción agregada", "carrito_promo": carrito_promo}), 200
+    return (
+        jsonify({"mensaje": "Promoción agregada", "carrito_promo": carrito_promo}),
+        200,
+    )
+
 
 # -----------------------------
 # 📌 Eliminar producto del carrito
 # -----------------------------
-#lian
+# lian
 @app.route("/carrito/eliminar/<int:id_Stock>", methods=["POST"])
 def eliminar_carrito(id_Stock):
     carrito = session.get("carrito", [])
     carrito = [item for item in carrito if item["id"] != id_Stock]
     session["carrito"] = carrito
-    return jsonify({"mensaje": "Producto eliminado del carrito", "carrito": carrito}), 200
+    return (
+        jsonify({"mensaje": "Producto eliminado del carrito", "carrito": carrito}),
+        200,
+    )
 
 
 @app.route("/carrito/eliminar_promo/<int:id>", methods=["POST"])
@@ -441,28 +493,36 @@ def eliminar_carrito_promo(id):
     carrito_promo = session.get("carrito_promo", [])
     carrito_promo = [item for item in carrito_promo if item["id"] != id]
     session["carrito_promo"] = carrito_promo
-    return jsonify({"mensaje": "Promoción eliminada del carrito", "carrito_promo": carrito_promo}), 200
+    return (
+        jsonify(
+            {
+                "mensaje": "Promoción eliminada del carrito",
+                "carrito_promo": carrito_promo,
+            }
+        ),
+        200,
+    )
 
 
 # -----------------------------
 # 📌 Vaciar carrito
 # -----------------------------
-#lian
+# lian
 @app.route("/carrito/vaciar", methods=["POST"])
 def vaciar_carrito():
     session["carrito"] = []
     session["carrito_promo"] = []
-    return jsonify({"mensaje": "Carrito vaciado", "carrito": [], "carrito_promo": []}), 200
-
-
-
+    return (
+        jsonify({"mensaje": "Carrito vaciado", "carrito": [], "carrito_promo": []}),
+        200,
+    )
 
 
 # --------------------------
 # GET: Listar todas las promociones
 # --------------------------
-#valen
-@app.route('/Promociones', methods=['GET'])
+# valen
+@app.route("/Promociones", methods=["GET"])
 def obtener_promociones():
     db = get_db()
     cursor = db.cursor(dictionary=True)
@@ -470,15 +530,14 @@ def obtener_promociones():
     promociones = cursor.fetchall()
     cursor.close()
     db.close()
-    return jsonify(promociones), 200       
-
+    return jsonify(promociones), 200
 
 
 # --------------------------
 # GET: Obtener una promoción por ID
 # --------------------------
-#valen
-@app.route('/Promociones/<int:id>', methods=['GET'])
+# valen
+@app.route("/Promociones/<int:id>", methods=["GET"])
 def obtener_promocion(id):
     db = get_db()
     cursor = db.cursor(dictionary=True)
@@ -495,84 +554,95 @@ def obtener_promocion(id):
 # --------------------------
 # POST: Agregar una nueva promoción
 # --------------------------
-#valen
-@app.route('/Promociones', methods=['POST'])
+# valen
+@app.route("/Promociones", methods=["POST"])
 def agregar_promocion():
     datos = request.get_json()
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
         "INSERT INTO Promociones (nombre, descripcion, precio, productos) VALUES (%s, %s, %s, %s)",
-        (datos["nombre"], datos.get("descripcion"), datos["precio"], datos.get("productos"))
+        (
+            datos["nombre"],
+            datos.get("descripcion"),
+            datos["precio"],
+            datos.get("productos"),
+        ),
     )
     db.commit()
     cursor.close()
     db.close()
     return jsonify({"mensaje": "Promoción agregada"}), 201
+
+
 # --------------------------
 # PUT: Actualizar una promoción existente
 # --------------------------
-#valen
-@app.route('/Promociones/<int:id>', methods=['PUT'])
-
+# valen
+@app.route("/Promociones/<int:id>", methods=["PUT"])
 def actualizar_promocion(id):
     datos = request.get_json()
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
         "UPDATE Promociones SET nombre=%s, descripcion=%s, precio=%s, productos=%s WHERE id=%s",
-        (datos["nombre"], datos.get("descripcion"), datos["precio"], datos.get("productos"), id)
+        (
+            datos["nombre"],
+            datos.get("descripcion"),
+            datos["precio"],
+            datos.get("productos"),
+            id,
+        ),
     )
     db.commit()
     cursor.close()
     db.close()
     return jsonify({"mensaje": "Promoción actualizada"}), 200
+
+
 # --------------------------
 # DELETE: Eliminar una promoción
 # --------------------------
-#valen
-@app.route('/Promociones/<int:id>', methods=['DELETE'])
+# valen
+@app.route("/Promociones/<int:id>", methods=["DELETE"])
 def eliminar_promocion(id):
- db = get_db()
- cursor = db.cursor()
- cursor.execute("DELETE FROM Promociones WHERE id = %s", (id,))
- db.commit()
- cursor.close()
- db.close()
- return jsonify({"mensaje": "Promoción eliminada"}), 200
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM Promociones WHERE id = %s", (id,))
+    db.commit()
+    cursor.close()
+    db.close()
+    return jsonify({"mensaje": "Promoción eliminada"}), 200
 
 
-
-
-
-
-#valen
-@app.route('/contacto', methods=['POST'])
+# valen
+@app.route("/contacto", methods=["POST"])
 def guardar_contacto():
     data = request.get_json()
-    
+
     # Validar que los datos estén completos
-    if not data or 'nombre' not in data or 'email' not in data or 'mensaje' not in data:
-        return {'mensaje': 'Todos los campos son requeridos'}, 400
-    
-    nombre = data['nombre']
-    email = data['email']
-    mensaje = data['mensaje']
-    
+    if not data or "nombre" not in data or "email" not in data or "mensaje" not in data:
+        return {"mensaje": "Todos los campos son requeridos"}, 400
+
+    nombre = data["nombre"]
+    email = data["email"]
+    mensaje = data["mensaje"]
+
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
         "INSERT INTO Contacto (nombre, email, mensaje) VALUES (%s, %s, %s)",
-        (nombre, email, mensaje)
+        (nombre, email, mensaje),
     )
     db.commit()
     cursor.close()
     db.close()
-    
-    return {'mensaje': 'Mensaje de contacto guardado exitosamente'}, 201
 
-#lian
-@app.route('/carrito/total', methods=['GET'])
+    return {"mensaje": "Mensaje de contacto guardado exitosamente"}, 201
+
+
+# lian
+@app.route("/carrito/total", methods=["GET"])
 def total_carrito():
     # Verificamos que haya usuario logueado
     usuario_id = session.get("usuario_id")
@@ -591,8 +661,7 @@ def total_carrito():
     return jsonify({"total": total, "items": carrito}), 200
 
 
-
-#lian
+# lian
 @app.route("/crear_preferencia", methods=["POST"])
 def crear_preferencia():
     try:
@@ -606,20 +675,22 @@ def crear_preferencia():
         items = []
         for item in carrito:
             print("🧾 Item recibido:", item)
-            items.append({
-                "title": item.get("Producto", "Sin nombre"),
-                "quantity": int(item.get("cantidad", 1)),
-                "unit_price": float(item.get("Costo", 0))
-            })
+            items.append(
+                {
+                    "title": item.get("Producto", "Sin nombre"),
+                    "quantity": int(item.get("cantidad", 1)),
+                    "unit_price": float(item.get("Costo", 0)),
+                }
+            )
 
         preference_data = {
             "items": items,
             "back_urls": {
                 "success": "http://localhost:5173/pago/exitoso",
                 "failure": "http://localhost:5173/pago_fallido",
-                "pending": "http://localhost:5173/pago_pendiente"
+                "pending": "http://localhost:5173/pago_pendiente",
             },
-               # 👈 Esto hace que se redirija automáticamente al success si el pago fue aprobado
+            # 👈 Esto hace que se redirija automáticamente al success si el pago fue aprobado
         }
 
         print("📦 Enviando a Mercado Pago:", preference_data)
@@ -634,40 +705,43 @@ def crear_preferencia():
         return jsonify({"error": str(e)}), 500
 
 
-# Endpoint para obtener los productos más 
-#valen
-@app.route('/productos-mas-vendidos', methods=['GET'])
+# Endpoint para obtener los productos más
+# valen
+@app.route("/productos-mas-vendidos", methods=["GET"])
 def productos_mas_vendidos():
     # Conexión a la base de datos
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
 
     # Consulta SQL para obtener los productos más vendidos
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT s.Producto, SUM(v.Cantidad) AS total_vendido
         FROM Ventas v
         JOIN Productos s ON v.id_Stock = s.id_Stock
         GROUP BY s.Producto
         ORDER BY total_vendido DESC
         LIMIT 10;
-    """)
-    
+    """
+    )
+
     # Obtener los resultados
     resultados = cursor.fetchall()
 
     # Convertimos total_vendido a int
     for fila in resultados:
-        fila['total_vendido'] = int(fila['total_vendido'] or 0)  # por si es NULL
+        fila["total_vendido"] = int(fila["total_vendido"] or 0)  # por si es NULL
 
     # Cerrar la conexión
     cursor.close()
     conn.close()
-    
+
     # Retornar los resultados como JSON
     return jsonify(resultados)
 
-#lian
-@app.route('/productos/promedio-precios', methods=['GET'])
+
+# lian
+@app.route("/productos/promedio-precios", methods=["GET"])
 def promedio_precios():
     db = get_db()
     cursor = db.cursor(dictionary=True)
@@ -676,11 +750,12 @@ def promedio_precios():
     cursor.close()
     db.close()
 
-    promedio = resultado['promedio_precio'] if resultado['promedio_precio'] else 0
-    return jsonify({'promedio_precio_productos': promedio}), 200
+    promedio = resultado["promedio_precio"] if resultado["promedio_precio"] else 0
+    return jsonify({"promedio_precio_productos": promedio}), 200
 
-#lian
-@app.route('/productos/mas-caro', methods=['GET'])
+
+# lian
+@app.route("/productos/mas-caro", methods=["GET"])
 def producto_mas_caro():
     db = get_db()
     cursor = db.cursor(dictionary=True)
@@ -690,49 +765,51 @@ def producto_mas_caro():
     db.close()
 
     if not producto:
-        return jsonify({'mensaje': 'No hay productos registrados'}), 404
-    return jsonify({'producto_mas_caro': producto}), 200
+        return jsonify({"mensaje": "No hay productos registrados"}), 404
+    return jsonify({"producto_mas_caro": producto}), 200
 
 
-
-#lian
-@app.route('/ventas/ganancia-mensual', methods=['GET'])
+# lian
+@app.route("/ventas/ganancia-mensual", methods=["GET"])
 def ganancia_mensual():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT 
             DATE_FORMAT(NOW(), '%Y-%m') AS mes_actual,
             SUM(Total) AS ganancia_total
         FROM Ventas
         WHERE MONTH(Fecha) = MONTH(CURRENT_DATE())
           AND YEAR(Fecha) = YEAR(CURRENT_DATE());
-    """)
+    """
+    )
 
     resultado = cursor.fetchone()
     cursor.close()
     db.close()
 
-    ganancia = resultado['ganancia_total'] if resultado['ganancia_total'] else 0
-    return jsonify({"mes": resultado['mes_actual'], "ganancia_total": ganancia}), 200
+    ganancia = resultado["ganancia_total"] if resultado["ganancia_total"] else 0
+    return jsonify({"mes": resultado["mes_actual"], "ganancia_total": ganancia}), 200
 
 
-
-#valen
-@app.route('/usuarios/top-compradores', methods=['GET'])
+# valen
+@app.route("/usuarios/top-compradores", methods=["GET"])
 def top_compradores():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT u.Usuario, COUNT(v.id_Venta) AS total_compras, SUM(v.Total) AS monto_total
         FROM Ventas v
         JOIN Usuarios u ON v.id_Usuarios = u.id_usuarios
         GROUP BY u.Usuario
         ORDER BY monto_total DESC
         LIMIT 5;
-    """)
+    """
+    )
 
     resultado = cursor.fetchall()
     cursor.close()
@@ -741,33 +818,34 @@ def top_compradores():
     return jsonify(resultado), 200
 
 
-#lian
-@app.route('/productos/agregar', methods=['POST'])
+# lian
+@app.route("/productos/agregar", methods=["POST"])
 def agregar_producto2():
     db = get_db()
     cursor = db.cursor()
 
     data = request.get_json()
-    nombre = data.get('Nombre')
-    costo = data.get('Costo')
-    
+    nombre = data.get("Nombre")
+    costo = data.get("Costo")
 
     if not nombre or not costo:
         return jsonify({"error": "Faltan campos obligatorios"}), 400
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO Producto (Nombre, Descripcion, Categoria)
         VALUES (%s, %s, %s);
-    """, (nombre, costo))
+    """,
+        (nombre, costo),
+    )
     db.commit()
 
     cursor.close()
     db.close()
 
 
-
-#valen
-@app.route('/productos/<int:id_producto>', methods=['DELETE'])
+# valen
+@app.route("/productos/<int:id_producto>", methods=["DELETE"])
 def eliminar_producto(id_producto):
     db = get_db()
     cursor = db.cursor()
@@ -781,13 +859,11 @@ def eliminar_producto(id_producto):
     return jsonify({"mensaje": "Producto eliminado correctamente"}), 200
 
 
-
-
-#lian
-@app.route('/stock/filtro', methods=['GET'])
+# lian
+@app.route("/stock/filtro", methods=["GET"])
 def filtrar_stock():
-    distribuidora = request.args.get('distribuidora')
-    producto = request.args.get('producto')
+    distribuidora = request.args.get("distribuidora")
+    producto = request.args.get("producto")
 
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -810,23 +886,25 @@ def filtrar_stock():
         return jsonify({"mensaje": "No se encontraron coincidencias"}), 404
 
     return jsonify(resultados)
-#lian
-@app.route('/stock/resumen', methods=['GET'])
+
+
+# lian
+@app.route("/stock/resumen", methods=["GET"])
 def resumen_stock():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT Distribuidora, SUM(Cantidad) AS Total_Unidades, COUNT(*) AS Cantidad_Productos
         FROM Stock
         GROUP BY Distribuidora
         ORDER BY Total_Unidades DESC
-    """)
+    """
+    )
     resumen = cursor.fetchall()
     conn.close()
 
     return jsonify(resumen)
-
-
 
 
 ##valen
@@ -834,85 +912,90 @@ def resumen_stock():
 def sucursales_tempranas():
     db = get_db()
     cursor = db.cursor(dictionary=True)
-    
-    cursor.execute("""
+
+    cursor.execute(
+        """
         SELECT Ciudad, Pais, Horario_abierto
         FROM Sucursales
         WHERE Horario_abierto < '09:00:00'
         ORDER BY Horario_abierto ASC
-    """)
-    
+    """
+    )
+
     resultado = cursor.fetchall()
     cursor.close()
     db.close()
-    
+
     # Convertir Horario_abierto a string HH:MM:SS
     for fila in resultado:
-        if 'Horario_abierto' in fila and fila['Horario_abierto'] is not None:
-            fila['Horario_abierto'] = str(fila['Horario_abierto'])
-    
+        if "Horario_abierto" in fila and fila["Horario_abierto"] is not None:
+            fila["Horario_abierto"] = str(fila["Horario_abierto"])
+
     return jsonify(resultado)
+
 
 ##valen
 @app.route("/empleados", methods=["GET"])
 def obtener_empleados():
     db = get_db()
     cursor = db.cursor(dictionary=True)
-    
-    cursor.execute("""
+
+    cursor.execute(
+        """
         SELECT id_Empleados, Nombre, Apellido, Email, Numero, id_Sucursales
         FROM Empleados
         ORDER BY id_Empleados ASC
-    """)
-    
+    """
+    )
+
     empleados = cursor.fetchall()
     cursor.close()
     db.close()
-    
+
     return jsonify(empleados), 200
 
 
-
-
-
-#valen
+# valen
 @app.route("/empleados/por_sucursal", methods=["GET"])
 def empleados_por_sucursal():
     db = get_db()
     cursor = db.cursor(dictionary=True)
-    
-    cursor.execute("""
+
+    cursor.execute(
+        """
         SELECT id_Sucursales, COUNT(*) AS Total_Empleados
         FROM Empleados
         GROUP BY id_Sucursales
         ORDER BY id_Sucursales ASC
-    """)
-    
+    """
+    )
+
     resultado = cursor.fetchall()
     cursor.close()
     db.close()
-    
-    return jsonify(resultado), 200
 
+    return jsonify(resultado), 200
 
 
 # -----------------------------
 # 📌 Eliminar producto del carrito PROMOCIONES
 # -----------------------------
-#lian
+# lian
 
 
-#lian
-@app.route('/empleados/sucursales', methods=['GET'])
+# lian
+@app.route("/empleados/sucursales", methods=["GET"])
 def empleadosSucursales():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT e.Nombre, e.Apellido, s.Pais, s.Ciudad FROM `Empleados` AS e
 INNER JOIN `Sucursales` as s 
 ON s.id_Sucursales = e.id_Sucursales
-    """)
+    """
+    )
 
     resultado = cursor.fetchall()
     cursor.close()
@@ -921,12 +1004,13 @@ ON s.id_Sucursales = e.id_Sucursales
     return jsonify(resultado), 200
 
 
-@app.route('/ventas', methods=['GET'])
+@app.route("/ventas", methods=["GET"])
 def ventas():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT 
     MIN(a.Total) AS menor_venta,
     MAX(a.Total) AS mayor_venta,
@@ -939,7 +1023,8 @@ FROM Ventas as a
  on s.id_Stock = a.id_Stock ;
                 
 
-    """)
+    """
+    )
 
     resultado = cursor.fetchall()
     cursor.close()
@@ -948,14 +1033,13 @@ FROM Ventas as a
     return jsonify(resultado), 200
 
 
-
-
-@app.route('/ventas/producto', methods=['GET'])
+@app.route("/ventas/producto", methods=["GET"])
 def vanteasProducto():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT 
     a.Total AS venta,
     s.Producto,
@@ -965,7 +1049,8 @@ FROM Ventas as a
  on s.id_Stock = a.id_Stock;
                 
 
-    """)
+    """
+    )
 
     resultado = cursor.fetchall()
     cursor.close()
@@ -974,19 +1059,18 @@ FROM Ventas as a
     return jsonify(resultado), 200
 
 
-
 # --------------------------------------
 # 📌 ADMIN: Agregar un nuevo producto
 # --------------------------------------
 # @app.route('/admin/productos', methods=['POST'])
 # def admin_agregar_producto():
 #     data = request.get_json()
-    
+
 #     imagen = request.files.get("Imagen")#trae el file deñ front al back
-    
+
 #     # Validar campos obligatorios
-   
-    
+
+
 #     # imagen_url = None
 #     # if imagen:
 #     #     try:
@@ -994,7 +1078,7 @@ FROM Ventas as a
 #     #         imagen_url = upload_result["secure_url"]
 #     #     except Exception as e:
 #     #         return jsonify({"error": f"Error al subir imagen: {str(e)}"}), 500
-    
+
 #     db = get_db()
 #     cursor = db.cursor()
 
@@ -1014,7 +1098,7 @@ FROM Ventas as a
 # --------------------------------------
 # 📌 ADMIN: Eliminar producto
 # --------------------------------------
-@app.route('/admin/productos/<int:id_Precio>', methods=['DELETE'])
+@app.route("/admin/productos/<int:id_Precio>", methods=["DELETE"])
 def admin_eliminar_producto(id_Precio):
     db = get_db()
     cursor = db.cursor()
@@ -1027,14 +1111,12 @@ def admin_eliminar_producto(id_Precio):
     db.close()
 
     if filas_afectadas == 0:
-        return jsonify({'mensaje': 'No se encontró el producto'}), 404
+        return jsonify({"mensaje": "No se encontró el producto"}), 404
 
-    return jsonify({'mensaje': f'Producto con ID {id_Precio} eliminado correctamente'}), 200
-
-
-
-
-
+    return (
+        jsonify({"mensaje": f"Producto con ID {id_Precio} eliminado correctamente"}),
+        200,
+    )
 
 
 ##valen
@@ -1049,32 +1131,28 @@ def obtener_opiniones():
     return jsonify(opiniones)
 
 
-
-#valen
+# valen
 @app.route("/opiniones/buscar/<string:palabra>", methods=["GET"])
 def buscar_opiniones(palabra):
     db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute(
         "SELECT nombre, mensaje, fecha FROM Contacto WHERE mensaje LIKE %s OR nombre LIKE %s",
-        (f"%{palabra}%", f"%{palabra}%")
+        (f"%{palabra}%", f"%{palabra}%"),
     )
     resultados = cursor.fetchall()
     cursor.close()
     db.close()
     return jsonify(resultados)
+
+
 # Busca en la tabla Contacto los registros donde el nombre o el mensaje
 # contengan la palabra ingresada.
 # El % antes y después permite buscar coincidencias parciales (ej: "Juan" -> "Juanita").
 # Se usan %s como parámetros seguros para evitar inyecciones SQL.
 
 
-
-
-
-#valen
-
-
+# valen
 
 
 # cloudinary.config(
@@ -1085,11 +1163,8 @@ def buscar_opiniones(palabra):
 # )
 
 
-
-
-
 ##opiniones totales
-##valen 
+##valen
 @app.route("/opiniones/total", methods=["GET"])
 def contar_opiniones():
     db = get_db()
@@ -1116,23 +1191,10 @@ def opiniones_recientes():
     return jsonify(opiniones)
 
 
-
-
-
-
-
-
-
 def create_app():
     return app
 
 
 # Iniciar el servidor Flask
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-
-
-

@@ -1,4 +1,3 @@
-
 // src/CarritoContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 
@@ -15,31 +14,33 @@ export function CarritoProvider({ children }) {
 
   // 🔹 Cargar carrito desde backend
   const cargarCarrito = () => {
-  fetch("http://127.0.0.1:5000/carrito", {
-    method: "GET",
-    credentials: "include",
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      const carritoProductos = data.carrito?.map((item) => ({
-        ...item,
-        cantidad: item.cantidad || 1,
-        precio: Number(item.Costo), // 🔹 de Productos
-      })) || [];
-
-      const carritoPromos = data.carrito_promo?.map((item) => ({
-        ...item,
-        cantidad: item.cantidad || 1,
-        precio: Number(item.precio), // 🔹 de Promos
-      })) || [];
-
-      setCarrito(carritoProductos);
-      setCarrito_promo(carritoPromos);
-      setTotal(data.total || 0);
+    fetch("http://127.0.0.1:5000/carrito", {
+      method: "GET",
+      credentials: "include",
     })
-    .catch((err) => console.error("Error cargando carrito:", err));
-};
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        const carritoProductos =
+          data.carrito?.map((item) => ({
+            ...item,
+            cantidad: item.cantidad || 1,
+            precio: Number(item.Costo), // 🔹 de Productos
+          })) || [];
 
+        const carritoPromos =
+          data.carrito_promo?.map((item) => ({
+            ...item,
+            cantidad: item.cantidad || 1,
+            precio: Number(item.precio), // 🔹 de Promos
+          })) || [];
+
+        setCarrito(carritoProductos);
+        setCarrito_promo(carritoPromos);
+        setTotal(data.total || 0);
+      })
+      .catch((err) => console.error("Error cargando carrito:", err));
+  };
 
   // 🔹 Agregar producto o promoción
   const agregarCarrito = (id) => {
@@ -73,7 +74,6 @@ export function CarritoProvider({ children }) {
       .catch((err) => console.error("Error eliminando ítem:", err));
   };
 
-
   const eliminarItemPromo = (id) => {
     fetch(`http://127.0.0.1:5000/carrito/eliminar_promo/${id}`, {
       method: "POST",
@@ -83,7 +83,6 @@ export function CarritoProvider({ children }) {
       .then(() => cargarCarrito())
       .catch((err) => console.error("Error eliminando ítem:", err));
   };
-
 
   // 🔹 Vaciar carrito
   const vaciarCarrito = () => {
@@ -100,10 +99,10 @@ export function CarritoProvider({ children }) {
   const incrementarItem = (id) => {
     setCarrito((prev) => {
       const nuevoCarrito = prev.map((item) =>
-        item.id === id ? { ...item, cantidad: item.cantidad + 1 } : item
+        item.id === id ? { ...item, cantidad: item.cantidad + 1 } : item,
       );
       setTotal(
-        nuevoCarrito.reduce((acc, item) => acc + item.Costo * item.cantidad, 0)
+        nuevoCarrito.reduce((acc, item) => acc + item.Costo * item.cantidad, 0),
       );
       return nuevoCarrito;
     });
@@ -115,24 +114,26 @@ export function CarritoProvider({ children }) {
       const nuevoCarrito = prev.map((item) =>
         item.id === id && item.cantidad > 1
           ? { ...item, cantidad: item.cantidad - 1 }
-          : item
+          : item,
       );
       setTotal(
-        nuevoCarrito.reduce((acc, item) => acc + item.Costo * item.cantidad, 0)
+        nuevoCarrito.reduce((acc, item) => acc + item.Costo * item.cantidad, 0),
       );
       return nuevoCarrito;
     });
   };
 
-
-   // 🔹 Incrementar cantidad
+  // 🔹 Incrementar cantidad
   const incrementarItemPromo = (id) => {
     setCarrito_promo((prev) => {
       const nuevoCarrito = prev.map((item) =>
-        item.id === id ? { ...item, cantidad: item.cantidad + 1 } : item
+        item.id === id ? { ...item, cantidad: item.cantidad + 1 } : item,
       );
       setTotal(
-        nuevoCarrito.reduce((acc, item) => acc + <item className="precio"></item> * item.cantidad, 0)
+        nuevoCarrito.reduce(
+          (acc, item) => acc + <item className="precio"></item> * item.cantidad,
+          0,
+        ),
       );
       return nuevoCarrito;
     });
@@ -144,10 +145,13 @@ export function CarritoProvider({ children }) {
       const nuevoCarrito = prev.map((item) =>
         item.id === id && item.cantidad > 1
           ? { ...item, cantidad: item.cantidad - 1 }
-          : item
+          : item,
       );
       setTotal(
-        nuevoCarrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0)
+        nuevoCarrito.reduce(
+          (acc, item) => acc + item.precio * item.cantidad,
+          0,
+        ),
       );
       return nuevoCarrito;
     });
