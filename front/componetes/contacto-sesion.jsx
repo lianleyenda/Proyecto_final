@@ -135,7 +135,7 @@ function ContactoSesion() {
           >
             <Link to="/inicio">Página principal</Link>
             <Link to="/Contacto/sesion">Contacto</Link>
-            <Link to="/Promociones/sesion">Promociones</Link>
+            {/* <Link to="/Promociones/sesion">Promociones</Link> */}
 
             {usuario && (
               <SidebarUsuario

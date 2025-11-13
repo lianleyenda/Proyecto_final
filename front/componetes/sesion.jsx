@@ -68,15 +68,12 @@ function Sesion() {
 
   return (
     <>
-      <div className="promo">
+       <div className="promo">
         <span>
-          ¡Hoy tu hambre tiene premio! 🍔 Comprá 2 hamburguesas y la tercera va
-          de regalo —solo por tiempo limitado.
+          ¡Aca estan nuestros productos!🍔
         </span>
-        <a href="/Promociones">
-          <button>Ir</button>
-        </a>
-      </div>
+        
+      </div> 
 
       <header className={scrolled ? "scrolled" : ""}>
         <nav className="navbar-navegacion">
@@ -92,7 +89,7 @@ function Sesion() {
           <div className="navbar-right">
             <a href="/inicio">Página principal</a>
             <a href="/contacto/sesion">Contacto</a>
-            <a href="/Promociones/sesion">Promociones</a>
+            {/* <a href="/Promociones/sesion">Promociones</a> */}
 
             {usuario && (
               <SidebarUsuario

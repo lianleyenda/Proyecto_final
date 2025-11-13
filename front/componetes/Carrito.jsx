@@ -80,7 +80,8 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
               ))}
             </ul>
 
-            <h3 style={{ color: "#023973" }}>🎁 Tus Promos</h3>
+
+            {/* <h3 style={{ color: "#023973" }}>🎁 Tus Promos</h3>
             <ul>
               {carrito_promo.map((item) => (
                 <li key={item.id}>
@@ -99,6 +100,7 @@ function SidebarCarrito({ abrirAutomaticamente = false }) {
                 </li>
               ))}
             </ul>
+ */}
 
             <h3 className="pagar-vaciar-btn">Total: ${total}</h3>
             <div className="pagar-vaciar-btn">

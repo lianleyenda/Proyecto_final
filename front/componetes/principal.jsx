@@ -58,13 +58,10 @@ function Inicio() {
     <>
       <div className="promo">
         <span>
-          ¡Hoy tu hambre tiene premio! 🍔 Comprá 2 hamburguesas y la tercera va
-          de regalo —solo por tiempo limitado.
+          ¡Aca estan nuestros productos!🍔
         </span>
-        <a href="/Promociones">
-          <button>Ir</button>
-        </a>
-      </div>
+        
+      </div> 
 
       <header className={scrolled ? "scrolled" : ""}>
         <nav className="navbar-navegacion">
@@ -93,9 +90,9 @@ function Inicio() {
             <a href="/Contacto" onClick={() => setMenuOpen(false)}>
               Contacto
             </a>
-            <a href="/Promociones" onClick={() => setMenuOpen(false)}>
+            {/* <a href="/Promociones" onClick={() => setMenuOpen(false)}>
               Promociones
-            </a>
+            </a> */}
             <a href="/Login" onClick={() => setMenuOpen(false)}>
               Iniciar Sesión
             </a>

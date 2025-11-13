@@ -23,7 +23,7 @@ export default function PromocionesSesion() {
       fetch("http://127.0.0.1:5000/Promociones").then((res) => res.json()),
       fetch("http://127.0.0.1:5000/productos-mas-vendidos").then((res) =>
         res.json()
-      ),cargarCarrito()
+      ),
     ])
       .then(([promosData, vendidosData]) => {
         setPromos(promosData);
@@ -32,6 +32,10 @@ export default function PromocionesSesion() {
       })
       .catch((err) => console.error(err));
   }, []);
+
+  useEffect(() => {
+    cargarCarrito();
+    },[])
 
   // 🔹 Scroll y altura del hero
   useEffect(() => {

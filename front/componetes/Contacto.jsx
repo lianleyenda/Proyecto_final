@@ -94,7 +94,7 @@ function Contacto() {
           <div className="contacto-navbar-right">
             <Link to="/">Página principal</Link>
             <Link to="/Contacto">Contacto</Link>
-            <Link to="/Promociones">Promociones</Link>
+            {/* <Link to="/Promociones">Promociones</Link> */}
             <Link to="/Login">Iniciar Sesión</Link>
             <Link to="/Login">
               <TiShoppingCart size={40} />
